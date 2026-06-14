@@ -138,6 +138,11 @@ forge deploy
 forge install
 ```
 
+> **Full step-by-step install & wiring:** see
+> [`docs/INTEGRATION.md`](docs/INTEGRATION.md) — tooling, register/deploy/install,
+> scopes, project/issue-type/workflow setup, custom fields, Rovo enablement,
+> Automation wiring, an end-to-end smoke test, and troubleshooting.
+
 ## 7. Jira Automation setup
 
 See [`automation/jira-automation-rules.md`](automation/jira-automation-rules.md)
