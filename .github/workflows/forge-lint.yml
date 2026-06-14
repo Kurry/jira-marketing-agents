@@ -1,0 +1,40 @@
+name: Forge Lint
+
+on:
+  push:
+    branches:
+      - main
+      - "claude/**"
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  forge-lint:
+    name: Forge manifest lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Forge CLI
+        run: npm install -g @forge/cli
+
+      # `forge lint` validates the manifest schema. It can require auth/network
+      # in some environments, so this job is informational and non-blocking;
+      # the build-and-test job is the gating check.
+      - name: Forge lint
+        continue-on-error: true
+        run: forge lint
