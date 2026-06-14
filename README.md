@@ -216,6 +216,7 @@ campaign, landing page, referral, activation).
 manifest.yml          Forge modules: rovo:agent, action, function, resources
 src/                  TypeScript handlers + pure domain logic + utils
 prompts/              One Markdown prompt per agent
+skills/               Reusable agent skill modules (grounded in src/ + manifest)
 policies/             Safety, claims-risk, and experiment policies
 automation/           Jira Automation rules and JQL filters
 tests/                Vitest unit tests (TDD)
