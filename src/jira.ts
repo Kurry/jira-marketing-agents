@@ -92,15 +92,15 @@ export async function addComment(issueKey: string, markdown: string): Promise<{ 
 }
 
 /**
- * Fetch an issue plus its comments and normalize into an IssueContext.
- * This is the single entry point most handlers use to read issue data.
+ * Map a raw Jira issue JSON + extracted comment texts into a normalized
+ * IssueContext. Shared by the Forge handler path and the MCP server path so the
+ * two integrations produce identical context shapes.
  */
-export async function getIssueContext(issueKey: string): Promise<IssueContext> {
-  const [issue, comments] = await Promise.all([
-    getIssue(issueKey),
-    getIssueComments(issueKey).catch(() => [] as string[]),
-  ]);
-
+export function mapIssueToContext(
+  issueKey: string,
+  issue: any,
+  comments: string[]
+): IssueContext {
   const fields = issue?.fields ?? {};
   const summary: string = fields.summary ?? "";
   const description: string = extractPlainTextFromAdf(fields.description);
@@ -134,6 +134,19 @@ export async function getIssueContext(issueKey: string): Promise<IssueContext> {
     comments,
     combinedText,
   };
+}
+
+/**
+ * Fetch an issue plus its comments and normalize into an IssueContext.
+ * This is the single entry point most handlers use to read issue data.
+ */
+export async function getIssueContext(issueKey: string): Promise<IssueContext> {
+  const [issue, comments] = await Promise.all([
+    getIssue(issueKey),
+    getIssueComments(issueKey).catch(() => [] as string[]),
+  ]);
+
+  return mapIssueToContext(issueKey, issue, comments);
 }
 
 /** Map a raw search issue into a SimilarIssue stub (score filled in later). */

@@ -37,8 +37,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Type check / build
+      - name: Type check / build (Forge + domain)
         run: npm run build
+
+      - name: Type check MCP server (Cowork path)
+        run: npm run build:mcp
 
       - name: Run tests
         run: npm test

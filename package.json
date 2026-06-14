@@ -8,14 +8,18 @@
     "build": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "mcp": "tsx mcp/server.ts",
+    "build:mcp": "tsc -p tsconfig.mcp.json"
   },
   "dependencies": {
-    "@forge/api": "latest"
+    "@forge/api": "latest",
+    "@modelcontextprotocol/sdk": "^1.0.0"
   },
   "devDependencies": {
     "typescript": "latest",
     "vitest": "latest",
-    "@types/node": "latest"
+    "@types/node": "latest",
+    "tsx": "latest"
   }
 }

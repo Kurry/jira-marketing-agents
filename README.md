@@ -10,6 +10,13 @@ weekly growth readouts.
 It is **safe by default**: agents analyze and draft, they never take high-stakes
 actions (see [Safety model](#5-safety-model)).
 
+**Two integration routes, one shared core.** The growth-ops logic in `src/`
+powers both:
+
+- **Atlassian Forge + Rovo** — agents run inside Jira ([`docs/INTEGRATION.md`](docs/INTEGRATION.md)).
+- **Claude Cowork (MCP)** — the same capabilities as a 23-tool MCP server Cowork
+  connects to ([`docs/COWORK.md`](docs/COWORK.md)).
+
 ---
 
 ## 1. What this app does
@@ -219,10 +226,12 @@ campaign, landing page, referral, activation).
 
 ```
 manifest.yml          Forge modules: rovo:agent, action, function, resources
-src/                  TypeScript handlers + pure domain logic + utils
+src/                  TypeScript handlers + pure domain logic + utils (shared core)
+mcp/                  Claude Cowork MCP server exposing src/ as 23 tools
 prompts/              One Markdown prompt per agent
 skills/               Reusable agent skill modules (grounded in src/ + manifest)
 policies/             Safety, claims-risk, and experiment policies
 automation/           Jira Automation rules and JQL filters
+docs/                 INTEGRATION.md (Forge/Rovo) and COWORK.md (MCP)
 tests/                Vitest unit tests (TDD)
 ```
