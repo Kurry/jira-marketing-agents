@@ -1,0 +1,403 @@
+# Forge manifest for the AI Growth Ops Rovo agents app.
+#
+# NOTE: The app id below is a placeholder. Run `forge register` to create a
+# real app and replace this id (the CLI rewrites it automatically). Do not
+# commit a real production app id without intent.
+app:
+  id: ari:cloud:ecosystem::app/00000000-0000-0000-0000-000000000000
+  runtime:
+    name: nodejs22.x
+
+permissions:
+  # Classic scopes are used for a faster MVP. If you switch to granular
+  # scopes, replace these with the granular equivalents (for example
+  # read:issue:jira, write:comment:jira, read:comment:jira) and re-run
+  # `forge deploy`. See README "Custom fields guidance" and Forge docs.
+  scopes:
+    - read:jira-work
+    - write:jira-work
+    - read:chat:rovo
+
+resources:
+  - key: growth-triage-agent-prompt
+    path: prompts/growth-triage-agent.md
+  - key: requirements-gap-agent-prompt
+    path: prompts/requirements-gap-agent.md
+  - key: epic-breakdown-agent-prompt
+    path: prompts/epic-breakdown-agent.md
+  - key: duplicate-detector-agent-prompt
+    path: prompts/duplicate-detector-agent.md
+  - key: sprint-risk-agent-prompt
+    path: prompts/sprint-risk-agent.md
+  - key: acceptance-criteria-agent-prompt
+    path: prompts/acceptance-criteria-agent.md
+  - key: qa-testcase-agent-prompt
+    path: prompts/qa-testcase-agent.md
+  - key: experiment-design-agent-prompt
+    path: prompts/experiment-design-agent.md
+  - key: creative-claims-agent-prompt
+    path: prompts/creative-claims-agent.md
+  - key: employer-launch-agent-prompt
+    path: prompts/employer-launch-agent.md
+  - key: dashboard-spec-agent-prompt
+    path: prompts/dashboard-spec-agent.md
+  - key: funnel-friction-agent-prompt
+    path: prompts/funnel-friction-agent.md
+  - key: weekly-readout-agent-prompt
+    path: prompts/weekly-readout-agent.md
+
+modules:
+  rovo:agent:
+    - key: growth-triage-agent
+      name: AI Growth Triage Agent
+      description: Classifies Jira intake, identifies workflow area, risk, missing info, priority, owner group, and next action.
+      prompt: resource:growth-triage-agent-prompt
+      conversationStarters:
+        - Triage this issue
+        - Find missing requirements
+        - Recommend owner and next status
+      actions:
+        - getIssueContext
+        - classifyGrowthIssue
+        - findSimilarIssues
+        - proposeAcceptanceCriteria
+
+    - key: requirements-gap-agent
+      name: AI Requirements Gap Agent
+      description: Identifies missing requirements, clarifying questions, and blockers, and decides if an issue is ready for work.
+      prompt: resource:requirements-gap-agent-prompt
+      conversationStarters:
+        - Find missing requirements
+        - Is this ready for work?
+        - List clarifying questions
+      actions:
+        - getIssueContext
+        - proposeRequirementsGaps
+        - proposeAcceptanceCriteria
+
+    - key: epic-breakdown-agent
+      name: AI Epic Breakdown Agent
+      description: Breaks an epic into child stories with acceptance criteria, dependencies, and owner groups.
+      prompt: resource:epic-breakdown-agent-prompt
+      conversationStarters:
+        - Break down this epic
+        - Propose child stories
+        - Suggest dependencies
+      actions:
+        - getIssueContext
+        - breakDownEpic
+
+    - key: duplicate-detector-agent
+      name: AI Duplicate Detector Agent
+      description: Finds likely duplicate issues using text overlap, labels, and components.
+      prompt: resource:duplicate-detector-agent-prompt
+      conversationStarters:
+        - Find duplicates of this issue
+        - Search for similar issues
+      actions:
+        - getIssueContext
+        - findSimilarIssues
+
+    - key: sprint-risk-agent
+      name: AI Sprint Risk Agent
+      description: Assesses sprint and ticket execution risk and proposes mitigations.
+      prompt: resource:sprint-risk-agent-prompt
+      conversationStarters:
+        - Assess sprint risk
+        - What could block this?
+      actions:
+        - getIssueContext
+        - assessSprintRisk
+
+    - key: acceptance-criteria-agent
+      name: AI Acceptance Criteria Agent
+      description: Proposes acceptance criteria, definition of done, and QA checks.
+      prompt: resource:acceptance-criteria-agent-prompt
+      conversationStarters:
+        - Propose acceptance criteria
+        - Draft a definition of done
+      actions:
+        - getIssueContext
+        - proposeAcceptanceCriteria
+
+    - key: qa-testcase-agent
+      name: AI QA Test Case Agent
+      description: Generates QA test cases from a Jira issue.
+      prompt: resource:qa-testcase-agent-prompt
+      conversationStarters:
+        - Generate QA test cases
+        - Write edge case tests
+      actions:
+        - getIssueContext
+        - generateQATestCases
+
+    - key: experiment-design-agent
+      name: AI Experiment Design Agent
+      description: Drafts an experiment spec with hypothesis, metrics, guardrails, variants, and decision rule.
+      prompt: resource:experiment-design-agent-prompt
+      conversationStarters:
+        - Design an experiment
+        - Draft an experiment spec
+      actions:
+        - getIssueContext
+        - proposeExperimentSpec
+
+    - key: creative-claims-agent
+      name: AI Creative Claims Agent
+      description: Reviews creative copy for health claims risk and suggests safer rewrites. Never approves claims.
+      prompt: resource:creative-claims-agent-prompt
+      conversationStarters:
+        - Review claims risk
+        - Suggest safer rewrites
+      actions:
+        - getIssueContext
+        - reviewCreativeClaimsRisk
+
+    - key: employer-launch-agent
+      name: AI Employer Launch Agent
+      description: Builds an employer launch workback plan, readiness score, and suggested subtasks.
+      prompt: resource:employer-launch-agent-prompt
+      conversationStarters:
+        - Plan this employer launch
+        - Score launch readiness
+      actions:
+        - getIssueContext
+        - createEmployerLaunchPlan
+
+    - key: dashboard-spec-agent
+      name: AI Dashboard Spec Agent
+      description: Drafts a dashboard analytics specification from a request.
+      prompt: resource:dashboard-spec-agent-prompt
+      conversationStarters:
+        - Draft a dashboard spec
+        - Define dashboard metrics
+      actions:
+        - getIssueContext
+        - createDashboardSpec
+
+    - key: funnel-friction-agent
+      name: AI Funnel Friction Agent
+      description: Analyzes signup funnel issues and recommends fixes.
+      prompt: resource:funnel-friction-agent-prompt
+      conversationStarters:
+        - Analyze funnel friction
+        - Diagnose this signup issue
+      actions:
+        - getIssueContext
+        - analyzeFunnelFriction
+
+    - key: weekly-readout-agent
+      name: AI Weekly Readout Agent
+      description: Produces a weekly growth readout over recent AIGO issues.
+      prompt: resource:weekly-readout-agent-prompt
+      conversationStarters:
+        - Generate the weekly readout
+        - Summarize last week
+      actions:
+        - generateWeeklyReadout
+
+  action:
+    - key: getIssueContext
+      name: Get issue context
+      description: Fetch summary, description, fields, comments, labels, and components for an issue.
+      function: getIssueContext
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: classifyGrowthIssue
+      name: Classify growth issue
+      description: Classify issue type, workflow area, risk, priority, and missing info.
+      function: classifyGrowthIssue
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: findSimilarIssues
+      name: Find similar issues
+      description: Search for similar issues by text and JQL.
+      function: findSimilarIssues
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: proposeAcceptanceCriteria
+      name: Propose acceptance criteria
+      description: Generate acceptance criteria, definition of done, and QA checks.
+      function: proposeAcceptanceCriteria
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: proposeRequirementsGaps
+      name: Propose requirements gaps
+      description: Identify missing requirements and clarifying questions.
+      function: proposeRequirementsGaps
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: breakDownEpic
+      name: Break down epic
+      description: Propose child stories and subtasks for an epic.
+      function: breakDownEpic
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: assessSprintRisk
+      name: Assess sprint risk
+      description: Assess sprint or ticket execution risk.
+      function: assessSprintRisk
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: generateQATestCases
+      name: Generate QA test cases
+      description: Generate QA test cases from an issue.
+      function: generateQATestCases
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: proposeExperimentSpec
+      name: Propose experiment spec
+      description: Generate an experiment specification.
+      function: proposeExperimentSpec
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: reviewCreativeClaimsRisk
+      name: Review creative claims risk
+      description: Claims-risk review and safer rewrites. Never approves claims.
+      function: reviewCreativeClaimsRisk
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: createEmployerLaunchPlan
+      name: Create employer launch plan
+      description: Employer launch workback plan, readiness score, and subtasks.
+      function: createEmployerLaunchPlan
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: createDashboardSpec
+      name: Create dashboard spec
+      description: Dashboard analytics specification.
+      function: createDashboardSpec
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: analyzeFunnelFriction
+      name: Analyze funnel friction
+      description: Signup funnel issue analysis.
+      function: analyzeFunnelFriction
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: generateWeeklyReadout
+      name: Generate weekly readout
+      description: Weekly summary over recent AIGO issues.
+      function: generateWeeklyReadout
+      actionVerb: GET
+      inputs:
+        jql:
+          title: JQL query
+          type: string
+          required: true
+        days:
+          title: Lookback days
+          type: integer
+          required: false
+
+    - key: addAnalysisComment
+      name: Add analysis comment
+      description: Explicitly add a Jira comment. This is the only mutating action in the MVP.
+      function: addAnalysisComment
+      actionVerb: UPDATE
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+        commentBody:
+          title: Comment body
+          type: string
+          required: true
+
+  function:
+    - key: getIssueContext
+      handler: src/index.getIssueContext
+    - key: classifyGrowthIssue
+      handler: src/index.classifyGrowthIssue
+    - key: findSimilarIssues
+      handler: src/index.findSimilarIssues
+    - key: proposeAcceptanceCriteria
+      handler: src/index.proposeAcceptanceCriteria
+    - key: proposeRequirementsGaps
+      handler: src/index.proposeRequirementsGaps
+    - key: breakDownEpic
+      handler: src/index.breakDownEpic
+    - key: assessSprintRisk
+      handler: src/index.assessSprintRisk
+    - key: generateQATestCases
+      handler: src/index.generateQATestCases
+    - key: proposeExperimentSpec
+      handler: src/index.proposeExperimentSpec
+    - key: reviewCreativeClaimsRisk
+      handler: src/index.reviewCreativeClaimsRisk
+    - key: createEmployerLaunchPlan
+      handler: src/index.createEmployerLaunchPlan
+    - key: createDashboardSpec
+      handler: src/index.createDashboardSpec
+    - key: analyzeFunnelFriction
+      handler: src/index.analyzeFunnelFriction
+    - key: generateWeeklyReadout
+      handler: src/index.generateWeeklyReadout
+    - key: addAnalysisComment
+      handler: src/index.addAnalysisComment
