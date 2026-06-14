@@ -1,5 +1,10 @@
 # Jira Automation Rules
 
+> **Automation as code:** importable JSON definitions of every rule below live in
+> [`rules/`](rules/) (`aigo-automation-ruleset.json` bundles all five). See
+> [`rules/README.md`](rules/README.md) for how to import them and which
+> placeholders to replace. The steps below remain the human-readable reference.
+
 These rules wire the Rovo agents into Jira Automation. They use the **Use Rovo
 agent** action and the `{{agentResponse}}` smart value. Rovo actions invoked by
 automation are treated as **read-style**; any comment posting is done by an

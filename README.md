@@ -121,7 +121,11 @@ forge install
 ## 7. Jira Automation setup
 
 See [`automation/jira-automation-rules.md`](automation/jira-automation-rules.md)
-and [`automation/jql-filters.md`](automation/jql-filters.md). In short:
+and [`automation/jql-filters.md`](automation/jql-filters.md). Importable
+**Automation-as-code** JSON for all five rules lives in
+[`automation/rules/`](automation/rules/) (bundle:
+`aigo-automation-ruleset.json`) — import via **Project settings → Automation →
+Import rules**, then replace the documented placeholders. In short:
 
 1. Create the AIGO project and the issue types listed below.
 2. Add Automation rules that use the **Use Rovo agent** action and post
