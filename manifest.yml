@@ -45,6 +45,18 @@ resources:
     path: prompts/funnel-friction-agent.md
   - key: weekly-readout-agent-prompt
     path: prompts/weekly-readout-agent.md
+  - key: creative-generation-agent-prompt
+    path: prompts/creative-generation-agent.md
+  - key: audience-builder-agent-prompt
+    path: prompts/audience-builder-agent.md
+  - key: campaign-orchestration-agent-prompt
+    path: prompts/campaign-orchestration-agent.md
+  - key: landing-page-agent-prompt
+    path: prompts/landing-page-agent.md
+  - key: referral-loop-agent-prompt
+    path: prompts/referral-loop-agent.md
+  - key: activation-agent-prompt
+    path: prompts/activation-agent.md
 
 modules:
   rovo:agent:
@@ -195,6 +207,74 @@ modules:
         - Summarize last week
       actions:
         - generateWeeklyReadout
+
+    - key: creative-generation-agent
+      name: AI Creative Generation Agent
+      description: Drafts compliant creative variants per channel and scans each for claims risk. Never sends or approves.
+      prompt: resource:creative-generation-agent-prompt
+      conversationStarters:
+        - Generate creative variants
+        - Draft email and SMS copy
+      actions:
+        - getIssueContext
+        - generateCreativeVariants
+        - reviewCreativeClaimsRisk
+
+    - key: audience-builder-agent
+      name: AI Audience Builder Agent
+      description: Proposes candidate audience/segment definitions and personalization rules. Never mutates audiences or suppression.
+      prompt: resource:audience-builder-agent-prompt
+      conversationStarters:
+        - Build a candidate segment
+        - Propose personalization rules
+      actions:
+        - getIssueContext
+        - buildAudienceSegment
+        - proposePersonalization
+
+    - key: campaign-orchestration-agent
+      name: AI Campaign Orchestration Agent
+      description: Drafts a multi-touch outreach plan with guardrails and approvals for a human to execute. Never sends.
+      prompt: resource:campaign-orchestration-agent-prompt
+      conversationStarters:
+        - Plan an outreach campaign
+        - Sequence channels for this launch
+      actions:
+        - getIssueContext
+        - buildCampaignPlan
+
+    - key: landing-page-agent
+      name: AI Landing Page Agent
+      description: Produces a conversion-optimized landing page spec with compliance-scanned draft copy and an A/B plan.
+      prompt: resource:landing-page-agent-prompt
+      conversationStarters:
+        - Spec a landing page
+        - Draft landing page copy
+      actions:
+        - getIssueContext
+        - createLandingPageSpec
+
+    - key: referral-loop-agent
+      name: AI Referral Loop Agent
+      description: Designs a referral loop with tracking, fraud guardrails, and compliance flags. Never creates incentives.
+      prompt: resource:referral-loop-agent-prompt
+      conversationStarters:
+        - Design a referral loop
+        - How should referrals work?
+      actions:
+        - getIssueContext
+        - designReferralLoop
+
+    - key: activation-agent
+      name: AI Activation Agent
+      description: Proposes an early-activation plan to get registered members to first value. Never sends nudges.
+      prompt: resource:activation-agent-prompt
+      conversationStarters:
+        - Plan early activation
+        - Reduce onboarding drop-off
+      actions:
+        - getIssueContext
+        - proposeActivationPlan
 
   action:
     - key: getIssueContext
@@ -355,6 +435,83 @@ modules:
           type: integer
           required: false
 
+    - key: generateCreativeVariants
+      name: Generate creative variants
+      description: Draft compliant creative variants per channel; scans each for claims risk.
+      function: generateCreativeVariants
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: buildAudienceSegment
+      name: Build audience segment
+      description: Propose a candidate audience/segment definition. Never mutates production audiences.
+      function: buildAudienceSegment
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: proposePersonalization
+      name: Propose personalization
+      description: Propose personalization variables and rules for a segment.
+      function: proposePersonalization
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: buildCampaignPlan
+      name: Build campaign plan
+      description: Draft a multi-touch outreach plan for a human to execute. Never sends.
+      function: buildCampaignPlan
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: createLandingPageSpec
+      name: Create landing page spec
+      description: Produce a landing page spec with compliance-scanned draft copy.
+      function: createLandingPageSpec
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: designReferralLoop
+      name: Design referral loop
+      description: Design a referral loop with tracking, fraud guardrails, and compliance flags.
+      function: designReferralLoop
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
+    - key: proposeActivationPlan
+      name: Propose activation plan
+      description: Propose an early-activation plan for newly registered members.
+      function: proposeActivationPlan
+      actionVerb: GET
+      inputs:
+        issueKey:
+          title: Issue key
+          type: string
+          required: true
+
     - key: addAnalysisComment
       name: Add analysis comment
       description: Explicitly add a Jira comment. This is the only mutating action in the MVP.
@@ -399,5 +556,19 @@ modules:
       handler: src/index.analyzeFunnelFriction
     - key: generateWeeklyReadout
       handler: src/index.generateWeeklyReadout
+    - key: generateCreativeVariants
+      handler: src/index.generateCreativeVariants
+    - key: buildAudienceSegment
+      handler: src/index.buildAudienceSegment
+    - key: proposePersonalization
+      handler: src/index.proposePersonalization
+    - key: buildCampaignPlan
+      handler: src/index.buildCampaignPlan
+    - key: createLandingPageSpec
+      handler: src/index.createLandingPageSpec
+    - key: designReferralLoop
+      handler: src/index.designReferralLoop
+    - key: proposeActivationPlan
+      handler: src/index.proposeActivationPlan
     - key: addAnalysisComment
       handler: src/index.addAnalysisComment

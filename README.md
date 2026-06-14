@@ -14,10 +14,17 @@ actions (see [Safety model](#5-safety-model)).
 
 ## 1. What this app does
 
-The app exposes 13 Rovo agents and 15 callable actions. Each agent reads a Jira
+The app exposes 19 Rovo agents and 22 callable actions. Each agent reads a Jira
 issue (or a JQL result set), runs deterministic TypeScript logic, and returns
 **structured JSON** plus optional Markdown for comments. The only mutating
 action is `addAnalysisComment`, which posts an AI-labeled comment.
+
+Coverage spans the full member-acquisition lifecycle: **triage & planning**
+(triage, requirements, epics, duplicates, sprint risk, acceptance criteria, QA),
+**audience & creative** (audience/segment building, personalization, creative
+generation, claims review), **funnel & conversion** (campaign orchestration,
+landing page specs, referral loops, signup-funnel analysis, early activation),
+and **measurement** (experiment design, dashboard specs, weekly readouts).
 
 It is built for Twin's member-acquisition workflow: identifying high-potential
 populations, designing/running experiments, moving registration & CAC, and
@@ -72,6 +79,12 @@ fully unit-testable without the Jira API (see `tests/`).
 | AI Dashboard Spec Agent | Dashboard analytics specification |
 | AI Funnel Friction Agent | Signup funnel issue analysis |
 | AI Weekly Readout Agent | Weekly growth readout over recent AIGO issues |
+| AI Creative Generation Agent | Draft compliant creative variants per channel (claims-scanned) |
+| AI Audience Builder Agent | Propose candidate segments + personalization (never mutates audiences) |
+| AI Campaign Orchestration Agent | Draft multi-touch outreach plan for a human to execute |
+| AI Landing Page Agent | Conversion-optimized landing page spec with draft copy |
+| AI Referral Loop Agent | Referral mechanic, tracking, fraud guardrails, compliance flags |
+| AI Activation Agent | Early-activation plan to get registered members to first value |
 
 ## 4. Actions
 
@@ -91,6 +104,13 @@ fully unit-testable without the Jira API (see `tests/`).
 | `createDashboardSpec` | GET | Dashboard analytics spec |
 | `analyzeFunnelFriction` | GET | Signup funnel analysis |
 | `generateWeeklyReadout` | GET | Weekly summary over recent AIGO issues |
+| `generateCreativeVariants` | GET | Draft compliant creative variants (claims-scanned) |
+| `buildAudienceSegment` | GET | Propose audience/segment definition |
+| `proposePersonalization` | GET | Propose personalization variables & rules |
+| `buildCampaignPlan` | GET | Draft multi-touch outreach plan (no send) |
+| `createLandingPageSpec` | GET | Landing page spec with draft copy |
+| `designReferralLoop` | GET | Referral loop design with guardrails |
+| `proposeActivationPlan` | GET | Early-activation plan |
 | `addAnalysisComment` | UPDATE | **Only** mutation: add an ADF comment |
 
 ## 5. Safety model
@@ -177,7 +197,8 @@ npm run test:watch
 The project is developed **test-first (TDD)**: each domain module has a matching
 test under `tests/` (triage, requirements, experiments, creative claims,
 dashboards, duplicates, employer launch, funnel, backlog/sprint risk, readout,
-ADF/comments).
+ADF/comments, and growth execution: creative generation, audience/personalization,
+campaign, landing page, referral, activation).
 
 ## Future extensions
 

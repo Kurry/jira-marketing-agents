@@ -24,6 +24,12 @@ import { findDuplicates, CandidateIssue } from "./duplicates";
 import { assessSprintRisk as buildSprintRisk, breakDownEpic as buildEpicBreakdown, generateQATestCases as buildQATestCases } from "./backlog";
 import { buildWeeklyReadout, ReadoutIssue } from "./readout";
 import { addAnalysisComment as doAddComment } from "./comments";
+import { generateCreativeVariants as buildCreativeVariants } from "./creativeGen";
+import { buildAudienceSegment as buildAudience, proposePersonalization as buildPersonalization } from "./audience";
+import { buildCampaignPlan as buildCampaign } from "./campaign";
+import { createLandingPageSpec as buildLandingPageSpec } from "./landingPage";
+import { designReferralLoop as buildReferralLoop } from "./referral";
+import { proposeActivationPlan as buildActivationPlan } from "./activation";
 
 // Forge invokes handlers with the action inputs as the first argument. Inputs
 // may arrive nested under `payload` depending on the invocation path, so we
@@ -139,6 +145,43 @@ export async function generateWeeklyReadout(req: any) {
   }));
 
   return buildWeeklyReadout(issues, days ?? 7);
+}
+
+// --- Growth execution agents (draft / plan / spec — never autonomous) ------
+
+export async function generateCreativeVariants(req: any) {
+  const ctx = await fetchIssueContext(requireIssueKey(req));
+  return buildCreativeVariants(ctx);
+}
+
+export async function buildAudienceSegment(req: any) {
+  const ctx = await fetchIssueContext(requireIssueKey(req));
+  return buildAudience(ctx);
+}
+
+export async function proposePersonalization(req: any) {
+  const ctx = await fetchIssueContext(requireIssueKey(req));
+  return buildPersonalization(ctx);
+}
+
+export async function buildCampaignPlan(req: any) {
+  const ctx = await fetchIssueContext(requireIssueKey(req));
+  return buildCampaign(ctx);
+}
+
+export async function createLandingPageSpec(req: any) {
+  const ctx = await fetchIssueContext(requireIssueKey(req));
+  return buildLandingPageSpec(ctx);
+}
+
+export async function designReferralLoop(req: any) {
+  const ctx = await fetchIssueContext(requireIssueKey(req));
+  return buildReferralLoop(ctx);
+}
+
+export async function proposeActivationPlan(req: any) {
+  const ctx = await fetchIssueContext(requireIssueKey(req));
+  return buildActivationPlan(ctx);
 }
 
 // --- Mutating action (explicit, allowlisted) ------------------------------

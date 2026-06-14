@@ -1,8 +1,11 @@
 # Safe Mutations Policy
 
-This app is **safe by default**. Agents analyze and draft; they do not take
-high-stakes actions. This policy is the source of truth for what the app may
-and may not do.
+This app is **safe by default**. Agents analyze, draft, generate, plan, and
+spec; they do not take high-stakes actions. Full member-acquisition coverage
+(audience building, creative generation, campaign orchestration, landing pages,
+referral loops, activation) is provided as **drafts/plans/specs for human
+execution** — the irreversible, regulated steps below always remain human-gated.
+This policy is the source of truth for what the app may and may not do.
 
 ## What the AI may do (read / draft only)
 
@@ -19,6 +22,13 @@ and may not do.
 - Flag claims risk
 - Draft dashboard specs
 - Draft weekly readouts
+- Generate compliant creative variants (claims-scanned, for human review)
+- Propose candidate audience/segment definitions (for warehouse computation)
+- Propose personalization variables and rules
+- Draft multi-touch campaign/outreach plans (for a human to execute)
+- Produce landing page specs with draft copy
+- Design referral loops (with compliance flags)
+- Propose early-activation plans
 
 ## What the AI may NOT do autonomously
 
