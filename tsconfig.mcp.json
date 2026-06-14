@@ -1,0 +1,18 @@
+{
+  "comment": "Typecheck config for the MCP server path. Uses bundler module resolution so the ESM-only @modelcontextprotocol/sdk (subpath exports) resolves cleanly. The server is run with tsx (npm run mcp), which handles ESM/CJS interop at runtime.",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true
+  },
+  "include": ["mcp/**/*.ts", "src/**/*.ts"],
+  "exclude": ["node_modules"]
+}

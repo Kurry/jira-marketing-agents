@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "name": "AIGO – Experiment Spec",
+      "description": "When an Experiment is created or transitioned to AI Triage, run the AI Experiment Design Agent and post the draft spec. Does not launch anything.",
+      "state": "DISABLED",
+      "ruleScope": {
+        "resources": ["ari:cloud:jira:__PROJECT_ID__:project/__PROJECT_ID__"]
+      },
+      "actor": { "type": "ACCOUNT_ID", "value": "__ACTOR_ACCOUNT_ID__" },
+      "trigger": {
+        "component": "TRIGGER",
+        "type": "jira.manual.or.event.trigger",
+        "value": {
+          "triggers": [
+            { "type": "jira.issue.event.trigger:created", "value": {} },
+            { "type": "jira.issue.event.trigger:transitioned", "value": { "toStatus": ["AI Triage"] } }
+          ]
+        }
+      },
+      "components": [
+        {
+          "component": "CONDITION",
+          "type": "jira.jql.condition",
+          "value": {
+            "jql": "project = __PROJECT_KEY__ AND issuetype = Experiment"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.rovo.agent.action",
+          "value": {
+            "agentKey": "__EXPERIMENT_DESIGN_AGENT_KEY__",
+            "prompt": "Draft an experiment spec: hypothesis, audience/segment, channel, variants, primary metric, secondary metrics, guardrails, sample size note, runtime, tracking, decision rule, readout template, approvals. If no measurable primary metric exists, mark not ready. Do not launch.",
+            "issueKey": "{{issue.key}}",
+            "outputVar": "agentResponse"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.issue.comment",
+          "value": {
+            "body": "🤖 AI Growth Ops — Experiment Spec (draft; launch requires human go/no-go)\n\n{{agentResponse}}",
+            "visibility": "INTERNAL"
+          }
+        }
+      ]
+    }
+  ]
+}

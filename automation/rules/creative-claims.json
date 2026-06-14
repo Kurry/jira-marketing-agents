@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "name": "AIGO – Creative Claims Review",
+      "description": "When a Creative Request transitions to Ready, run the AI Creative Claims Agent and post its risk analysis. Approval remains a human step.",
+      "state": "DISABLED",
+      "ruleScope": {
+        "resources": ["ari:cloud:jira:__PROJECT_ID__:project/__PROJECT_ID__"]
+      },
+      "actor": { "type": "ACCOUNT_ID", "value": "__ACTOR_ACCOUNT_ID__" },
+      "trigger": {
+        "component": "TRIGGER",
+        "type": "jira.issue.event.trigger:transitioned",
+        "value": {
+          "toStatus": ["Ready"]
+        }
+      },
+      "components": [
+        {
+          "component": "CONDITION",
+          "type": "jira.jql.condition",
+          "value": {
+            "jql": "project = __PROJECT_KEY__ AND issuetype = \"Creative Request\""
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.rovo.agent.action",
+          "value": {
+            "agentKey": "__CREATIVE_CLAIMS_AGENT_KEY__",
+            "prompt": "Review this creative for health/marketing claims risk. Return overall claims risk, flagged phrases with safer rewrites, channel warnings, and whether human review is required. Never approve claims.",
+            "issueKey": "{{issue.key}}",
+            "outputVar": "agentResponse"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.issue.comment",
+          "value": {
+            "body": "🤖 AI Growth Ops — Claims Review (analysis only; not an approval)\n\n{{agentResponse}}",
+            "visibility": "INTERNAL"
+          }
+        },
+        {
+          "component": "CONDITION",
+          "type": "jira.smartvalue.condition",
+          "value": {
+            "first": "{{agentResponse}}",
+            "operator": "CONTAINS",
+            "second": "Risky"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.issue.transition",
+          "value": {
+            "status": "Claims Review",
+            "_comment": "Optional routing only. Human still owns the approval decision."
+          }
+        }
+      ]
+    }
+  ]
+}
