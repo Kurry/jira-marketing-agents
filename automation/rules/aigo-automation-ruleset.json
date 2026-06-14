@@ -1,0 +1,274 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "name": "AIGO \u2013 Intake Triage",
+      "description": "On issue creation in AIGO, run the AI Growth Triage Agent and post its analysis as a comment. Read-style; no fields are changed.",
+      "state": "DISABLED",
+      "ruleScope": {
+        "resources": [
+          "ari:cloud:jira:__PROJECT_ID__:project/__PROJECT_ID__"
+        ]
+      },
+      "actor": {
+        "type": "ACCOUNT_ID",
+        "value": "__ACTOR_ACCOUNT_ID__"
+      },
+      "trigger": {
+        "component": "TRIGGER",
+        "type": "jira.issue.event.trigger:created",
+        "value": {}
+      },
+      "components": [
+        {
+          "component": "CONDITION",
+          "type": "jira.jql.condition",
+          "value": {
+            "jql": "project = __PROJECT_KEY__"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.rovo.agent.action",
+          "value": {
+            "agentKey": "__TRIAGE_AGENT_KEY__",
+            "prompt": "Triage this issue using summary, description, fields, comments, labels, and linked issues. Return clean summary, issue type, workflow area, risk, claims risk, missing information, suggested owner, acceptance criteria, subtasks, and recommended next status.",
+            "issueKey": "{{issue.key}}",
+            "outputVar": "agentResponse"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.issue.comment",
+          "value": {
+            "body": "\ud83e\udd16 AI Growth Ops \u2014 Triage (analysis only)\n\n{{agentResponse}}",
+            "visibility": "INTERNAL"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AIGO \u2013 Creative Claims Review",
+      "description": "When a Creative Request transitions to Ready, run the AI Creative Claims Agent and post its risk analysis. Approval remains a human step.",
+      "state": "DISABLED",
+      "ruleScope": {
+        "resources": [
+          "ari:cloud:jira:__PROJECT_ID__:project/__PROJECT_ID__"
+        ]
+      },
+      "actor": {
+        "type": "ACCOUNT_ID",
+        "value": "__ACTOR_ACCOUNT_ID__"
+      },
+      "trigger": {
+        "component": "TRIGGER",
+        "type": "jira.issue.event.trigger:transitioned",
+        "value": {
+          "toStatus": [
+            "Ready"
+          ]
+        }
+      },
+      "components": [
+        {
+          "component": "CONDITION",
+          "type": "jira.jql.condition",
+          "value": {
+            "jql": "project = __PROJECT_KEY__ AND issuetype = \"Creative Request\""
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.rovo.agent.action",
+          "value": {
+            "agentKey": "__CREATIVE_CLAIMS_AGENT_KEY__",
+            "prompt": "Review this creative for health/marketing claims risk. Return overall claims risk, flagged phrases with safer rewrites, channel warnings, and whether human review is required. Never approve claims.",
+            "issueKey": "{{issue.key}}",
+            "outputVar": "agentResponse"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.issue.comment",
+          "value": {
+            "body": "\ud83e\udd16 AI Growth Ops \u2014 Claims Review (analysis only; not an approval)\n\n{{agentResponse}}",
+            "visibility": "INTERNAL"
+          }
+        },
+        {
+          "component": "CONDITION",
+          "type": "jira.smartvalue.condition",
+          "value": {
+            "first": "{{agentResponse}}",
+            "operator": "CONTAINS",
+            "second": "Risky"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.issue.transition",
+          "value": {
+            "status": "Claims Review",
+            "_comment": "Optional routing only. Human still owns the approval decision."
+          }
+        }
+      ]
+    },
+    {
+      "name": "AIGO \u2013 Experiment Spec",
+      "description": "When an Experiment is created or transitioned to AI Triage, run the AI Experiment Design Agent and post the draft spec. Does not launch anything.",
+      "state": "DISABLED",
+      "ruleScope": {
+        "resources": [
+          "ari:cloud:jira:__PROJECT_ID__:project/__PROJECT_ID__"
+        ]
+      },
+      "actor": {
+        "type": "ACCOUNT_ID",
+        "value": "__ACTOR_ACCOUNT_ID__"
+      },
+      "trigger": {
+        "component": "TRIGGER",
+        "type": "jira.manual.or.event.trigger",
+        "value": {
+          "triggers": [
+            {
+              "type": "jira.issue.event.trigger:created",
+              "value": {}
+            },
+            {
+              "type": "jira.issue.event.trigger:transitioned",
+              "value": {
+                "toStatus": [
+                  "AI Triage"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "components": [
+        {
+          "component": "CONDITION",
+          "type": "jira.jql.condition",
+          "value": {
+            "jql": "project = __PROJECT_KEY__ AND issuetype = Experiment"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.rovo.agent.action",
+          "value": {
+            "agentKey": "__EXPERIMENT_DESIGN_AGENT_KEY__",
+            "prompt": "Draft an experiment spec: hypothesis, audience/segment, channel, variants, primary metric, secondary metrics, guardrails, sample size note, runtime, tracking, decision rule, readout template, approvals. If no measurable primary metric exists, mark not ready. Do not launch.",
+            "issueKey": "{{issue.key}}",
+            "outputVar": "agentResponse"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.issue.comment",
+          "value": {
+            "body": "\ud83e\udd16 AI Growth Ops \u2014 Experiment Spec (draft; launch requires human go/no-go)\n\n{{agentResponse}}",
+            "visibility": "INTERNAL"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AIGO \u2013 Employer Launch Plan",
+      "description": "When an Employer Launch issue is created, run the AI Employer Launch Agent and post the workback plan and readiness score. Does not launch.",
+      "state": "DISABLED",
+      "ruleScope": {
+        "resources": [
+          "ari:cloud:jira:__PROJECT_ID__:project/__PROJECT_ID__"
+        ]
+      },
+      "actor": {
+        "type": "ACCOUNT_ID",
+        "value": "__ACTOR_ACCOUNT_ID__"
+      },
+      "trigger": {
+        "component": "TRIGGER",
+        "type": "jira.issue.event.trigger:created",
+        "value": {}
+      },
+      "components": [
+        {
+          "component": "CONDITION",
+          "type": "jira.jql.condition",
+          "value": {
+            "jql": "project = __PROJECT_KEY__ AND issuetype = \"Employer Launch\""
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.rovo.agent.action",
+          "value": {
+            "agentKey": "__EMPLOYER_LAUNCH_AGENT_KEY__",
+            "prompt": "Build an employer launch workback plan: readiness score, launch phases with tasks, blockers, required assets, QA checklist, and suggested subtasks. Go/no-go and claims approval are human steps.",
+            "issueKey": "{{issue.key}}",
+            "outputVar": "agentResponse"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.issue.comment",
+          "value": {
+            "body": "\ud83e\udd16 AI Growth Ops \u2014 Employer Launch Plan (analysis only)\n\n{{agentResponse}}",
+            "visibility": "INTERNAL"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AIGO \u2013 Weekly Growth Readout",
+      "description": "Every Monday at 8 AM, run the AI Weekly Readout Agent over the last 7 days of AIGO issues and create a Decision Memo with the summary.",
+      "state": "DISABLED",
+      "ruleScope": {
+        "resources": [
+          "ari:cloud:jira:__PROJECT_ID__:project/__PROJECT_ID__"
+        ]
+      },
+      "actor": {
+        "type": "ACCOUNT_ID",
+        "value": "__ACTOR_ACCOUNT_ID__"
+      },
+      "trigger": {
+        "component": "TRIGGER",
+        "type": "jira.scheduled.trigger",
+        "value": {
+          "schedule": {
+            "type": "CRON",
+            "expression": "0 0 8 ? * MON",
+            "timezone": "America/New_York"
+          },
+          "runFromJql": false
+        }
+      },
+      "components": [
+        {
+          "component": "ACTION",
+          "type": "jira.rovo.agent.action",
+          "value": {
+            "agentKey": "__WEEKLY_READOUT_AGENT_KEY__",
+            "prompt": "Generate the weekly growth readout.",
+            "jql": "project = __PROJECT_KEY__ AND updated >= -7d ORDER BY updated DESC",
+            "days": 7,
+            "outputVar": "agentResponse"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.issue.create",
+          "value": {
+            "project": "__PROJECT_KEY__",
+            "issueType": "Decision Memo",
+            "summary": "Weekly Growth Readout \u2014 {{now.format(\"yyyy-MM-dd\")}}",
+            "description": "\ud83e\udd16 AI Growth Ops \u2014 Weekly Readout (analysis only)\n\n{{agentResponse}}"
+          }
+        }
+      ]
+    }
+  ]
+}

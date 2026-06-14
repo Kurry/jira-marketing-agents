@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "name": "AIGO – Intake Triage",
+      "description": "On issue creation in AIGO, run the AI Growth Triage Agent and post its analysis as a comment. Read-style; no fields are changed.",
+      "state": "DISABLED",
+      "ruleScope": {
+        "resources": ["ari:cloud:jira:__PROJECT_ID__:project/__PROJECT_ID__"]
+      },
+      "actor": { "type": "ACCOUNT_ID", "value": "__ACTOR_ACCOUNT_ID__" },
+      "trigger": {
+        "component": "TRIGGER",
+        "type": "jira.issue.event.trigger:created",
+        "value": {}
+      },
+      "components": [
+        {
+          "component": "CONDITION",
+          "type": "jira.jql.condition",
+          "value": {
+            "jql": "project = __PROJECT_KEY__"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.rovo.agent.action",
+          "value": {
+            "agentKey": "__TRIAGE_AGENT_KEY__",
+            "prompt": "Triage this issue using summary, description, fields, comments, labels, and linked issues. Return clean summary, issue type, workflow area, risk, claims risk, missing information, suggested owner, acceptance criteria, subtasks, and recommended next status.",
+            "issueKey": "{{issue.key}}",
+            "outputVar": "agentResponse"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.issue.comment",
+          "value": {
+            "body": "🤖 AI Growth Ops — Triage (analysis only)\n\n{{agentResponse}}",
+            "visibility": "INTERNAL"
+          }
+        }
+      ]
+    }
+  ]
+}

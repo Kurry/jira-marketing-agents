@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "name": "AIGO – Weekly Growth Readout",
+      "description": "Every Monday at 8 AM, run the AI Weekly Readout Agent over the last 7 days of AIGO issues and create a Decision Memo with the summary.",
+      "state": "DISABLED",
+      "ruleScope": {
+        "resources": ["ari:cloud:jira:__PROJECT_ID__:project/__PROJECT_ID__"]
+      },
+      "actor": { "type": "ACCOUNT_ID", "value": "__ACTOR_ACCOUNT_ID__" },
+      "trigger": {
+        "component": "TRIGGER",
+        "type": "jira.scheduled.trigger",
+        "value": {
+          "schedule": {
+            "type": "CRON",
+            "expression": "0 0 8 ? * MON",
+            "timezone": "America/New_York"
+          },
+          "runFromJql": false
+        }
+      },
+      "components": [
+        {
+          "component": "ACTION",
+          "type": "jira.rovo.agent.action",
+          "value": {
+            "agentKey": "__WEEKLY_READOUT_AGENT_KEY__",
+            "prompt": "Generate the weekly growth readout.",
+            "jql": "project = __PROJECT_KEY__ AND updated >= -7d ORDER BY updated DESC",
+            "days": 7,
+            "outputVar": "agentResponse"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.issue.create",
+          "value": {
+            "project": "__PROJECT_KEY__",
+            "issueType": "Decision Memo",
+            "summary": "Weekly Growth Readout — {{now.format(\"yyyy-MM-dd\")}}",
+            "description": "🤖 AI Growth Ops — Weekly Readout (analysis only)\n\n{{agentResponse}}"
+          }
+        }
+      ]
+    }
+  ]
+}
