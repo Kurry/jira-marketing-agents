@@ -36,6 +36,34 @@ The manifest intentionally keeps public Rovo action keys descriptive, while
 Forge function module keys are short internal keys to satisfy Forge's function
 key length limits and uniqueness rules.
 
+## Initial Outcome Architecture
+
+The expanded AI Growth Ops system has three layers:
+
+1. Jira control plane
+   - Issue types, custom fields, workflows, screens, queues, filters,
+     dashboards, Automation rules, and human approval gates.
+   - This layer decides whether work is ready, blocked, under review, running,
+     waiting for readout, or done.
+
+2. Forge/Rovo agent layer
+   - Rovo agents classify, draft, summarize, recommend, create specs, and return
+     reviewable analysis.
+   - Forge actions read Jira context, call pure TypeScript modules, and return
+     structured output.
+   - The default write surface remains AI-labeled comments only.
+
+3. Portable provisioning layer
+   - Instance configs, seed rendering, Forge install, project create/clone,
+     readiness checks, and Automation template rendering.
+   - Golden company-managed Jira projects remain the default scale path until a
+     Terraform provider is proven in a sandbox.
+
+The 10 initial outcome workflows are tracked in
+[`outcome-roadmap.md`](./outcome-roadmap.md). Current code implements several
+agent capabilities, but the complete operating system still requires Jira admin
+configuration, missing agents/modules, Automation validation, and documentation.
+
 ## Core Components
 
 ### Forge Manifest
@@ -125,6 +153,29 @@ The provision script intentionally does not pretend to Terraform-manage every
 Jira admin object. It automates the supported CLI surfaces and documents the
 remaining UI/template-project gates.
 
+### Terraform Provider Strategy
+
+Terraform is a post-MVP option, not the MVP foundation.
+
+The official Atlassian Operations Terraform provider is useful for JSM/Compass
+operations resources such as teams, schedules, escalations, services, alert
+policies, notification rules, and routing rules. It does not cover the general
+Jira project, workflow, board, screen, field, Automation, or Rovo surfaces this
+system needs.
+
+The most relevant Jira Cloud provider candidates are third-party:
+
+- [`gothub97/terraform-provider-atlassian`](https://github.com/gothub97/terraform-provider-atlassian)
+- [`lbajsarowicz/terraform-provider-atlassian`](https://github.com/lbajsarowicz/terraform-provider-atlassian)
+- [`alc0der/terraform-provider-jira-automation`](https://github.com/alc0der/terraform-provider-jira-automation)
+- [`fourplusone/terraform-provider-jira`](https://github.com/fourplusone/terraform-provider-jira)
+- [`Vestmark/terraform-provider-jira`](https://github.com/Vestmark/terraform-provider-jira)
+
+The spike must prove create, import, plan, drift, and destroy behavior against a
+disposable Jira site before any `.tf` resources become the supported path. If
+coverage is incomplete, keep the portable implementation on Forge CLI, ACLI,
+Jira REST scripts, Automation JSON templates, and golden-project cloning.
+
 ### Jira Automation
 
 Automation is the bridge from Jira events to Rovo agent runs.
@@ -208,4 +259,5 @@ Integration tests protect deployability by checking:
 - Add production/staging environment promotion docs after the development flow
   is stable.
 - Evaluate third-party Terraform providers only after validating they cover the
-  exact Jira project, workflow, board, Automation, and Rovo surfaces needed.
+  exact Jira project, workflow, board, Automation, import/drift, and destroy
+  surfaces needed.

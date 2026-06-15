@@ -135,6 +135,314 @@ Acceptance:
 - No critical blocker remains for the development-site MVP.
 - Any post-MVP work is explicitly moved out of the MVP checklist.
 
+## Milestone 8: Initial Outcome Roadmap
+
+- `[x]` Look up current Forge/Rovo and Jira REST documentation before extending
+  the roadmap.
+- `[x]` Inspect the current manifest, source modules, tests, Automation rules,
+  portability scripts, and specs.
+- `[x]` Launch six focused subagents to audit:
+  Intake/Triage, Segmentation/Personalization, Creative/Experimentation,
+  Research/Positioning, Campaign/Funnel/Readouts, and Platform/IaC.
+- `[x]` Review the Terraform provider shortlist:
+  [`atlassian/terraform-provider-atlassian-operations`](https://github.com/atlassian/terraform-provider-atlassian-operations),
+  [`gothub97/terraform-provider-atlassian`](https://github.com/gothub97/terraform-provider-atlassian),
+  [`lbajsarowicz/terraform-provider-atlassian`](https://github.com/lbajsarowicz/terraform-provider-atlassian),
+  [`fourplusone/terraform-provider-jira`](https://github.com/fourplusone/terraform-provider-jira),
+  [`Vestmark/terraform-provider-jira`](https://github.com/Vestmark/terraform-provider-jira),
+  and
+  [`alc0der/terraform-provider-jira-automation`](https://github.com/alc0der/terraform-provider-jira-automation).
+- `[x]` Add the detailed 10-outcome roadmap in
+  [`outcome-roadmap.md`](./outcome-roadmap.md).
+- `[ ]` Finalize the canonical issue-type catalog for:
+  AI Growth Request, Creative Request, Experiment, Segmentation Request,
+  Personalization Journey, Employer Launch, Campaign, Dashboard Request,
+  Signup Funnel Issue, Research Brief, Claims Review, Decision Memo,
+  Positioning Update, and any retained compatibility types.
+- `[ ]` Finalize the custom-field catalog for segmentation, personalization,
+  creative, experimentation, research, campaigns, conversion optimization,
+  analytics, and positioning.
+- `[ ]` Add or verify the expanded Jira workflows, screens, queues, filters, and
+  dashboards described in the outcome roadmap.
+- `[ ]` Add missing Forge/Rovo agents and compatibility mappings for requested
+  names that differ from the current manifest.
+- `[ ]` Add dedicated modules for the missing outcome surfaces:
+  personalization journey, objection mining, experiment readout, positioning,
+  anomaly summary, decision recommendation, and any separated launch-readiness
+  or regression-check logic.
+- `[ ]` Add per-instance Automation rule rendering and contract tests.
+- `[ ]` Run the bounded Terraform/provider spike after the control-plane spec is
+  stable; keep Forge, ACLI, Jira REST, and golden-project cloning as the
+  supported portable path until a provider is proven.
+- `[ ]` Update the integration, portability, runbook, workflow, claims,
+  operating-model, and agent-skill docs as the roadmap tasks land.
+
+Acceptance:
+- The repo has a clear, reviewable path from the current Forge/Rovo MVP to the
+  10 initial AI Growth Ops outcomes.
+- Tasks distinguish implemented code, manual Jira validation, and post-MVP
+  platform/IaC spikes.
+- Terraform is treated as an evaluated option, not an assumed MVP dependency.
+
+## Outcome 1 Tasks: AI Growth Intake and Triage
+
+- `[x]` Expose Growth Triage, Requirements Gap, Acceptance Criteria, and
+  Duplicate Detector agents in `manifest.yml`.
+- `[x]` Normalize Jira issue context for summary, description, labels, issue
+  type, status, comments, project, parent, subtasks, assignee, reporter, and
+  dates.
+- `[x]` Classify workflow area, recommended issue type, priority, risk, missing
+  information, owner group, next status, acceptance criteria, and subtasks.
+- `[x]` Keep triage output comment-only and reviewable.
+- `[ ]` Add or verify canonical intake issue types and statuses:
+  New Intake, AI Triage, Needs Human Review, Ready, In Progress,
+  Decision Needed, and Done.
+- `[ ]` Manually run Growth Triage, Requirements Gap, Acceptance Criteria, and
+  Duplicate Detector on seed issues; capture expected vs actual output.
+- `[ ]` Import or rebuild the Intake Triage Automation rule and capture
+  audit-log success.
+- `[ ]` Decide whether recommended next status remains comment-only for MVP or
+  becomes an allowlisted Automation transition later.
+
+Acceptance:
+- New Jira issues are classified into the correct workflow area.
+- Missing fields are identified automatically.
+- AI suggests owner, priority, acceptance criteria, and next status.
+- AI output is auditable and does not mutate fields or transitions.
+
+## Outcome 2 Tasks: AI Segmentation and Targeting Workflow
+
+- `[x]` Expose Audience Builder with the read-style `buildAudienceSegment`
+  action.
+- `[x]` Return include criteria, suppression defaults, detected signals,
+  required sources, measurement, approval notes, and
+  `mutatesProductionAudience: false`.
+- `[ ]` Add or rename a dedicated `segmentation-agent` and
+  `targeting-refinement-agent`, or document the current
+  `audience-builder-agent` compatibility mapping.
+- `[ ]` Expand segmentation readiness with source-of-truth fields, consent,
+  suppression dependencies, unknown-signal handling, owner handoff, and
+  `readyForWarehouseCompute`.
+- `[ ]` Add tests for unknown signals, missing source systems,
+  consent/suppression gaps, clinical targeting language, and no invented reach.
+- `[ ]` Verify `Segmentation Request` issue type, fields, and workflow statuses
+  in Jira.
+- `[ ]` Manually run the segmentation agent on a seeded issue and check Forge
+  logs.
+
+Acceptance:
+- Every audience request becomes a structured targeting spec.
+- Suppression logic is required before activation.
+- Human approval is required before audience lists are used.
+- Targeting outcomes can feed future refinement tickets.
+
+## Outcome 3 Tasks: AI Personalization Journey Workflow
+
+- `[~]` Current personalization logic proposes variables, rules, fallbacks, and
+  privacy notes, but it is not yet a complete journey artifact.
+- `[ ]` Add `Personalization Journey` issue type, custom fields, workflow, and
+  seed issue.
+- `[ ]` Add a dedicated journey module, or expand `src/audience.ts`, to produce
+  a full journey spec: segment, stage, channels, triggers, sequence, timing,
+  dynamic blocks, CTA, claims risk, fallbacks, tracking, and approvals.
+- `[ ]` Add `journey-design-agent`, `personalization-agent`, and
+  `claims-review-prep-agent`, or document compatibility mappings to existing
+  agents.
+- `[ ]` Add tests for missing variables, consent/frequency caps, no PHI,
+  claims-safe copy, tracking, fallback behavior, and not-ready output.
+- `[ ]` Decide whether Personalization Journey needs an Automation rule or stays
+  manual-only for MVP.
+
+Acceptance:
+- Each segment can get a complete journey spec from one Jira ticket.
+- Journey logic includes behavior-based branches.
+- Copy references claims rules before approval.
+- Output is structured enough for lifecycle or marketing ops implementation.
+
+## Outcome 4 Tasks: AI Creative Production Pipeline
+
+- `[x]` Expose creative generation and creative claims review agents.
+- `[x]` Generate draft creative variants with channel detection, claims risk,
+  flagged phrases, SMS opt-out text, and human-review flags.
+- `[x]` Keep creative and claims review draft-only; no send or approval action
+  exists.
+- `[ ]` Add coded Variant IDs and Hook Type tags to generated creative.
+- `[ ]` Add or rename `creative-factory-agent`, `claims-review-prep-agent`, and
+  `variant-id-agent`, or document compatibility mappings to current agents.
+- `[ ]` Tighten Creative Claims Automation so Risky, Prohibited, or Requires
+  Human Review routes to Claims Review without approving anything.
+- `[ ]` Add tests that winning creative can be promoted only as a reusable
+  playbook/SOP recommendation, not an automatic campaign action.
+- `[ ]` Manually validate Creative Generation and Creative Claims on seeded
+  creative issues.
+
+Acceptance:
+- Creative variants are traceable by ID.
+- Medium/high-risk claims route to review.
+- Winning creative can become a reusable SOP/playbook only after human review.
+- AI drafts; humans approve.
+
+## Outcome 5 Tasks: AI Experimentation Engine
+
+- `[x]` Expose Experiment Design and Backlog-related behavior through existing
+  modules.
+- `[x]` Generate hypothesis, audience, segment, channel, variants, primary
+  metric, guardrails, sample/runtime notes, tracking requirements, decision
+  rule, readout template, approvals, and readiness.
+- `[ ]` Tighten readiness so missing audience, segment, primary metric, channel,
+  tracking, variants, or decision rule blocks `Ready to Launch`.
+- `[ ]` Add evidence-based experiment readout action. It should return Scale,
+  Kill, Iterate, Extend, or Needs Review only when result data is supplied.
+- `[ ]` Add or rename `experiment-readout-agent` and
+  `backlog-prioritization-agent`, or document compatibility mappings.
+- `[ ]` Add workflow validator or Jira workflow gate requiring measurement,
+  guardrails, tracking, and decision rule before launch.
+- `[ ]` Add tests for inconclusive tests, guardrail failures, missing data,
+  sample/runtime caveats, and no invented statistical significance.
+- `[ ]` Manually validate Experiment Design and Readout flows on seeded issues.
+
+Acceptance:
+- No experiment moves to launch without metric, guardrails, and tracking.
+- Readouts produce scale/kill/iterate/extend recommendations only from evidence.
+- Inconclusive tests are explicitly labeled.
+- Learnings can create or recommend follow-up Jira tickets.
+
+## Outcome 6 Tasks: AI Research and Objection Mining Workflow
+
+- `[~]` Current triage recognizes research/insight work, and weekly readouts can
+  summarize recent issues, but there is no dedicated objection-mining action.
+- `[ ]` Add `Research Brief` issue type, fields, workflow, and seed issues for
+  cost, time, privacy, trust, eligibility, and AI skepticism objections.
+- `[ ]` Add `src/objections.ts` with theme clustering, frequency, segment,
+  employer, funnel step, de-identified quotes, conversion impact, recommended
+  tests, and claims-risk routing.
+- `[ ]` Add `objection-mining-agent`, `competitor-research-agent`, and
+  `messaging-opportunity-agent`.
+- `[ ]` Support JQL or issue-key-list input for multi-issue qualitative
+  synthesis.
+- `[ ]` Add tests for clustering, evidence quotes, PHI redaction, competitor
+  hypotheses, claims-risk routing, and follow-up ticket recommendations.
+- `[ ]` Extend weekly readout with top objection themes when research issues are
+  available.
+
+Acceptance:
+- Weekly research outputs produce creative, experiment, or product tickets.
+- Themes are mapped to segments.
+- AI distinguishes messaging problems from product/funnel problems.
+- Competitor insights become testable hypotheses.
+
+## Outcome 7 Tasks: AI Campaign and Employer Launch Orchestration
+
+- `[x]` Expose Employer Launch Agent and Campaign Orchestration Agent with
+  read-style actions.
+- `[x]` Implement employer launch readiness scoring, blockers, phases, QA
+  checklist, and suggested subtasks.
+- `[x]` Implement draft-only campaign plan with channels, cadence, suppression
+  checks, tracking, and approvals.
+- `[x]` Add disabled Employer Launch Automation that comments analysis only.
+- `[ ]` Add or verify `Campaign` issue type and campaign-specific fields.
+- `[ ]` Manually validate Employer Launch on the Acme launch seed issue.
+- `[ ]` Manually validate Campaign Planner on the re-engagement campaign seed
+  issue.
+- `[ ]` Decide whether Campaign Planner needs an Automation rule or remains
+  manual-only.
+- `[ ]` Design optional post-MVP writeback for readiness score and subtasks
+  behind an explicit allowlist.
+- `[ ]` Add `launch-readiness-agent` if readiness remains separate from the
+  employer launch agent.
+
+Acceptance:
+- Every launch has a workback plan.
+- Missing assets and blockers are visible.
+- Human approval is required before execution.
+- Post-launch readout is generated or recommended.
+
+## Outcome 8 Tasks: AI Conversion Optimization Workflow
+
+- `[x]` Expose Funnel Friction Agent with `analyzeFunnelFriction`.
+- `[x]` Implement affected-step detection, work-type classification, evidence
+  extraction, expected impact, QA, and acceptance criteria.
+- `[x]` Add Signup Funnel dashboard category and triage/QA support for funnel
+  issues.
+- `[ ]` Add or rename `product-ticket-agent` and `regression-check-agent`, or
+  document compatibility mappings to current modules.
+- `[ ]` Manually validate Funnel Friction on the mobile Safari signup seed
+  issue.
+- `[ ]` Add or explicitly defer a Funnel Friction Automation rule for new or
+  blocked Signup Funnel Issue tickets.
+- `[ ]` Add analytics/session-replay source integration or require linked
+  evidence fields before impact sizing.
+- `[ ]` Add acceptance coverage for high-priority funnel issues producing
+  product-ready remediation tickets.
+
+Acceptance:
+- Funnel issues become product-ready tickets.
+- AI separates tracking issues from real user friction.
+- Each ticket includes expected impact and QA.
+- Completed changes trigger impact review.
+
+## Outcome 9 Tasks: AI Analytics and Decision Support Workflow
+
+- `[x]` Expose Weekly Readout Agent with default weekly JQL.
+- `[x]` Implement weekly buckets for completed, blocked, decisions, claims
+  bottlenecks, experiments, employer launch risks, funnel issues, and top three
+  actions.
+- `[x]` Add disabled scheduled Weekly Readout Automation that creates a Decision
+  Memo.
+- `[x]` Add dashboard spec category for weekly growth decision support.
+- `[ ]` Add or rename `anomaly-summary-agent` and
+  `decision-recommendation-agent`, or document compatibility mappings.
+- `[ ]` Manually validate Weekly Readout over recent AIGO issues.
+- `[ ]` Import or enable Weekly Readout Automation and capture audit-log
+  success.
+- `[ ]` Add evidence-aware decision support using custom fields or linked
+  analytics data instead of only status/type/label buckets.
+- `[ ]` Add dashboard URL linking, notification path, and decision-metrics
+  reporting if needed.
+
+Acceptance:
+- Weekly memo is generated automatically after Automation is validated.
+- Decisions are linked to Jira tickets.
+- Follow-up work is created or recommended.
+- Leadership can see growth-system state in Jira.
+
+## Outcome 10 Tasks: AI Product Positioning and Messaging System
+
+- `[~]` Creative, campaign, landing-page, audience, and claims modules support
+  parts of positioning, but there is no dedicated positioning system.
+- `[ ]` Add `Positioning Update` issue type, fields, workflow, and seed issue.
+- `[ ]` Add `src/positioning.ts` with AI capability, member value proposition,
+  employer value proposition, proof requirements, differentiators, objection
+  matrix, channel examples, CTAs, claims risk, and missing-evidence warnings.
+- `[ ]` Add `positioning-agent` and connect it to claims review prep and
+  creative generation.
+- `[ ]` Define reusable knowledge assets: `twin-context`, `twin-claims-rules`,
+  `twin-segments`, `twin-experiments`, `employer-launch`, and `growth-readout`.
+- `[ ]` Add tests proving no invented outcomes/proof, all copy is claims-scanned,
+  missing proof is flagged, and output varies by segment/channel.
+- `[ ]` Document how approved positioning feeds creative and campaign agents
+  without bypassing human approval.
+
+Acceptance:
+- Positioning updates are reviewed before reuse.
+- Approved language feeds creative and campaign agents.
+- Risky claims route to human review.
+- The AI Digital Twin story stays consistent.
+
+## Outcome Platform Tasks
+
+- `[ ]` Add per-instance Automation rule rendering for project key/id, actor
+  account id, and agent keys; fail if placeholders remain.
+- `[ ]` Add Automation template contract tests for manifest agent references,
+  AI-analysis comments, disabled-by-default rules, claims safety, and no launch
+  behavior.
+- `[ ]` Validate the golden template project with canonical issue types,
+  statuses, screens, fields, board, queues, filters, and Automation placeholders.
+- `[ ]` Extend readiness checks for transition paths, required fields, screens,
+  seed coverage, Rovo UI visibility, and Automation audit logs.
+- `[ ]` Run the Terraform/provider spike against a disposable Jira site before
+  adding production `.tf` resources.
+
 ## Post-MVP Backlog
 
 - `[ ]` Add custom-field read mappings for optional workflow metadata.

@@ -27,6 +27,30 @@ For scale, use a golden company-managed Jira project as the configuration
 template. ACLI can create a new project from that project, which carries much
 more configuration than a fresh team-managed project.
 
+## Terraform Provider Shortlist
+
+Evaluate Terraform after the Jira control plane is stable. Use a disposable Jira
+site/project and prove create, import, plan, drift, and destroy behavior before
+making any provider part of the supported setup path.
+
+- [`atlassian/terraform-provider-atlassian-operations`](https://github.com/atlassian/terraform-provider-atlassian-operations):
+  official Atlassian provider for JSM/Compass operations resources, not general
+  Jira project/workflow configuration.
+- [`gothub97/terraform-provider-atlassian`](https://github.com/gothub97/terraform-provider-atlassian):
+  experimental Jira Cloud provider candidate with project, field, screen,
+  status, workflow, and scheme resources.
+- [`lbajsarowicz/terraform-provider-atlassian`](https://github.com/lbajsarowicz/terraform-provider-atlassian):
+  experimental Jira/Confluence config-as-code provider candidate with import and
+  drift-detection claims.
+- [`fourplusone/terraform-provider-jira`](https://github.com/fourplusone/terraform-provider-jira):
+  older Jira provider with project, issue type, filter, group, issue, role,
+  user, and webhook resources.
+- [`Vestmark/terraform-provider-jira`](https://github.com/Vestmark/terraform-provider-jira):
+  fork/variant of the older Jira provider; do not assume modern Jira Cloud
+  workflow coverage without testing.
+- [`alc0der/terraform-provider-jira-automation`](https://github.com/alc0der/terraform-provider-jira-automation):
+  Jira Automation rule provider candidate with raw JSON fallback.
+
 ## Instance Config
 
 Create a JSON file per Jira target. Start from

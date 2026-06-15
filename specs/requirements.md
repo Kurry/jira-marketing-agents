@@ -19,6 +19,8 @@ instance config plus a golden template project when available.
   and `AIGO_REQUIRE_FORGE_INSTALL=1 npm run test:smoke:jira`.
 - The repo now includes instance-config scripts for rendering seeds and running
   provision/check commands against any target site/project.
+- The repo now includes an initial 10-outcome roadmap for expanding the MVP into
+  a Jira-native AI Growth Ops control plane.
 - The remaining MVP work is mostly product configuration and validation inside
   Jira: issue types, statuses, workflow, Automation rule import, Rovo manual
   checks, and runbook polish.
@@ -166,6 +168,27 @@ Acceptance:
   clearly state that general Jira project configuration is not fully covered by
   a first-party Terraform provider.
 
+### REQ-009: Initial Outcome Control Plane
+
+The post-MVP roadmap must define the control plane required to support the first
+10 AI Growth Ops outcomes:
+intake and triage, segmentation and targeting, personalization journeys,
+creative production, experimentation, research and objection mining, campaign
+and employer-launch orchestration, signup funnel optimization, weekly decision
+support, and product positioning.
+
+Acceptance:
+- `specs/outcome-roadmap.md` lists the Jira issue types, fields, workflows,
+  agents, Automation, safety gates, tests, and documentation tasks needed for
+  each outcome.
+- The roadmap distinguishes existing Forge/Rovo functionality from missing
+  implementation and manual Jira validation.
+- The roadmap keeps Forge/Rovo as the primary execution platform and treats
+  Terraform as a bounded provider spike until coverage is proven.
+- The roadmap preserves the safe-by-default contract: AI drafts, classifies,
+  recommends, and comments; humans approve claims, launches, audiences,
+  suppression, and production changes.
+
 ## Non-Functional Requirements
 
 - Safety: High-stakes actions require human approval.
@@ -187,6 +210,9 @@ Acceptance:
 - Custom-field writeback, dashboards, Slack notifications, or analytics
   warehouse integration.
 - LLM-as-judge evals for prompt quality. These are post-MVP.
+- Full implementation of all 10 outcome workflows. The MVP captures the roadmap
+  and current partial implementation, then promotes individual outcome work
+  through explicit tasks.
 
 ## Open Risks
 
