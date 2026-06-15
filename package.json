@@ -24,6 +24,16 @@
     "provision:dashboards": "node scripts/provision-dashboards.cjs",
     "provision:automation:forge": "node scripts/forge-import-automation.cjs",
     "check:rovo": "node scripts/check-rovo-visibility.cjs",
+    "audit": "node scripts/audit/run-all.mjs",
+    "infra:plan": "node scripts/infra/plan.mjs",
+    "infra:apply": "node scripts/infra/apply.mjs",
+    "infra:verify": "node scripts/verify/run-all.mjs",
+    "infra:render": "node scripts/infra/render-all.mjs",
+    "test:safety": "vitest run tests/safety",
+    "rovo:invoke-all": "node scripts/invoke/run-all.mjs",
+    "forge:deploy": "forge deploy -e development",
+    "forge:install": "forge install --upgrade -e development -p jira --site myhealthcaresite.atlassian.net --confirm-scopes",
+    "forge:lint": "forge lint",
     "lint": "tsc --noEmit"
   },
   "engines": {

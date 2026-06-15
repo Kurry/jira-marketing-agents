@@ -1,0 +1,37 @@
+{
+  "generated_by": "scripts/infra/bootstrap (manual first-tick)",
+  "generated_at": "2026-06-15T00:00:00.000Z",
+  "directories_created": [
+    "scripts/audit/",
+    "scripts/infra/",
+    "scripts/verify/",
+    "scripts/invoke/",
+    "scripts/lib/",
+    "evidence/infra/",
+    "evidence/audit/"
+  ],
+  "npm_scripts_added": [
+    "audit",
+    "infra:plan",
+    "infra:apply",
+    "infra:verify",
+    "infra:render",
+    "test:safety",
+    "rovo:invoke-all",
+    "forge:deploy",
+    "forge:install",
+    "forge:lint"
+  ],
+  "stub_entrypoints": [
+    "scripts/audit/run-all.mjs",
+    "scripts/infra/plan.mjs",
+    "scripts/infra/apply.mjs",
+    "scripts/infra/render-all.mjs",
+    "scripts/verify/run-all.mjs",
+    "scripts/invoke/run-all.mjs"
+  ],
+  "lib": [
+    "scripts/lib/staging.mjs",
+    "scripts/lib/evidence.mjs"
+  ]
+}
