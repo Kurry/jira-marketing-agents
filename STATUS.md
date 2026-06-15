@@ -1,7 +1,7 @@
 # AIGO Agent-Team Status
 
-_Last updated: 2026-06-15T15:00Z_
-_Current tick: 27_
+_Last updated: 2026-06-15T16:30Z_
+_Current tick: 28_
 
 ## Milestone
 - Active: **M0-M3 ✓ · M6 ✓ · IaC ✓ · docs ✓ · safety ✓ · evidence ✓ — awaiting operator: T-M3-03 only (connect Rovo, enable rules, capture audit logs)**
@@ -35,15 +35,20 @@ _Current tick: 27_
   - Outcomes 1–6: pre-existing complete traces confirmed
   - Outcomes 7–10: new traces created (employer launch, funnel, analytics/readout, positioning)
 
+## Completed this tick (tick 28)
+- **skill: jira-automation-rovo-setup** ✓ — written to `skills/jira-automation-rovo-setup/SKILL.md`
+- **R-07 documented** — BLK-02 added to `evidence/blockers.md`; AI activation exhaustively investigated
+- **outcome-roadmap.md audited** ✓ — 20+ stale items converted to [x]/[~] (commit b65835d)
+
 ## Blocked / awaiting operator action (in order)
-1. **T-M3-03** — Connect Rovo to Automation (Settings → Automation → Rovo), then edit each rule: replace placeholder comment with Rovo action, add JQL condition scope; update triggers for rules 4 (→ transitioned) and 5 (→ scheduled). Enable each rule, trigger on seed issue, capture audit log → `evidence/automation/<rule>-audit.md`
-2. **T-M4-live** — Re-run agents live in Jira (currently evidenced via domain function output; live Rovo comment pending Rovo connection)
+1. **T-M3-03 — BLOCKED by BLK-02 (plan limitation)** — "Use agent" in Jira Automation requires Atlassian Intelligence (Premium/Enterprise). Site is on Free/Standard. Resolution: upgrade plan at atlassian.com/purchase → return to `skills/jira-automation-rovo-setup/SKILL.md` to complete wiring.
+2. **T-M4-live** — Re-run agents live in Jira (currently evidenced via domain function output; live Rovo comment pending T-M3-03)
 3. **T-M5-live** — Capture live audit-log evidence once automation rules are enabled
 
 ## Top 3 risks
-1. **R-01 (Node v26):** forge CLI warns unsupported. 1046 tests pass. Low active risk.
-2. **R-04 (Rovo connection):** All 5 automation rules are DISABLED and use placeholder comment actions. Rovo must be connected to Automation via Settings → Automation → Rovo before rules can fire agents.
-3. **R-06 (Trigger gaps):** Rule 4 fires on all transitions (toStatus filter UI-only). Rule 5 CRON trigger is UI-only. Both need operator edits before enabling.
+1. **R-07 (Plan limitation — NEW):** "Use agent" in Jira Automation requires Atlassian Intelligence (Premium/Enterprise feature). Site `myhealthcaresite.atlassian.net` is on Free/Standard. Blocks T-M3-03, T-M4-live, T-M5-live. Resolution: upgrade plan. Evidence: `/jira/settings/system/labs` has no AI toggle; only "Jira formula fields" beta feature present.
+2. **R-01 (Node v26):** forge CLI warns unsupported. 1046 tests pass. Low active risk.
+3. **R-06 (Trigger gaps):** Rule 4 fires on all transitions (toStatus filter UI-only). Rule 5 CRON trigger is UI-only. Both need operator edits before enabling (once R-07 resolved).
 
 ## Completed this tick (ticks 19–22 — coverage sweep)
 | Task | Owner | Notes |
