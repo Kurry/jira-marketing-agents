@@ -1,0 +1,73 @@
+# CodeRabbit configuration for jira-marketing-agents
+# https://docs.coderabbit.ai/guides/configure-coderabbit
+
+language: "en-US"
+
+reviews:
+  profile: "assertive"
+  request_changes_workflow: true
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+
+  path_filters:
+    - "!evidence/**"
+    - "!.claude/**"
+    - "!**/*.log"
+    - "!**/*.jsonl"
+
+  path_instructions:
+    - path: "src/**/*.ts"
+      instructions: |
+        This is a healthcare marketing Forge/Rovo app with strict safety constraints.
+        Flag any mutation beyond addAnalysisComment in src/comments.ts — that is the
+        ONLY allowed mutating action per policies/safe-mutations.md.
+        Check that domain functions (triage.ts, creativeClaims.ts, etc.) remain pure
+        (no side effects, no API calls). All API calls must go through src/jira.ts.
+        Verify no PHI or PII appears in return values, logs, or comments.
+
+    - path: "prompts/**/*.md"
+      instructions: |
+        These are Rovo agent prompts for a healthcare marketing system.
+        Verify that no prompt approves clinical or health claims — agents may only
+        classify, flag, or recommend human review per policies/claims-risk-policy.md.
+        Check that every prompt includes language preventing autonomous approval of
+        claims, campaign launches, audience changes, or workflow mutations.
+        Flag any prompt that could be interpreted as authorizing a high-risk action.
+
+    - path: "policies/**"
+      instructions: |
+        These are safety policy files. Any change that weakens or narrows the
+        safe-mutations allowlist, claims-risk rules, or experiment guardrails is
+        high-risk and requires explicit justification. Flag loosening of constraints.
+
+    - path: "automation/rules/**"
+      instructions: |
+        Jira Automation rule JSON. Verify rules import with state: "DISABLED".
+        Check that no rule has an action that approves claims, sends messages,
+        alters audiences, or performs transitions without a human review gate.
+        Confirm JQL scope conditions are present to limit rule blast radius.
+
+    - path: "tests/**/*.ts"
+      instructions: |
+        Check that safety invariant tests in tests/safety.test.ts are not weakened.
+        New domain modules must have corresponding test files. Verify makeIssue()
+        from tests/helpers.ts is used rather than manual IssueContext construction.
+
+    - path: "manifest.yml"
+      instructions: |
+        Forge manifest changes require careful review. Verify scopes stay within
+        read:jira-work, write:jira-work, read:chat:rovo, manage:jira-configuration.
+        Any new scope addition is high-risk. addAnalysisComment must remain the only
+        action with actionVerb: UPDATE. New rovo:agent entries must reference a real
+        prompts/ file and a valid subset of existing actions.
+
+  auto_review:
+    enabled: true
+    drafts: false
+    base_branches:
+      - "main"
+
+chat:
+  auto_reply: true
