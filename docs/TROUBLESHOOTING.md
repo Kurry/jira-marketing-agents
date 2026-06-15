@@ -67,6 +67,32 @@ Employer Launch, Weekly Readout).
 Rovo agents are **not** Automation rules and do not appear in the Automation
 rules list. Automation rules do not appear in the Rovo agents tab.
 
+### "Use agent" blocked by "your org admin needs to activate AI" (R-07 / BLK-02)
+
+If the "Use agent" (Rovo AI) step in the Automation flow builder shows this
+message, the site is on a **Free or Standard plan**. Atlassian Intelligence —
+required for calling Rovo agents from Automation — is a **Premium/Enterprise**
+feature.
+
+**Exhaustive check list (all confirmed on `myhealthcaresite.atlassian.net` 2026-06-15):**
+
+| Location | What to look for | Result if on Free/Standard |
+|---|---|---|
+| admin.atlassian.com → Rovo → Beta features | "Rovo beta features" toggle | Already ON — not the blocker |
+| admin.atlassian.com → Rovo → Access | Org/user blocklist | Empty — not the blocker |
+| `myhealthcaresite.atlassian.net/jira/settings/system/labs` | "Atlassian Intelligence" toggle | Not present — only "Jira formula fields" |
+| Jira admin → System settings sidebar | "Atlassian Intelligence" section | Not present |
+| Jira admin search "atlassian intelligence" | Any result | No results |
+
+**Resolution:** Upgrade to Jira Premium at atlassian.com/purchase. After upgrade,
+an "Atlassian Intelligence" section appears in Jira admin settings and the
+"Use agent" step becomes functional. Then follow
+`skills/jira-automation-rovo-setup/SKILL.md` to complete T-M3-03.
+
+**Workaround (no upgrade):** Operators can invoke Rovo agents manually via the
+Rovo chat sidebar while viewing any AIGO issue. Automation integration is
+deferred but agents themselves are fully functional.
+
 ---
 
 ## 2. Forge deploy and install troubleshooting

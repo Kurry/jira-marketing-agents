@@ -220,8 +220,15 @@ consent dialog.
 
 ## Jira Automation Validation (T-M3-03)
 
-After all 5 rules are imported (all disabled), enable and validate one at a
-time:
+> **BLOCKED (BLK-02 — plan limitation):** "Use agent" in Jira Automation
+> requires Atlassian Intelligence (Jira Premium/Enterprise). Site is on
+> Free/Standard. Upgrade at atlassian.com/purchase, then follow
+> `skills/jira-automation-rovo-setup/SKILL.md` to complete this step.
+> See `evidence/blockers.md#BLK-02` and `docs/TROUBLESHOOTING.md` → "Use agent
+> blocked by activate AI" for full investigation notes.
+
+After upgrading to Premium and connecting Rovo (Settings → Automation → Rovo),
+enable and validate one rule at a time:
 
 1. Enable `AIGO – Intake Triage`.
 2. Create or update an AIGO issue (or use a seed issue in `Intake` status).
