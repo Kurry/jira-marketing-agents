@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/verify/run-all.mjs",
-  "generated_at": "2026-06-15T15:17:32.062Z",
-  "git_sha": "6d5b561539f82e638f1f7abb0b3feff588409285",
+  "generated_at": "2026-06-15T15:20:57.951Z",
+  "git_sha": "f672ae0084b29347227c3f7de16bb03d3754278d",
   "instance": "myhealthcaresite.atlassian.net",
   "exit_code": 0,
   "summary": "8 verify rows: 7 green, 1 unsupported(blocked), 0 red",

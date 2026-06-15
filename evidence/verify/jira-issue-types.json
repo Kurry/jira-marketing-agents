@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/verify/jira-issue-types.mjs",
-  "generated_at": "2026-06-15T15:17:25.787Z",
-  "git_sha": "6d5b561539f82e638f1f7abb0b3feff588409285",
+  "generated_at": "2026-06-15T15:20:52.139Z",
+  "git_sha": "f672ae0084b29347227c3f7de16bb03d3754278d",
   "instance": "myhealthcaresite.atlassian.net",
   "exit_code": 0,
   "summary": "VM-JIRA-ISSUE-TYPES: 18 declared, 18 live; 0 missing, 0 extra(live-only)",

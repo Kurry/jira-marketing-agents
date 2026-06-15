@@ -14,4 +14,10 @@ automation/seed/generated/
 *.err.log
 .mcp.json
 .claude/worktrees/
-infra/terraform/
+# Terraform: track source (.tf), never state/secrets/providers
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log

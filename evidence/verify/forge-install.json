@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/verify/forge-install.mjs",
-  "generated_at": "2026-06-15T15:17:23.732Z",
-  "git_sha": "6d5b561539f82e638f1f7abb0b3feff588409285",
+  "generated_at": "2026-06-15T15:41:13.033Z",
+  "git_sha": "9bf587c74fb55c4efd1e648fecb26be123d270a3",
   "instance": "myhealthcaresite.atlassian.net",
   "exit_code": 0,
   "summary": "Forge app Up-to-date on myhealthcaresite.atlassian.net",

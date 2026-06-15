@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/audit/forge-snapshot.mjs",
-  "generated_at": "2026-06-15T14:21:42.861Z",
-  "git_sha": "1ba8951ce3f3fb0d4fb9db203edcc5e3bff56b10",
+  "generated_at": "2026-06-15T15:41:05.631Z",
+  "git_sha": "9bf587c74fb55c4efd1e648fecb26be123d270a3",
   "instance": "staging",
   "exit_code": 0,
   "summary": "Forge app: Up-to-date on myhealthcaresite.atlassian.net, 19 agents, 22 actions",
@@ -20,7 +20,7 @@
     "manifest": {
       "rovo_agent_count": 19,
       "action_count": 22,
-      "function_count": 24,
+      "function_count": 23,
       "webtrigger_count": 1,
       "has_webtrigger": true,
       "fn_agent_webtrigger_registered": true

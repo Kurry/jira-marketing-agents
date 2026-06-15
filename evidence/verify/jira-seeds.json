@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/verify/jira-seeds.mjs",
-  "generated_at": "2026-06-15T15:17:26.396Z",
-  "git_sha": "6d5b561539f82e638f1f7abb0b3feff588409285",
+  "generated_at": "2026-06-15T15:20:52.689Z",
+  "git_sha": "f672ae0084b29347227c3f7de16bb03d3754278d",
   "instance": "myhealthcaresite.atlassian.net",
   "exit_code": 0,
   "summary": "VM-JIRA-SEEDS: 15 live \"aigo-seed\" issues across 14 types; 14 declared seed types, 0 unrepresented",
