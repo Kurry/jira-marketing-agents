@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/verify/jira-workflow.mjs",
-  "generated_at": "2026-06-15T15:05:38.468Z",
-  "git_sha": "4a6f6e2a0fd38dccad71fd491f19dc43a722dcea",
+  "generated_at": "2026-06-15T15:06:32.994Z",
+  "git_sha": "7f9310aa3f364687abf6a03c94509b011a664ab0",
   "instance": "myhealthcaresite.atlassian.net",
   "exit_code": 0,
   "summary": "VM-JIRA-WORKFLOW: 3 declared statuses, 3 live; 0 missing, 0 extra(live-only)",
