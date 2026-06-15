@@ -1,12 +1,12 @@
 # AIGO Agent-Team Status
 
-_Last updated: 2026-06-15T09:20Z_
-_Current tick: 18_
+_Last updated: 2026-06-15T05:55Z_
+_Current tick: 20_
 
 ## Milestone
 - Active: **M0-M2 ✓ · M6-filters ✓ · IaC ✓ · docs ✓ · safety-final-audit ✓ · DONE.md ✓ — awaiting operator: T-M3-02, T-M6-02, T-M1-04, T-M4-01..06**
 - M0 ✓ · M1 ✓ · M2 ✓ · M6-filters ✓ · IaC layer ✓ · docs ✓ · T-M8-01 ✓ (partial) · T-M8-02 ✓ · T-M8-03 ✓
-- Tests: **450 passing** (41 files) — unit + integration-mock (nock) — **build clean (0 TS errors)**
+- Tests: **601 passing** (42 files) — unit + integration-mock (nock) — **build clean (0 TS errors)**
 - Issue types: all 14 canonical live (IDs 10048-10061) ✓
 - Seeds: all 15 retyped to canonical types; all 14 types covered ✓
 - Safety: **T-M8-02 signed off** — evidence/safety/final-audit.md (PASS) ✓
@@ -32,18 +32,15 @@ _Current tick: 18_
 2. **R-03 (Rovo UI visibility):** 19 agents in manifest; UI confirmation pending T-M1-04.
 3. **R-05 (Automation import):** Forge function ready; needs operator `forge deploy` first.
 
-## Completed this tick (tick 12 — ultracode sweep + direct work)
+## Completed this tick (ticks 19–20 — coverage sweep)
 | Task | Owner | Notes |
 | ---- | ----- | ----- |
-| T-M8-01 (partial) | qa-verifier | Local VM rows → evidence/final-verification.log (4 green, remainder blocked-operator) |
-| T-M8-02 | safety-reviewer | evidence/safety/final-audit.md — PASS — 19 prompts + 3 policies + 5 rules verified |
-| T-M8-03 | architect | evidence/DONE.md — MVP completion record with full operator handoff |
-| Suite 8 nock tests | qa-verifier | 6 nock tests for provision-dashboards.cjs |
-| VM-DOCS-LINK-CHECK | qa-verifier | 0 broken links; evidence/gates/link-check.log |
-| tests/check-rovo-visibility.test.ts | forge-engineer | 8 unit tests; fixed countManifestAgents regex bug |
-| README.md section 11 | docs-writer | All IaC provision commands documented |
-| T-M7-01/02/03 | docs-writer | Task list synced — marked completed |
-| aigo-completion-sweep workflow | lead | 10-agent ultracode sweep running (safety + evidence + code + docs) |
+| readout.test.ts | qa-verifier | 2→22 tests: done-status variants, label bucketing, highImpactFunnelIssues, topThreeActions |
+| experiments.test.ts | qa-verifier | 3→35 tests: all channel/metric detections, audience, approvals, hypothesis, readout template |
+| triage.test.ts | qa-verifier | 5→39 tests: all 9 area detections, detectMissingInfo, output shape, human approvals, recommendedNextStatus |
+| employerLaunch.test.ts | qa-verifier | 4→29 tests: readiness checks, output shape, risky-claims blocker, requiredAssets |
+| duplicates.test.ts | qa-verifier | 3→17 tests: score sort, options, label/component overlap boost |
+| creativeClaims.test.ts | qa-verifier | 4→17 tests: channel warnings, all risk levels, flaggedPhrase shape |
 
 ## In-flight (operator-gated)
 | Task | Status |
