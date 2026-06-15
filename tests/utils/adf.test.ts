@@ -27,7 +27,7 @@ describe("toAdf — document structure", () => {
 
   it("handles null/undefined via nullish coalescing", () => {
     // toAdf coerces null with ?? ""
-    const doc = toAdf(null as unknown as string) as { content: unknown[] };
+    const doc = toAdf(null as unknown as string) as { type: string; content: unknown[] };
     expect(doc.type).toBe("doc");
     expect(doc.content.length).toBeGreaterThan(0);
   });
