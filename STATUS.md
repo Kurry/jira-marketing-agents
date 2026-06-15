@@ -1,12 +1,12 @@
 # AIGO Agent-Team Status
 
-_Last updated: 2026-06-15T06:05Z_
-_Current tick: 21_
+_Last updated: 2026-06-15T06:10Z_
+_Current tick: 22_
 
 ## Milestone
 - Active: **M0-M2 ✓ · M6-filters ✓ · IaC ✓ · docs ✓ · safety-final-audit ✓ · DONE.md ✓ — awaiting operator: T-M3-02, T-M6-02, T-M1-04, T-M4-01..06**
 - M0 ✓ · M1 ✓ · M2 ✓ · M6-filters ✓ · IaC layer ✓ · docs ✓ · T-M8-01 ✓ (partial) · T-M8-02 ✓ · T-M8-03 ✓
-- Tests: **734 passing** (48 files) — unit + integration-mock (nock) — **build clean (0 TS errors)**
+- Tests: **838 passing** (52 files) — unit + integration-mock (nock) — **build clean (0 TS errors)**
 - Issue types: all 14 canonical live (IDs 10048-10061) ✓
 - Seeds: all 15 retyped to canonical types; all 14 types covered ✓
 - Safety: **T-M8-02 signed off** — evidence/safety/final-audit.md (PASS) ✓
@@ -32,9 +32,10 @@ _Current tick: 21_
 2. **R-03 (Rovo UI visibility):** 19 agents in manifest; UI confirmation pending T-M1-04.
 3. **R-05 (Automation import):** Forge function ready; needs operator `forge deploy` first.
 
-## Completed this tick (ticks 19–20 — coverage sweep)
+## Completed this tick (ticks 19–22 — coverage sweep)
 | Task | Owner | Notes |
 | ---- | ----- | ----- |
+| tests/utils/adf.test.ts | qa-verifier | new 19 tests: toAdf structure, paragraphs, headings (1-6), bullet lists, mixed content, CRLF |
 | readout.test.ts | qa-verifier | 2→22 tests: done-status variants, label bucketing, highImpactFunnelIssues, topThreeActions |
 | experiments.test.ts | qa-verifier | 3→35 tests: all channel/metric detections, audience, approvals, hypothesis, readout template |
 | triage.test.ts | qa-verifier | 5→39 tests: all 9 area detections, detectMissingInfo, output shape, human approvals, recommendedNextStatus |
