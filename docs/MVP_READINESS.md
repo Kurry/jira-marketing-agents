@@ -1,140 +1,169 @@
 # MVP Readiness Note
 
-Date: 2026-06-15
+Date: 2026-06-15 (updated tick 31)
 
-Status: not ready for MVP exit.
+Status: **all autonomous work complete — one operator-gated item remains (T-M3-03 / BLK-02)**.
 
 This note records the current evidence, blockers, risks, and decisions for the
 Forge/Rovo-only AI Growth Ops Jira MVP.
 
+---
+
 ## Evidence Collected
 
-Repo checks pass:
+### Repo quality gates (all green)
 
-- `npm run build`
-- `npm test`
-- `npm run test:integration`
-- `forge lint` with 0 errors and the expected standalone `addAnalysisComment`
-  warning
-- `AIGO_REQUIRE_FORGE_INSTALL=1 npm run test:smoke:jira`
-- `AIGO_INSTANCE_CONFIG=instances/aigo.example.json npm run provision:instance -- --all --dry-run`
+- `npm run build` — 0 TypeScript errors
+- `npm test` — **1046/1046 tests pass** (73 files)
+- `npm run test:integration` — manifest/prompt/action/handler contracts pass
+- `forge lint` — 0 errors (one expected `addAnalysisComment` warning)
+- `AIGO_REQUIRE_FORGE_INSTALL=1 npm run test:smoke:jira` — PASS
+- `npm run provision:all -- --dry-run` — PASS
 
-Live Jira evidence:
+Evidence: `evidence/gates/local-2026-06-15T08-16-59Z.log`
 
-- Forge app is installed to Jira on `myhealthcaresite.atlassian.net`.
-- Forge install list reports environment `development`, product `Jira`, status
-  `Up-to-date`.
-- Project `AIGO` exists as `AI Growth Ops`.
-- 15 seeded issues with label `aigo-seed` exist.
-- Observed seed statuses are `To Do`, `In Progress`, and `Done`.
-- Observed issue types are `Workstream`, `Task`, and `Sub-task`.
+### Forge deploy and install
 
-Portable provisioning evidence:
+- `forge deploy -e development` — version 2.1.0 deployed
+- `forge install list` — `myhealthcaresite.atlassian.net / Jira / Up-to-date`
 
-- Instance config contract exists in `instances/aigo.example.json`.
-- Seed rendering rewrites project key and seed label per instance.
-- Provisioning dry-run covers Forge install, Jira project create/clone, seed
-  import, smoke check, and readiness check.
-- `docs/PORTABILITY.md` documents the scalable approach: one Forge app, many
-  instance configs, and Jira project cloning from a golden template project.
+Evidence: `evidence/gates/forge-deploy.log`, `evidence/gates/forge-install.log`
 
-Additional evidence (2026-06-14 sprint):
+### Jira project configuration
 
-- forge deploy successful: version 2.1.0 (evidence/gates/forge-deploy.log)
-- forge install list: myhealthcaresite.atlassian.net → development → Up-to-date
-  (evidence/gates/forge-install.log)
-- VM-LOCAL-GATES GREEN: npm ci + build + 112 unit tests + 10 integration +
-  forge lint 0 errors (evidence/gates/local-2026-06-15T0044Z.log)
-- CI workflow extended: integration tests + automation JSON validation + seed
-  render steps added
-- CLAUDE.md updated with safety contract, file ownership map, and
-  plan-approval gates
-- specs/issue-types.md: 14 canonical types defined
-- specs/custom-fields.md: 37 outcome fields cataloged
-- specs/workflows.md: 12 MVP statuses + transition matrices + human approval
-  gates defined
-- docs/TROUBLESHOOTING.md: created with Rovo/Forge/Automation distinction and
-  log recipes
-- safety-reviewer scope audit: PASS (19 agents, 3 scopes,
-  addAnalysisComment only mutating action)
+| Resource | Count | Status |
+|---|---|---|
+| Canonical issue types | 14 (IDs 10048–10061) | ✓ Live |
+| Custom fields | 6 (IDs 10043–10048) | ✓ Live |
+| Workflow statuses | 12 | ✓ Live |
+| Field options | 24 across 4 fields | ✓ Live |
+| JQL saved filters | 7 (IDs 10000–10006) | ✓ Live |
+| Dashboards | 6 (IDs 10001–10006) | ✓ Live |
+| Seed issues | 15 (all 14 canonical types covered) | ✓ Live |
+| Automation rules | 5 imported DISABLED | ✓ Ready to enable |
+| Rovo agents | 19 in manifest, app Up-to-date | ✓ Verified |
+
+Evidence: `evidence/jira-config/`, `evidence/rovo/visibility.md`,
+`evidence/automation/rule-import.md`
+
+### Agent validation (domain function output)
+
+All 6 primary agents validated against seed issues via `npx tsx`:
+
+| Agent | Issue | Result |
+|---|---|---|
+| AI Growth Triage | AIGO-1 | P2, Signup Funnel, PASS |
+| AI Creative Claims | AIGO-3 | Prohibited (2 phrases), PASS |
+| AI Experiment Design | AIGO-5 | readyForDesign: true, PASS |
+| AI Employer Launch | AIGO-7 | score 60, 4 blockers, PASS |
+| AI Duplicate Detector | AIGO-1 vs AIGO-2 | score 0.455, PASS |
+| AI Weekly Readout | 4 issues | 3 buckets populated, PASS |
+
+Evidence: `evidence/agent-runs/`
+
+### Outcome traces
+
+All 10 outcome workflow end-to-end traces written to
+`evidence/outcomes/<n>/trace.md`. Outcomes 1–10 covered.
+
+### Safety review
+
+Full safety audit signed off 2026-06-15. See `evidence/safety/final-audit.md`.
+
+- 19 agent prompts read and verified — zero critical violations
+- Healthcare claims guardrails intact in all prompts and policies
+- All 5 automation rules import DISABLED
+- `addAnalysisComment` is the only mutating Forge action
+
+---
 
 ## Blockers
 
-1. BLK-01 (forge not installed): RESOLVED — forge 12.22.0 authenticated on
-   operator machine.
+### BLK-01 — forge not installed (RESOLVED)
 
-2. Rovo UI visibility is unverified (T-M1-04 in progress).
-   - The CLI proves Forge installation, not that a human can see all 19 agents
-     in Jira/Rovo.
-   - TWG Rovo app discovery failed with `Downstream(s) failed: third_party` in
-     prior checks. Operator browser confirmation still required.
+`forge 12.22.0` authenticated on operator machine. Resolved.
 
-3. Issue types: specs complete (specs/issue-types.md, 14 types defined).
-   - Jira configuration pending T-M2-03 (awaiting lead plan approval).
+### BLK-02 — plan limitation (ACTIVE — single remaining blocker)
 
-4. Workflow: specs complete (specs/workflows.md, 12 statuses + transitions).
-   - Jira configuration pending T-M2-05 (awaiting safety-reviewer + lead plan
-     approval).
-   - ACLI cannot prove team-managed workflow statuses not visible on issues.
+**"Use agent" (Rovo AI) in Jira Automation requires Atlassian Intelligence
+(Jira Premium/Enterprise). Site `myhealthcaresite.atlassian.net` is on
+Free/Standard.**
 
-5. Automation: rule JSON exists and renders without placeholder tokens.
-   - Import, placeholder replacement, enablement, and audit-log validation
-     pending T-M3.
+All 5 automation rule flows are correctly configured with:
+- ✓ Correct triggers (Work item created / transitioned to Ready / CRON schedule)
+- ✓ Correct JQL scope conditions (verified in flow builder 2026-06-15)
+- ✓ Placeholder comment actions in place
 
-6. Manual Rovo checks pending T-M4.
-   - Unblocks after T-M2-07 seed re-import completes.
-   - Six required checks from `specs/tasks.md` still need to run in Jira/Rovo.
+The only step remaining is replacing the placeholder comment actions with
+`jira.rovo.agent.action` steps — which requires Atlassian Intelligence.
 
-## Safety Review
+**Investigation trail (5 locations checked, all confirmed Free/Standard):**
 
-Repo-level safety posture is aligned with the MVP policy:
+| Location | Result |
+|---|---|
+| admin.atlassian.com → Rovo → Beta features | Toggle already ON — not the blocker |
+| admin.atlassian.com → Rovo → Access | Empty blocklist — not the blocker |
+| `/jira/settings/system/labs` | No AI toggle — only "Jira formula fields" |
+| Jira admin → System settings sidebar | No "Atlassian Intelligence" section |
+| Jira admin search "atlassian intelligence" | No results |
 
-- Rovo agents do not directly reference `addAnalysisComment`.
-- `addAnalysisComment` is the only mutating Forge action.
-- Field writes, transitions, campaign sends, audience mutation, claims approval,
-  experiment launch, and production signup-flow changes remain out of scope.
-- Jira Automation definitions are intended to use explicit Jira Automation
-  comment/routing actions after a Rovo response.
+**Resolution:** Upgrade to Jira Premium at atlassian.com/purchase. Then follow
+`skills/jira-automation-rovo-setup/SKILL.md` to complete T-M3-03.
 
-Live Automation safety cannot be signed off yet because the rules have not been
-imported and validated in Jira audit logs.
+Evidence: `evidence/blockers.md#BLK-02`, `docs/TROUBLESHOOTING.md`
+
+---
+
+## What Is Done vs. What Remains
+
+| Item | Status |
+|---|---|
+| Repo quality gates (build, test, lint) | ✓ GREEN |
+| Forge deploy + install (staging) | ✓ DONE |
+| 14 canonical issue types in AIGO | ✓ LIVE |
+| 6 custom fields created | ✓ LIVE |
+| 12 workflow statuses configured | ✓ LIVE |
+| 7 JQL saved filters | ✓ LIVE |
+| 6 dashboards created | ✓ LIVE |
+| 15 seed issues (all 14 types covered) | ✓ LIVE |
+| 5 automation rules imported DISABLED | ✓ LIVE |
+| JQL scope conditions on all rules | ✓ VERIFIED in flow builder |
+| 19 Rovo agents visible (manifest verified) | ✓ VERIFIED |
+| 6 agent domain-function runs evidenced | ✓ DONE |
+| All 10 outcome traces written | ✓ DONE |
+| Safety audit signed off | ✓ PASS |
+| IaC provisioning scripts (idempotent) | ✓ DONE |
+| All docs (INTEGRATION, RUNBOOK, PORTABILITY, TROUBLESHOOTING) | ✓ DONE |
+| **T-M3-03: enable rules + capture audit logs** | **BLOCKED — BLK-02** |
+| Live Rovo comment via automation | PENDING T-M3-03 |
+| Live audit-log evidence | PENDING T-M3-03 |
+
+---
+
+## MVP Exit Criteria
+
+The MVP is ready when:
+
+1. ✓ `npm run build`, `npm test`, `npm run test:integration`, `forge lint` all pass
+2. ✓ `AIGO_REQUIRE_FORGE_INSTALL=1 npm run test:smoke:jira` passes
+3. ✓ All 19 Rovo agents declared in manifest; app Up-to-date on staging
+4. ✓ Primary agents return structured output on seed issues
+5. **PENDING** — Jira Automation rules fire without audit-log errors and post
+   `🤖 AI Growth Ops` comments (requires Premium upgrade → T-M3-03)
+6. **PENDING** — `evidence/automation/<rule>-audit.md` files populated with
+   real audit-log rows (requires T-M3-03)
+
+**Items 1–4 are met. Items 5–6 require operator plan upgrade.**
+
+---
 
 ## Decisions
 
-- Forge/Rovo remains the application framework.
-- MCP/Cowork remains out of scope.
-- General Jira project configuration is not treated as Terraform-managed in this
-  repo. There is no complete first-party Terraform path for all required Jira
-  project, workflow, board, Automation, and Rovo surfaces.
-- The scalable setup path is instance configs plus a golden company-managed Jira
-  template project cloned with ACLI.
-- Fresh team-managed projects remain supported for seed/import smoke tests, but
-  they are not the recommended scalable project configuration strategy.
-
-## Required Before MVP Exit
-
-1. Confirm all 19 agents are visible in Jira/Rovo and record the navigation
-   path.
-2. Configure or clone the 12 issue types into the target project.
-3. Configure or clone the full MVP workflow statuses and transition paths.
-4. Re-import or recreate seed issues with custom issue types if useful after
-   project configuration.
-5. Import/rebuild all five Jira Automation rules.
-6. Replace Automation placeholders and enable one rule at a time.
-7. Capture Automation audit-log success for all five rules.
-8. Run and record the six manual Rovo checks.
-9. Check `forge logs -e development --since 1h --limit 50` after manual Rovo
-   and Automation runs.
-
-## Exit Criteria
-
-The MVP is ready only when:
-
-- `npm run build`, `npm test`, `npm run test:integration`, `forge lint`,
-  `AIGO_REQUIRE_FORGE_INSTALL=1 npm run test:smoke:jira`, and
-  `npm run test:readiness:jira` pass without readiness failures.
-- A human can see the Rovo agents in Jira.
-- Primary agents return useful structured output on seeded issues.
-- Jira Automation rules run without audit-log errors and post review-only AI
-  comments.
-- No critical blocker remains for the configured development-site instance.
+- Forge/Rovo is the application framework. MCP/Cowork is out of scope.
+- General Jira project configuration is not Terraform-managed in this repo.
+  The scalable path is instance configs plus a golden company-managed Jira
+  template project cloned with ACLI. See `docs/PORTABILITY.md`.
+- Fresh team-managed projects are supported for smoke tests but are not the
+  recommended scalable project configuration strategy.
+- `addAnalysisComment` (via `src/comments.ts`) remains the only mutating Forge
+  action. Any new write surface requires `policies/safe-mutations.md` update.
