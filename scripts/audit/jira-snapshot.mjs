@@ -102,18 +102,33 @@ async function main() {
   const project = projectRes.ok ? projectRes.body : null;
   const projectId = project?.id;
 
-  // 3. issue types — full list, then narrow to ones scoped to AIGO when possible
-  const issueTypesRes = await jiraGet("/rest/api/3/issuetype", auth);
-  if (!issueTypesRes.ok) {
-    failures.push({ endpoint: "issuetype", status: issueTypesRes.status });
-  }
-  let issueTypes = issueTypesRes.ok ? issueTypesRes.body : [];
-  if (Array.isArray(issueTypes) && projectId) {
-    const scoped = issueTypes.filter(
-      (it) => !it.scope || it.scope?.project?.id === projectId,
+  // 3. issue types — prefer the project-scoped endpoint, fall back to the global
+  //    list narrowed to AIGO's scope.
+  let issueTypes = [];
+  let issueTypesSource = null;
+  if (projectId) {
+    const scopedRes = await jiraGet(
+      `/rest/api/3/issuetype/project?projectId=${projectId}`,
+      auth,
     );
-    // keep scoped list only if filtering didn't drop everything
-    if (scoped.length > 0) issueTypes = scoped;
+    if (scopedRes.ok && Array.isArray(scopedRes.body)) {
+      issueTypes = scopedRes.body;
+      issueTypesSource = `issuetype/project?projectId=${projectId}`;
+    }
+  }
+  if (issueTypes.length === 0) {
+    const issueTypesRes = await jiraGet("/rest/api/3/issuetype", auth);
+    if (!issueTypesRes.ok) {
+      failures.push({ endpoint: "issuetype", status: issueTypesRes.status });
+    }
+    const all = issueTypesRes.ok && Array.isArray(issueTypesRes.body)
+      ? issueTypesRes.body
+      : [];
+    issueTypes = projectId
+      ? all.filter((it) => !it.scope || it.scope?.project?.id === projectId)
+      : all;
+    if (issueTypes.length === 0) issueTypes = all;
+    issueTypesSource = "issuetype (global, scope-filtered)";
   }
   const issueTypesSlim = (Array.isArray(issueTypes) ? issueTypes : []).map((it) => ({
     id: it.id,
@@ -207,6 +222,7 @@ async function main() {
           }
         : null,
       issue_types: issueTypesSlim,
+      issue_types_source: issueTypesSource,
       custom_fields: customFields,
       filters,
       automation,
