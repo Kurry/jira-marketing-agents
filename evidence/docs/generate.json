@@ -1,10 +1,10 @@
 {
   "generated_by": "scripts/docs/generate.mjs",
-  "generated_at": "2026-06-15T15:08:48.842Z",
-  "git_sha": "6d5b561539f82e638f1f7abb0b3feff588409285",
+  "generated_at": "2026-06-15T15:41:40.486Z",
+  "git_sha": "9bf587c74fb55c4efd1e648fecb26be123d270a3",
   "instance": "myhealthcaresite.atlassian.net",
   "exit_code": 0,
-  "summary": "regenerated 3 docs from infra/ (0 errors)",
+  "summary": "regenerated 7 docs from infra/ (0 errors)",
   "data": {
     "files": [
       {
@@ -17,6 +17,22 @@
       },
       {
         "path": "docs/INTEGRATION.md",
+        "changed": false
+      },
+      {
+        "path": "docs/OPERATOR_PROMPTS.md",
+        "changed": false
+      },
+      {
+        "path": "README.md",
+        "changed": false
+      },
+      {
+        "path": "STATUS.md",
+        "changed": false
+      },
+      {
+        "path": "docs/MVP_READINESS.md",
         "changed": false
       }
     ],

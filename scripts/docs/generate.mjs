@@ -65,6 +65,38 @@ function loadInfra() {
   return { instance, issueTypes, customFields, filters, workflow, dashboards, seeds, automation };
 }
 
+// Canonical (proposed) counts from specs/v2/*. These do NOT match live infra/
+// (the v2 model is a not-yet-accepted re-homing proposal); we surface the
+// delta so docs never silently restate a stale number. Live infra/ wins.
+function canonicalCounts() {
+  const re = (text, rx) => {
+    const m = text.match(rx);
+    return m ? Number(m[1]) : null;
+  };
+  const it = readFileSync(p('specs/v2/issue-types.md'), 'utf8');
+  const cf = readFileSync(p('specs/v2/custom-fields.md'), 'utf8');
+  const wf = readFileSync(p('specs/v2/workflows.md'), 'utf8');
+  return {
+    issueTypes: re(it, /\*\*Canonical:\s*(\d+)\s*issue types/i),
+    fieldEntities: re(cf, /\*\*Canonical:\s*(\d+)\s*field entities/i),
+    statuses: re(wf, /\*\*Canonical:\s*(\d+)\s*statuses/i),
+  };
+}
+
+/** Single source for every entity count, derived from live infra/ YAML. */
+function counts(infra) {
+  return {
+    managedIssueTypes: infra.issueTypes.filter((t) => t.managed).length,
+    totalIssueTypes: infra.issueTypes.length,
+    customFields: infra.customFields.length,
+    filters: infra.filters.length,
+    workflowStatuses: (infra.workflow.statuses ?? []).length,
+    dashboards: infra.dashboards.length,
+    seeds: infra.seeds.length,
+    automation: infra.automation.length,
+  };
+}
+
 // --- region helpers -------------------------------------------------------
 
 function regionRe(key) {
@@ -80,6 +112,22 @@ function fillRegion(text, key, body) {
     throw new Error(`doc is missing region markers for "${key}"`);
   }
   return text.replace(re, `$1${body}\n$3`);
+}
+
+// Inline count tokens: `<!--count:key-->N<!--/count-->`. The number between the
+// markers is rewritten from live infra/; the markers survive so prose like
+// "the 8 custom fields" stays a single authored sentence with one live number.
+function fillInlineCounts(text, infra) {
+  const c = counts(infra);
+  return text.replace(
+    /(<!--count:(\w+)-->)[^<]*(<!--\/count-->)/g,
+    (whole, open, key, close) => {
+      if (!(key in c)) {
+        throw new Error(`unknown inline count key "${key}"`);
+      }
+      return `${open}${c[key]}${close}`;
+    },
+  );
 }
 
 function ensureHeader(text) {
@@ -185,6 +233,21 @@ function renderStagingState(infra) {
   ].join('\n');
 }
 
+function renderCounts(infra) {
+  const c = counts(infra);
+  return [
+    '| Resource | Live count | Source |',
+    '| --- | --- | --- |',
+    `| Managed AIGO issue types | ${c.managedIssueTypes} | \`infra/jira/issue-types.yaml\` |`,
+    `| Custom fields | ${c.customFields} | \`infra/jira/fields.yaml\` |`,
+    `| Workflow statuses | ${c.workflowStatuses} | \`infra/jira/workflows/aigo-default.yaml\` |`,
+    `| JQL saved filters | ${c.filters} | \`infra/jira/filters.yaml\` |`,
+    `| Dashboards | ${c.dashboards} | \`infra/jira/dashboards.yaml\` |`,
+    `| Seed issues | ${c.seeds} | \`infra/jira/seeds/matrix.yaml\` |`,
+    `| Automation rules | ${c.automation} | \`infra/jira/automation/*.yaml\` |`,
+  ].join('\n');
+}
+
 // Map each target doc to the regions it owns.
 const DOC_REGIONS = {
   'docs/PORTABILITY.md': {
@@ -194,6 +257,7 @@ const DOC_REGIONS = {
     'filters': renderFilters,
   },
   'docs/MVP_RUNBOOK.md': {
+    'counts': renderCounts,
     'issue-types': renderIssueTypes,
     'workflow': renderWorkflow,
     'automation': renderAutomation,
@@ -214,6 +278,18 @@ function regenerateDoc(relPath, regions, infra) {
   for (const [key, render] of Object.entries(regions)) {
     after = fillRegion(after, key, render(infra));
   }
+  after = fillInlineCounts(after, infra);
+  return { relPath, before, after, changed: before !== after };
+}
+
+// Docs that carry only inline count tokens (no full sentinel regions and no
+// generated_by header — they are authored prose with a few live numbers).
+const INLINE_ONLY_DOCS = ['docs/OPERATOR_PROMPTS.md', 'README.md', 'STATUS.md', 'docs/MVP_READINESS.md'];
+
+function regenerateInline(relPath, infra) {
+  const abs = p(relPath);
+  const before = readFileSync(abs, 'utf8');
+  const after = fillInlineCounts(before, infra);
   return { relPath, before, after, changed: before !== after };
 }
 
@@ -243,6 +319,14 @@ function main() {
     try {
       const r = regenerateDoc(relPath, regions, infra);
       results.push(r);
+    } catch (e) {
+      errors.push({ relPath, error: e.message });
+    }
+  }
+
+  for (const relPath of INLINE_ONLY_DOCS) {
+    try {
+      results.push(regenerateInline(relPath, infra));
     } catch (e) {
       errors.push({ relPath, error: e.message });
     }

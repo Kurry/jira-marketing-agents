@@ -55,11 +55,11 @@ env vars override them (`AIGO_INSTANCE_YAML_CONFIG` env var or auto-detected).
 ```
 VM-FORGE-INSTALL    GREEN  (forge-snapshot: Up-to-date confirmed)
 VM-JIRA-PROJECT     GREEN  (jira-snapshot: AIGO confirmed live)
-VM-JIRA-ISSUE-TYPES GREEN  (18 declared, 18 live; 0 missing)
-VM-JIRA-FIELDS      GREEN  (8 declared, 8 live; 0 missing)
-VM-JIRA-FILTERS     GREEN  (7 declared, 7 live AIGO filters; 0 missing)
-VM-JIRA-SEEDS       GREEN  (15 live aigo-seed issues; 14 declared types, 0 unrepresented)
-VM-JIRA-WORKFLOW    GREEN  (3 declared, 3 live; team-managed standard statuses)
+VM-JIRA-ISSUE-TYPES GREEN  (<!--count:totalIssueTypes-->18<!--/count--> declared, <!--count:totalIssueTypes-->18<!--/count--> live; 0 missing)
+VM-JIRA-FIELDS      GREEN  (<!--count:customFields-->8<!--/count--> declared, <!--count:customFields-->8<!--/count--> live; 0 missing)
+VM-JIRA-FILTERS     GREEN  (<!--count:filters-->7<!--/count--> declared, <!--count:filters-->7<!--/count--> live AIGO filters; 0 missing)
+VM-JIRA-SEEDS       GREEN  (<!--count:seeds-->15<!--/count--> live aigo-seed issues; <!--count:managedIssueTypes-->13<!--/count--> declared types, 0 unrepresented)
+VM-JIRA-WORKFLOW    GREEN  (<!--count:workflowStatuses-->3<!--/count--> declared, <!--count:workflowStatuses-->3<!--/count--> live; team-managed standard statuses)
 VM-ROVO-CATALOG     GREEN  (19 Rovo agents declared in manifest; Forge install Up-to-date; webtrigger fallback reachable. Native Rovo UI visibility and native Jira Automation "Use Rovo agent" audit proof still pending — see MVP_READINESS.md.)
 VM-AUTOMATION-AUDIT BLOCKED (cb-automation API returns 401/403; platform API unavailable)
 VM-DONE             GREEN  (evidence/DONE.json written — 7 green + 1 blocked)
@@ -92,7 +92,7 @@ VM-DONE             GREEN  (evidence/DONE.json written — 7 green + 1 blocked)
 
 - Repo: 167 files, 30 npm scripts
 - Forge: Up-to-date, 19 agents, 22 actions
-- Jira: 18 issue types, 8 custom fields, 7 filters (live data)
+- Jira: <!--count:totalIssueTypes-->18<!--/count--> issue types, <!--count:customFields-->8<!--/count--> custom fields, <!--count:filters-->7<!--/count--> filters (live data)
 - Safety: policies OK, hooks present, no banned phrases
 - Cleaned: 99 manual v1 artefacts
 

@@ -1,0 +1,54 @@
+{
+  "generated_by": "scripts/docs/generate.mjs (T-NIH-14)",
+  "task": "T-NIH-14",
+  "status": "green",
+  "counts_sourced_from": "infra/jira/*.yaml",
+  "reconcile_command": "npm run docs:generate  (verify: npm run docs:check)",
+  "live_counts": {
+    "managedIssueTypes": 13,
+    "totalIssueTypes": 18,
+    "customFields": 8,
+    "filters": 7,
+    "workflowStatuses": 3,
+    "dashboards": 6,
+    "seeds": 15,
+    "automation": 5
+  },
+  "mechanisms": {
+    "sentinel_regions": "<!-- BEGIN generated:<key> --> .. <!-- END generated:<key> --> regions rewritten wholesale (issue-types, fields, filters, workflow, automation, staging-state, and new 'counts' table).",
+    "inline_count_tokens": "<!--count:<key>-->N<!--/count--> spans inside authored prose; only N is rewritten from infra/, the surrounding sentence stays hand-written. Keys: managedIssueTypes, totalIssueTypes, customFields, filters, workflowStatuses, dashboards, seeds, automation."
+  },
+  "hardcoded_counts_removed": [
+    {"file": "docs/MVP_RUNBOOK.md", "was": "14 canonical issue types / 6 custom fields / 8 MVP workflow statuses / 7 filters / 15 seeds (narrative 'Current live state' list)", "now": "<!-- BEGIN generated:counts --> table sourced from infra/jira/ (13 managed types, 8 fields, 3 statuses, 7 filters, 6 dashboards, 15 seeds, 5 automation)"},
+    {"file": "docs/MVP_READINESS.md", "was": "14 issue types / 6 custom fields / 12 workflow statuses (two tables + prose)", "now": "inline <!--count:--> tokens -> 13 managed types, 8 fields, 3 statuses; filters/dashboards/seeds/automation tokenized too"},
+    {"file": "STATUS.md", "was": "VM rows '18 declared/8/7/14 declared types/3' and summary '18 issue types, 8 custom fields, 7 filters'", "now": "inline <!--count:--> tokens; the stale '14 declared types' in VM-JIRA-SEEDS now resolves to managedIssueTypes=13"},
+    {"file": "docs/INTEGRATION.md", "was": "'creates the 6 custom fields'", "now": "inline <!--count:customFields--> token -> 8"}
+  ],
+  "left_as_authored_catalog_references": [
+    {"file": "docs/OPERATOR_PROMPTS.md", "text": "add the following 14 issue types", "reason": "enumerates a 14-item operator catalog (13 managed AIGO types + 'Bug / Tracking Issue' which maps to the builtin Bug, managed:false). This is the named catalog the operator types into the UI, not the live managed-flag count; tokenizing to 13 would contradict its own 14-item list."},
+    {"file": "docs/PORTABILITY.md", "text": "Configure the 14 issue types ... ; Board -> add 8 statuses", "reason": "manual UI configuration steps referencing the canonical catalog (14 types) and the broader v2 status set (8 AIGO statuses), not the live infra workflow (3 platform statuses). Manual-procedure catalog references, not live-state assertions."},
+    {"file": "README.md", "text": "provision:seeds # 15 issues / provision:filters # 7 / provision:dashboards # 6", "reason": "inside a ```bash code fence; inline HTML-comment tokens would render literally. Values are correct against infra/."}
+  ],
+  "canonical_spec_vs_live_discrepancy": {
+    "note": "specs/v2/{issue-types,custom-fields,workflows}.md is a NOT-YET-ACCEPTED v2 re-homing proposal ('does not supersede current specs until accepted'). Per T-NIH-14, infra/jira/*.yaml is the live source of truth; the generator reads from infra/, not from the v2 specs.",
+    "deltas": [
+      {"entity": "issue types", "canonical_v2": 14, "live_infra_managed": 13, "explanation": "v2 catalog counts 'Bug / Tracking Issue' as a 14th named type; in infra it is the builtin Bug (id 10061, managed:false), so the managed-flag count is 13. v2 issue-types.md drift table itself records 'generated tables: 13'."},
+      {"entity": "custom fields", "canonical_v2": 39, "live_infra": 8, "explanation": "v2 custom-fields.md proposes 39 re-homed field entities across JPD/Assets/Jira; infra/jira/fields.yaml declares 8 live custom fields. v2 model not yet provisioned."},
+      {"entity": "workflow statuses", "canonical_v2": 11, "live_infra": 3, "explanation": "v2 workflows.md proposes 11 statuses (3 platform default + 8 AIGO); live infra workflow 'AIGO Default' has the 3 platform-default statuses only (team-managed project)."}
+    ],
+    "resolution": "Generator emits LIVE infra counts. The MVP_RUNBOOK 'counts' region and MVP_READINESS tables point readers to specs/v2/issue-types.md for the canonical-vs-live reconciliation rather than restating the proposal counts."
+  },
+  "files_updated": [
+    "scripts/docs/generate.mjs",
+    "docs/MVP_RUNBOOK.md",
+    "docs/MVP_READINESS.md",
+    "docs/INTEGRATION.md",
+    "STATUS.md"
+  ],
+  "verification": {
+    "docs_check": "npm run docs:check -> exit 0 (docs in sync with infra/)",
+    "drift_detection_proven": "corrupting an inline token to 99 made docs:check report DRIFT (exit 3); docs:generate restored it to the infra value",
+    "build": "npm run build (tsc --noEmit) -> clean",
+    "tests": "npm test -> 1081 passed, 1 pre-existing skip"
+  }
+}

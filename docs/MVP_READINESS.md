@@ -35,16 +35,19 @@ Evidence: `evidence/gates/forge-deploy.log`, `evidence/gates/forge-install.log`
 
 ### Jira project configuration
 
+Counts are regenerated from `infra/jira/` YAML by `scripts/docs/generate.mjs`
+(the inline `<!--count:…-->` tokens). The canonical-vs-live reconciliation lives
+in `specs/v2/issue-types.md`.
+
 | Resource | Count | Status |
 |---|---|---|
-| Canonical issue types | 14 (IDs 10048–10061) | ✓ Live |
-| Custom fields | 6 (IDs 10043–10048) | ✓ Live |
-| Workflow statuses | 12 | ✓ Live |
-| Field options | 24 across 4 fields | ✓ Live |
-| JQL saved filters | 7 (IDs 10000–10006) | ✓ Live |
-| Dashboards | 6 (IDs 10001–10006) | ✓ Live |
-| Seed issues | 15 (all 14 canonical types covered) | ✓ Live |
-| Automation rules | 5 imported DISABLED | ✓ Ready to enable |
+| Managed issue types | <!--count:managedIssueTypes-->13<!--/count--> | ✓ Live |
+| Custom fields | <!--count:customFields-->8<!--/count--> | ✓ Live |
+| Workflow statuses | <!--count:workflowStatuses-->3<!--/count--> | ✓ Live |
+| JQL saved filters | <!--count:filters-->7<!--/count--> | ✓ Live |
+| Dashboards | <!--count:dashboards-->6<!--/count--> | ✓ Live |
+| Seed issues | <!--count:seeds-->15<!--/count--> | ✓ Live |
+| Automation rules | <!--count:automation-->5<!--/count--> (imported DISABLED) | ✓ Ready to enable |
 | Rovo agents | 19 in manifest, app Up-to-date | Manifest/install verified; UI confirmation pending |
 
 Evidence: `evidence/jira-config/`, `evidence/rovo/visibility.md`,
@@ -76,7 +79,7 @@ Full safety audit signed off 2026-06-15. See `evidence/safety/final-audit.md`.
 
 - 19 agent prompts read and verified — zero critical violations
 - Healthcare claims guardrails intact in all prompts and policies
-- All 5 automation rules import DISABLED
+- All <!--count:automation-->5<!--/count--> automation rules import DISABLED
 - `addAnalysisComment` is the only mutating Forge action
 
 ---
@@ -112,13 +115,13 @@ Evidence: `evidence/blockers.md#BLK-02`, `evidence/automation/*-audit.md`
 |---|---|
 | Repo quality gates (build, test, lint) | ✓ GREEN |
 | Forge deploy + install (staging) | ✓ DONE |
-| 14 canonical issue types in AIGO | ✓ LIVE |
-| 6 custom fields created | ✓ LIVE |
-| 12 workflow statuses configured | ✓ LIVE |
-| 7 JQL saved filters | ✓ LIVE |
-| 6 dashboards created | ✓ LIVE |
-| 15 seed issues (all 14 types covered) | ✓ LIVE |
-| 5 automation rules imported DISABLED | ✓ LIVE |
+| <!--count:managedIssueTypes-->13<!--/count--> managed issue types in AIGO | ✓ LIVE |
+| <!--count:customFields-->8<!--/count--> custom fields created | ✓ LIVE |
+| <!--count:workflowStatuses-->3<!--/count--> workflow statuses configured | ✓ LIVE |
+| <!--count:filters-->7<!--/count--> JQL saved filters | ✓ LIVE |
+| <!--count:dashboards-->6<!--/count--> dashboards created | ✓ LIVE |
+| <!--count:seeds-->15<!--/count--> seed issues | ✓ LIVE |
+| <!--count:automation-->5<!--/count--> automation rules imported DISABLED | ✓ LIVE |
 | JQL scope conditions on all rules | ✓ VERIFIED in flow builder |
 | 19 Rovo agents manifest/install check | ✓ VERIFIED |
 | 19 Rovo agents visible in Jira UI | PENDING UI confirmation |

@@ -318,7 +318,7 @@ verify those in Jira.
 
 ## 8. Custom fields (automated)
 
-> **Automated:** `npm run provision:jira` creates the 6 custom fields and
+> **Automated:** `npm run provision:jira` creates the <!--count:customFields-->8<!--/count--> custom fields and
 > generates `evidence/jira-config/forge-vars.sh` with the `forge variables set`
 > commands. `npm run provision:all` sources and applies those commands automatically.
 

@@ -27,13 +27,21 @@ Verified by CLI:
 - `AIGO` exists as a team-managed business project.
 - Seed issues `AIGO-1` through `AIGO-15` exist with label `aigo-seed`.
 
-Current live state (as of 2026-06-15):
+Current live state (counts derived from `infra/jira/` YAML — see
+`specs/v2/issue-types.md` for the canonical-vs-live reconciliation):
 
-- All 14 canonical issue types are live (IDs 10048–10061). ✓
-- All 15 seed issues are live with canonical issue types. ✓
-- 6 custom fields are live (Segment, Primary Metric, Claims Risk, Experiment ID, Workflow Area, Priority Score). ✓
-- 8 MVP workflow statuses are live (Intake, Triage, Spec Ready, In Review, Claims Review, Experiment Running, Decision Needed, Launch Prep). ✓
-- 7 JQL saved filters are live (Intake, Claims Review, Launch Readiness, Readout Needed, Decision Needed, Blocked, Experiment Running). ✓
+<!-- BEGIN generated:counts -->
+| Resource | Live count | Source |
+| --- | --- | --- |
+| Managed AIGO issue types | 13 | `infra/jira/issue-types.yaml` |
+| Custom fields | 8 | `infra/jira/fields.yaml` |
+| Workflow statuses | 3 | `infra/jira/workflows/aigo-default.yaml` |
+| JQL saved filters | 7 | `infra/jira/filters.yaml` |
+| Dashboards | 6 | `infra/jira/dashboards.yaml` |
+| Seed issues | 15 | `infra/jira/seeds/matrix.yaml` |
+| Automation rules | 5 | `infra/jira/automation/*.yaml` |
+<!-- END generated:counts -->
+
 - Forge app deployed and installed. ✓
 
 Open gates:
