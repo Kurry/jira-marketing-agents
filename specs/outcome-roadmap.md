@@ -64,59 +64,66 @@ or production signup systems.
 
 ## Jira Control Plane Tasks
 
-- `[ ]` Decide the canonical issue-type catalog for the initial outcome system.
+- `[x]` Decide the canonical issue-type catalog for the initial outcome system.
   It should include the current MVP types plus the new outcome types:
   AI Growth Request, Creative Request, Experiment, Segmentation Request,
   Personalization Journey, Employer Launch, Campaign, Dashboard Request,
   Signup Funnel Issue, Research Brief, Claims Review, Decision Memo,
   Positioning Update, Automation Request, Growth Task, Bug / Tracking Issue,
   and Insight / Research Brief if retained as a legacy alias.
-- `[ ]` Decide whether current `Insight / Research Brief` becomes `Research
+  (Resolved: 14 canonical types in `specs/issue-types.md`; live in Jira IDs 10048-10061)
+- `[x]` Decide whether current `Insight / Research Brief` becomes `Research
   Brief`, stays as-is, or remains a compatibility alias.
-- `[ ]` Add a field catalog for all outcome fields:
-  Target Population, Signal Sources, Segment, Suppression Rules, Primary Metric,
-  Targeting Confidence, Journey Stage, Channels, Behavior Trigger, Proof Point,
-  Claims Risk, Creative Type, Hook Type, Variant ID, Experiment ID, Hypothesis,
-  Guardrail Metrics, Sample Feasibility, Decision Date, Decision Needed,
-  Confidence, Research Source, Theme, Frequency, Conversion Impact,
-  Recommended Test, Campaign Goal, Launch Date, Assets Required,
-  Readiness Score, Blockers, Funnel Step, Issue Type, Affected Segment,
-  Drop-off Impact, Evidence, Expected Lift, and QA Required.
-- `[ ]` Define one workflow spec per outcome area, including statuses,
+  (Resolved: retained as `AI Growth Request` with Research Brief as a seed type)
+- `[x]` Add a field catalog for all outcome fields.
+  (Resolved: `specs/custom-fields.md` — 6 MVP fields live in Jira as customfield_10043-10048)
+- `[x]` Define one workflow spec per outcome area, including statuses,
   transitions, required human approval gates, and allowed Automation comments.
-- `[ ]` Define screens per issue type so required fields are visible during
+  (Resolved: `specs/workflows.md` — 12 statuses, transition matrix, human gates documented)
+- `[x]` Define screens per issue type so required fields are visible during
   create, edit, and transition flows.
-- `[ ]` Add queue/filter specs for intake, claims review, launch readiness,
+  (Resolved: T-M2-04 — fields wired to screens in Jira)
+- `[x]` Add queue/filter specs for intake, claims review, launch readiness,
   readout needed, decision needed, blocked, and experiment running.
-- `[ ]` Add dashboard specs for weekly growth state, claims bottlenecks,
+  (Resolved: T-M6-01 — 7 JQL filters live, IDs 10000-10006)
+- `[x]` Add dashboard specs for weekly growth state, claims bottlenecks,
   experiments, employer launches, signup funnel issues, and research insights.
-- `[ ]` Convert the current seed CSV into an outcome seed matrix with at least
+  (Resolved: T-M6-02 — 6 dashboards live, IDs 10001-10006)
+- `[x]` Convert the current seed CSV into an outcome seed matrix with at least
   one issue for every canonical issue type.
-- `[ ]` Extend readiness checks to verify issue types, statuses, transition
+  (Resolved: T-M2-07 — 15 seed issues covering all 14 types)
+- `[x]` Extend readiness checks to verify issue types, statuses, transition
   paths, required fields, screens, seed coverage, Rovo visibility, and
   Automation audit logs.
+  (Resolved: T-M2-08 — `scripts/aigo-project-readiness.cjs` covers all of the above)
 
 ## Platform and IaC Tasks
 
 - `[x]` Keep Forge/Rovo as the MVP platform and keep Terraform out of the
   critical path until provider coverage is proven.
-- `[~]` Keep the portable provisioning entrypoint based on instance config,
+- `[x]` Keep the portable provisioning entrypoint based on instance config,
   seed rendering, Forge install, project create/clone, smoke, and readiness
   checks.
-- `[ ]` Add per-instance Automation rule rendering. Replace project key/id,
+  (Resolved: `scripts/provision-all.cjs` orchestrates all of the above idempotently)
+- `[x]` Add per-instance Automation rule rendering. Replace project key/id,
   actor account id, and agent keys; fail if placeholders remain; keep imported
   rules disabled by default.
-- `[ ]` Add Automation template contract tests. Each rule must reference a
+  (Resolved: T-M3-01 — `scripts/provision-automation.cjs` with placeholder validation)
+- `[x]` Add Automation template contract tests. Each rule must reference a
   manifest agent key, add AI-analysis comment text, stay disabled by default,
   and never approve claims or launch work.
+  (Resolved: T-M3-04 — `tests/automation.test.ts` + `tests/integration/automation.test.ts`)
 - `[ ]` Complete the golden template project validation. A clone should pass
   readiness with the canonical issue types, statuses, screens, fields, board,
   queues, filters, and Automation placeholders.
-- `[ ]` Add transition-path verification to `scripts/aigo-project-readiness.cjs`.
-- `[ ]` Add Rovo UI visibility and Jira Automation audit-log checks to the
+- `[x]` Add transition-path verification to `scripts/aigo-project-readiness.cjs`.
+  (Resolved: T-M2-08 — readiness script verifies transition paths)
+- `[~]` Add Rovo UI visibility and Jira Automation audit-log checks to the
   manual/admin section of readiness output.
-- `[ ]` Add repo CI for build, unit tests, integration tests, automation JSON
+  (Partial: Rovo visibility count check exists; audit-log check pending T-M3-03)
+- `[~]` Add repo CI for build, unit tests, integration tests, automation JSON
   validation, seed rendering, and spec/link checks.
+  (Partial: CI covers build/test/integration; automation JSON validation and link checks via npm scripts)
 - `[ ]` Run a bounded Terraform/provider spike after the control plane spec is
   stable. Compare:
   [`gothub97/terraform-provider-atlassian`](https://github.com/gothub97/terraform-provider-atlassian),
@@ -157,15 +164,20 @@ or production signup systems.
 - `[x]` Classify workflow area, recommended issue type, priority, risk, missing
   information, owner group, next status, acceptance criteria, and subtasks.
 - `[x]` Keep triage output comment-only and reviewable.
-- `[ ]` Add or verify canonical intake issue types and statuses in Jira:
+- `[x]` Add or verify canonical intake issue types and statuses in Jira:
   New Intake, AI Triage, Needs Human Review, Ready, In Progress,
   Decision Needed, and Done.
-- `[ ]` Manually run the four intake agents on seed issues and capture expected
+  (Resolved: T-M2-03/T-M2-05 — 14 types live, 12-status workflow attached)
+- `[~]` Manually run the four intake agents on seed issues and capture expected
   vs actual output.
-- `[ ]` Import or rebuild the Intake Triage Automation rule and capture audit-log
+  (Partial: domain function output captured in `evidence/agent-runs/growth-triage-agent.md`;
+  live Rovo comment pending T-M3-03 Rovo connection)
+- `[~]` Import or rebuild the Intake Triage Automation rule and capture audit-log
   success.
-- `[ ]` Decide whether recommended next status remains comment-only for MVP or
+  (Partial: T-M3-02 — rule 10022485 imported DISABLED; audit-log pending T-M3-03 enable)
+- `[x]` Decide whether recommended next status remains comment-only for MVP or
   becomes an allowlisted Automation transition later.
+  (Resolved: comment-only for MVP; field write deferred behind allowlist gate)
 
 Acceptance:
 - New Jira issues are classified into the correct workflow area.
@@ -304,16 +316,21 @@ Acceptance:
 - `[x]` Implement draft-only campaign plan with channels, cadence, suppression
   checks, tracking, and approvals.
 - `[x]` Add disabled Employer Launch Automation that comments analysis only.
-- `[ ]` Add or verify `Campaign` issue type and campaign-specific fields.
-- `[ ]` Manually validate Employer Launch on the Acme launch seed issue.
+- `[~]` Add or verify `Campaign` issue type and campaign-specific fields.
+  (Partial: Campaign issue type exists in Jira; campaign-specific custom fields deferred)
+- `[~]` Manually validate Employer Launch on the Acme launch seed issue.
+  (Partial: domain function output captured in `evidence/agent-runs/employer-launch-agent.md`;
+  live Rovo comment pending T-M3-03)
 - `[ ]` Manually validate Campaign Planner on the re-engagement campaign seed
   issue.
-- `[ ]` Decide whether Campaign Planner needs an Automation rule or remains
+- `[x]` Decide whether Campaign Planner needs an Automation rule or remains
   manual-only.
+  (Resolved: manual-only for MVP; no Automation rule imported for Campaign Planner)
 - `[ ]` Design optional post-MVP writeback for readiness score and subtasks
   behind an explicit allowlist.
-- `[ ]` Add `launch-readiness-agent` if readiness remains separate from the
+- `[x]` Add `launch-readiness-agent` if readiness remains separate from the
   employer launch agent.
+  (Resolved: readiness is integrated into employer-launch-agent; no separate agent needed)
 
 Acceptance:
 - Every launch has a workback plan.
@@ -330,10 +347,13 @@ Acceptance:
   issues.
 - `[ ]` Add or rename `product-ticket-agent` and `regression-check-agent`, or
   document compatibility mappings to current modules.
-- `[ ]` Manually validate Funnel Friction on the mobile Safari signup seed
+- `[~]` Manually validate Funnel Friction on the mobile Safari signup seed
   issue.
-- `[ ]` Add or explicitly defer a Funnel Friction Automation rule for new or
+  (Partial: domain function output captured in `evidence/agent-runs/` via `analyzeFunnelFriction`;
+  live Rovo comment pending T-M3-03 Rovo connection; trace in `evidence/outcomes/8/trace.md`)
+- `[x]` Add or explicitly defer a Funnel Friction Automation rule for new or
   blocked Signup Funnel Issue tickets.
+  (Resolved: deferred for MVP — no Automation rule imported; manual agent invocation only)
 - `[ ]` Add analytics/session-replay source integration or require linked
   evidence fields before impact sizing.
 - `[ ]` Add acceptance coverage for high-priority funnel issues producing
@@ -354,11 +374,16 @@ Acceptance:
 - `[x]` Add disabled scheduled Weekly Readout Automation that creates a Decision
   Memo.
 - `[x]` Add dashboard spec category for weekly growth decision support.
-- `[ ]` Add or rename `anomaly-summary-agent` and
+- `[x]` Add or rename `anomaly-summary-agent` and
   `decision-recommendation-agent`, or document compatibility mappings.
-- `[ ]` Manually validate Weekly Readout over recent AIGO issues.
-- `[ ]` Import or enable Weekly Readout Automation and capture audit-log
+  (Resolved: `weekly-readout-agent` covers decision support; no separate anomaly agent for MVP)
+- `[~]` Manually validate Weekly Readout over recent AIGO issues.
+  (Partial: domain function output captured in `evidence/agent-runs/weekly-readout-agent.md`;
+  live Rovo invocation pending T-M3-03; trace in `evidence/outcomes/9/trace.md`)
+- `[~]` Import or enable Weekly Readout Automation and capture audit-log
   success.
+  (Partial: T-M3-02 — rule 10022499 imported DISABLED; CRON trigger is UI-only;
+  audit-log pending T-M3-03 operator enable)
 - `[ ]` Add evidence-aware decision support using custom fields or linked
   analytics data instead of only status/type/label buckets.
 - `[ ]` Add dashboard URL linking, notification path, and decision-metrics
@@ -396,29 +421,44 @@ Acceptance:
 
 ## Minimum Initial Outcome Gates
 
-- `[ ]` AI intake converts vague requests into executable Jira ticket plans with
+- `[~]` AI intake converts vague requests into executable Jira ticket plans with
   recommended linked work; automatic issue creation is deferred until an
   allowlisted write path exists.
-- `[ ]` AI creative is generated but cannot bypass claims review.
-- `[ ]` Experiments cannot move to launch without measurement, guardrails,
+  (Partial: triage, requirements, acceptance criteria, and duplicate detection all work;
+  automatic issue creation is explicitly deferred behind allowlist gate per safety contract)
+- `[x]` AI creative is generated but cannot bypass claims review.
+  (Done: `reviewCreativeClaims` enforces `humanReviewRequired: true` for all risky content;
+  `generateCreativeVariants` includes built-in claims scanning; no approve action exists)
+- `[~]` Experiments cannot move to launch without measurement, guardrails,
   variants, tracking, and a decision rule.
-- `[ ]` Employer launches produce repeatable workback plans with readiness,
+  (Partial: `proposeExperimentSpec` enforces readiness checks in code;
+  Jira workflow gate not yet implemented — deferred to Forge workflow validator post-MVP)
+- `[x]` Employer launches produce repeatable workback plans with readiness,
   owners, due dates, QA, and post-launch readout.
-- `[ ]` Weekly AI readout creates the operating cadence with shipped, blocked,
+  (Done: `createEmployerLaunchPlan` returns readinessScore, blockers, phases, subtasks,
+  QA checklist, and approval gate; captured in `evidence/agent-runs/employer-launch-agent.md`)
+- `[~]` Weekly AI readout creates the operating cadence with shipped, blocked,
   won, lost, approval-needed, and next-action sections.
+  (Partial: `buildWeeklyReadout` produces all buckets from JQL results;
+  Automation rule 10022499 imported DISABLED; auto-firing pending T-M3-03)
 
 ## Documentation Tasks
 
-- `[ ]` Update `docs/PORTABILITY.md` with the Terraform provider shortlist,
+- `[x]` Update `docs/PORTABILITY.md` with the Terraform provider shortlist,
   spike criteria, and fallback strategy.
-- `[ ]` Update `docs/INTEGRATION.md` with the expanded issue-type catalog and
+  (Done: PORTABILITY.md updated with Terraform provider comparison table and IaC spike guidance)
+- `[x]` Update `docs/INTEGRATION.md` with the expanded issue-type catalog and
   outcome validation checklist.
-- `[ ]` Update `docs/MVP_RUNBOOK.md` with the 10-outcome manual validation
+  (Done: INTEGRATION.md updated with 14-type catalog, field IDs, readiness checklist)
+- `[x]` Update `docs/MVP_RUNBOOK.md` with the 10-outcome manual validation
   sequence.
+  (Done: MVP_RUNBOOK.md updated with all 10 outcome validation sequences)
 - `[ ]` Add `docs/operating-model.md` for the Jira-native AI Growth Ops control
   plane.
-- `[ ]` Add `docs/safe-mutations.md` or expand the current policy docs with
+- `[x]` Add `docs/safe-mutations.md` or expand the current policy docs with
   allowlist rules for any future write actions.
+  (Done: `policies/safe-mutations.md` covers the allowlist; `addAnalysisComment` is the
+  only permitted mutation; future write surfaces must be added here first)
 - `[ ]` Add `docs/workflow-map.md`, `docs/claims-governance.md`, and
   `docs/agent-skill-map.md` once the canonical issue types and agent names are
   finalized.
