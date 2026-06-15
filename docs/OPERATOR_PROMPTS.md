@@ -96,8 +96,9 @@ npm run provision:automation -- --dry-run
 ```
 
 The supported path does not call private/internal Atlassian Automation import
-APIs. `npm run provision:automation:forge` is retained only as an experimental
-staging helper and is not the portability path.
+APIs. The deleted Forge importer must not be used as portability evidence.
+Use `npm run provision:automation -- --dry-run` for validation, then import or
+rebuild rules through native Jira Automation.
 
 If Jira import is unavailable or the JSON drifts, rebuild the same rules from
 `automation/jira-automation-rules.md`.

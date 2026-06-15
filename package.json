@@ -33,7 +33,7 @@
     "test:safety": "vitest run tests/safety",
     "rovo:invoke-all": "node scripts/invoke/run-all.mjs",
     "forge:deploy": "forge deploy -e development",
-    "forge:install": "forge install --upgrade -e development -p jira --site myhealthcaresite.atlassian.net --confirm-scopes",
+    "forge:install": "node scripts/provision-instance.cjs --install-forge",
     "forge:lint": "forge lint",
     "lint": "tsc --noEmit"
   },

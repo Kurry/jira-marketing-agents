@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/docs/generate.mjs",
-  "generated_at": "2026-06-15T14:42:46.400Z",
-  "git_sha": "770ed6faab1f3f952088a43d319f41ff7cbf0c45",
+  "generated_at": "2026-06-15T14:48:27.929Z",
+  "git_sha": "71ef3b15ae8661070ecf68b2518f6042f4372875",
   "instance": "myhealthcaresite.atlassian.net",
   "exit_code": 0,
   "summary": "regenerated 3 docs from infra/ (0 errors)",

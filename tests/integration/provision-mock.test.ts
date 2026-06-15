@@ -1123,14 +1123,14 @@ describe("provision-dashboards — HTTP: nock scope verification", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Suite 9: forge-import-automation.cjs — pure-logic paths (no forge CLI)
+// Suite 9: provision-automation.cjs — supported render/validation boundary
 // ---------------------------------------------------------------------------
-// The script wraps `forge invoke function`; that live call needs a deployed
-// Forge app and is not exercised here. We test the guard logic and dry-run
-// path, which exit before touching the forge CLI.
+// Supported automation provisioning renders and validates Jira Automation JSON,
+// then stops before mutation. Native Jira Automation import/rebuild and audit
+// log validation are intentionally outside this script.
 
-describe("forge-import-automation — guard logic and dry-run", () => {
-  const SCRIPT = path.resolve(__dirname, "../../scripts/forge-import-automation.cjs");
+describe("provision-automation — guard logic and dry-run", () => {
+  const SCRIPT = path.resolve(__dirname, "../../scripts/provision-automation.cjs");
   const REPO_ROOT = path.resolve(__dirname, "../..");
   const EXAMPLE_CONFIG = path.join(REPO_ROOT, "instances", "aigo.example.json");
 
@@ -1146,7 +1146,7 @@ describe("forge-import-automation — guard logic and dry-run", () => {
     const r = runScript(["--config", EXAMPLE_CONFIG, "--dry-run"]);
     expect(r.code).toBe(0);
     expect(r.stdout).toMatch(/DRY RUN/i);
-    expect(r.stdout).toMatch(/Would import via Jira REST/i);
+    expect(r.stdout).toMatch(/No API calls made/i);
   });
 
   it("--dry-run lists at least 5 DISABLED rules", () => {
@@ -1168,15 +1168,17 @@ describe("forge-import-automation — guard logic and dry-run", () => {
     try {
       const r = runScript(["--config", tmp]);
       expect(r.code).toBe(1);
-      expect(r.stderr).toMatch(/missing cloudId/i);
+      expect(r.stderr).toMatch(/missing required field.*cloudId|cloudId.*missing/i);
     } finally {
       fs.unlinkSync(tmp);
     }
   });
 
   it("exits 1 when a rendered rule has state != DISABLED", () => {
-    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aigo-forge-test-"));
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aigo-automation-test-"));
+    const tmpScripts = path.join(tmpDir, "scripts");
     const renderedDir = path.join(tmpDir, "automation", "rules", "rendered");
+    fs.mkdirSync(tmpScripts, { recursive: true });
     fs.mkdirSync(renderedDir, { recursive: true });
 
     const enabledRule = { version: 1, rules: [{ name: "Bad Rule", state: "ENABLED" }] };
@@ -1186,18 +1188,17 @@ describe("forge-import-automation — guard logic and dry-run", () => {
     const cfgPath = path.join(tmpDir, "config.json");
     fs.writeFileSync(cfgPath, JSON.stringify(cfg));
 
-    // Patch renderedDir in a copy of the script so it reads our temp dir
-    const patchedScript = fs.readFileSync(SCRIPT, "utf8").replace(
-      'path.join(repoRoot, "automation", "rules", "rendered")',
-      JSON.stringify(renderedDir)
-    );
-    const patchedPath = path.join(tmpDir, "patched.cjs");
+    const renderStubPath = path.join(tmpScripts, "render-automation-rules.cjs");
+    fs.writeFileSync(renderStubPath, "#!/usr/bin/env node\nprocess.exit(0);\n");
+
+    const patchedScript = fs.readFileSync(SCRIPT, "utf8");
+    const patchedPath = path.join(tmpScripts, "provision-automation.cjs");
     fs.writeFileSync(patchedPath, patchedScript);
 
     try {
       const result = spawnSync("node", [patchedPath, "--config", cfgPath], { encoding: "utf8", cwd: tmpDir });
       expect(result.status).toBe(1);
-      expect(result.stderr).toMatch(/must be DISABLED/i);
+      expect(result.stderr).toMatch(/must.*DISABLED|DISABLED.*required/i);
     } finally {
       fs.rmSync(tmpDir, { recursive: true, force: true });
     }

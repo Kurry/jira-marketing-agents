@@ -236,11 +236,11 @@ npm run provision:all -- --config instances/customer.json --site customer.atlass
 
 This runs the current scripted steps: forge lint → forge deploy → forge install
 → provision:jira → forge variables set → forge redeploy → provision:seeds →
-experimental provision:automation:forge → test:smoke:jira → check:rovo.
+render/validate automation JSON → test:smoke:jira → check:rovo.
 
 `check:rovo` is a manifest/install check, not actual Rovo UI visibility proof.
-`provision:automation:forge` is a staging helper that relies on private/internal
-Automation endpoints; it is not the supported portability path.
+`provision:automation` validates rule JSON and stops before mutation; native
+Jira Automation import/rebuild plus audit-log evidence is still required.
 
 Render seed data for an instance:
 
@@ -255,7 +255,7 @@ node scripts/provision-jira.cjs --config instances/customer.json
 node scripts/provision-seeds.cjs --config instances/customer.json
 node scripts/provision-filters.cjs   # uses AIGO_CLOUD_ID + AIGO_PROJECT_KEY env vars
 node scripts/provision-dashboards.cjs  # uses AIGO_CLOUD_ID + filter IDs env vars
-npm run provision:automation:forge   # experimental private/internal Automation import helper
+npm run provision:automation -- --dry-run  # render/validate; native import still required
 ```
 
 Dry-run individual scripts:
@@ -264,7 +264,7 @@ Dry-run individual scripts:
 node scripts/provision-jira.cjs --dry-run
 node scripts/provision-seeds.cjs --dry-run
 node scripts/provision-dashboards.cjs --dry-run
-node scripts/forge-import-automation.cjs --dry-run
+node scripts/provision-automation.cjs --dry-run
 ```
 
 ## Golden Template Project
@@ -344,8 +344,7 @@ For every new Jira site/project:
 1. **Create instance config**: copy `instances/aigo.example.json` → `instances/<name>.json`. Fill in `site`, `cloudId`, `projectId`, `actorAccountId`, `projectKey`.
 2. **Dry-run**: `npm run provision:all -- --dry-run --config instances/<name>.json`
 3. **Deploy**: `forge deploy -e development`
-4. **Install** (accept the current manifest scopes; `manage:jira-configuration`
-   is only needed if intentionally running the experimental Forge importer):
+4. **Install** (accept the current manifest scopes):
    `forge install -e development -p jira --site <site> --confirm-scopes`
 5. **Provision Jira**: `node scripts/provision-jira.cjs --config instances/<name>.json`
    - Creates issue types, custom fields, workflow statuses, field options.
@@ -357,8 +356,8 @@ For every new Jira site/project:
 10. **Dashboards**: `AIGO_CLOUD_ID=<cloudId> node scripts/provision-dashboards.cjs`
 11. **Automation rules**: rebuild from `automation/jira-automation-rules.md` or
     import rendered JSON through Jira Automation UI/export-import. Use
-    `npm run provision:automation:forge` only as experimental staging evidence,
-    not as the supported path.
+    `npm run provision:automation -- --dry-run` to validate the rendered JSON
+    before native import/rebuild.
 12. **Smoke + readiness**: `npm run test:smoke:jira && npm run test:readiness:jira`
 13. **UI steps** (manual):
     - Board → add 8 statuses to columns.

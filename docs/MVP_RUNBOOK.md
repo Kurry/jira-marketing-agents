@@ -211,9 +211,9 @@ This reads all 5 files from `automation/rules/rendered/`, validates each has
 or rebuild is still required, followed by native **Use Rovo agent** audit-log
 validation.
 
-`npm run provision:automation:forge` is retained only as an experimental staging
-helper that depends on private/internal Automation endpoints. It is not the
-supported portability path.
+No Forge importer is part of the supported path. `npm run provision:automation`
+validates the rendered JSON and then requires native Jira Automation import or
+rebuild plus audit-log evidence.
 
 **Jira Automation UI import**:
 

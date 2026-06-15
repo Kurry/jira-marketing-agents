@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/verify/automation-audit.mjs",
-  "generated_at": "2026-06-15T14:45:56.925Z",
-  "git_sha": "71bf1aff72a2b0542de620269ecbc1c90d8450c8",
+  "generated_at": "2026-06-15T14:48:47.837Z",
+  "git_sha": "742fcac08ebfbb97e3cdd75bf9abcdf13a33124b",
   "instance": "myhealthcaresite.atlassian.net",
   "exit_code": 5,
   "summary": "VM-AUTOMATION-AUDIT: cb-automation API unavailable (401) — blocked, not failed",

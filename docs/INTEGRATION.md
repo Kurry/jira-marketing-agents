@@ -129,22 +129,20 @@ The app requests **classic** scopes (`manifest.yml` → `permissions.scopes`):
 | `read:jira-work` | Read issues, comments, JQL search (all read actions) |
 | `write:jira-work` | Add the analysis comment (`addAnalysisComment`) only |
 | `read:chat:rovo` | Rovo agent runtime |
-| `manage:jira-configuration` | Experimental Forge Automation importer only |
 
-`manage:jira-configuration` is used exclusively by the experimental
-`fn-import-automation` Forge function (invoked by
-`npm run provision:automation:forge`). That importer relies on private/internal
-Automation endpoints and is not the supported portability path. All 19 Rovo
-agents and all other handlers use only the first three scopes.
+The app no longer requests `manage:jira-configuration`. Jira Automation rule
+import is not implemented as a Forge function because a portable MVP should not
+depend on private/internal Automation gateway endpoints. The supported path is:
+render and validate JSON in this repo, then import or rebuild the rules through
+native Jira Automation and capture the native audit-log row.
 
 When you `forge deploy` and `forge install`, the admin is prompted to consent to
 these scopes. If you later switch to **granular** scopes, replace them with the
 equivalents (e.g. `read:issue:jira`, `read:comment:jira`, `write:comment:jira`,
 `read:jql:jira`) and re-deploy. Start classic for the MVP.
 
-**Verify:** `forge deploy` prints the expected scopes for consent. If the
-experimental Automation importer is retired, remove `manage:jira-configuration`
-from the manifest and re-consent.
+**Verify:** `forge deploy` prints only the three expected scopes above for
+consent.
 
 ---
 
@@ -404,11 +402,11 @@ Declared rules (generated from `infra/jira/automation/` — do not hand-edit; ru
 | weekly-readout | disabled |
 <!-- END generated:automation -->
 
-The supported path is native Jira Automation: import rendered JSON through the
-Jira Automation UI/export-import flow, rebuild the rules from
+The supported path is native Jira Automation: validate rendered JSON in this
+repo, then import rendered JSON through the Jira Automation UI/export-import
+flow, rebuild the rules from
 [`../automation/jira-automation-rules.md`](../automation/jira-automation-rules.md),
-or use a documented public Atlassian API if one becomes available. The Forge
-importer is retained only as staging evidence.
+or use a documented public Atlassian API if one becomes available.
 
 ### 10a. Supported UI import or rebuild
 
@@ -420,27 +418,22 @@ Use rendered JSON from `automation/rules/rendered/` as source material:
 3. Record the numeric rule ID from each rule's URL
    (`…/automation/rules/edit/12345`) in `evidence/automation/rule-ids.md`.
 
-### 10b. Experimental Forge import (not supported portability path)
-
-After Step 4 (`forge deploy` + `forge install` with
-`manage:jira-configuration` scope accepted), this staging helper may import the
-rendered rules as **DISABLED**:
+### 10b. Render and validate rule JSON
 
 ```bash
-npm run provision:automation:forge
+npm run render:automation
+npm run provision:automation -- --dry-run
 ```
 
-Evidence output: `evidence/automation/forge-import-output.json`
+This reads all rendered files from `automation/rules/rendered/`, validates that
+each rule has `state: "DISABLED"`, and exits before any Jira mutation. Running
+`npm run provision:automation` without `--dry-run` writes
+`evidence/automation/import-output.json` and exits with code `2` to make the
+native Jira Automation import/rebuild step explicit.
 
-The script reads all 5 rendered files from `automation/rules/rendered/`,
-validates each has `state: "DISABLED"`, and calls
-`forge invoke function fn-import-automation --payload '{...}'`. The Forge
-function posts to private/internal Jira Automation gateway endpoints, so this
-is not a supported repeatable import path.
-
-If the function returns HTTP 403, the new scope needs admin consent — re-run
-`forge install --upgrade --confirm-scopes` if you intentionally want to use the
-experimental helper. Otherwise, use the supported UI import/rebuild path above.
+The provisioner has an explicit experimental API escape hatch for disposable
+research only. It is not part of the supported portability path, is off by
+default, and must not be used as MVP proof.
 
 See `docs/OPERATOR_PROMPTS.md` → "Import automation rules (T-M3-02)" for the
 operator prompt.
@@ -674,7 +667,7 @@ known limitations.
 | Symptom | Likely cause | Fix |
 | --- | --- | --- |
 | Agents don't appear in Rovo | App not deployed/installed to the Jira site, missing `read:chat:rovo` consent, or Rovo disabled | Run `forge deploy -e development`, `forge install -e development -p jira --site "$JIRA_SITE" --confirm-scopes`, then `AIGO_REQUIRE_FORGE_INSTALL=1 npm run test:smoke:jira`; confirm Rovo/Atlassian Intelligence is enabled |
-| Action returns `Jira API failed: 401/403` | Missing scope consent or wrong site | Re-`forge install`; ensure admin consented to the required app scopes. `manage:jira-configuration` is only needed for the experimental Automation importer |
+| Action returns `Jira API failed: 401/403` | Missing scope consent or wrong site | Re-`forge install`; ensure admin consented to the required app scopes |
 | `Jira API failed: 404` on `getIssueContext` | Bad issue key or app lacks project access | Confirm the key; ensure the app is installed where the project lives |
 | No comment after a rule runs | Rule disabled, condition didn't match, or actor lacks comment permission | Check the rule **audit log**; verify the actor account can comment |
 | Weekly readout empty | JQL matched nothing / wrong project key | Test the JQL in search; set `AIGO_PROJECT_KEY` if your key isn't `AIGO` |
@@ -682,7 +675,7 @@ known limitations.
 | Triage misclassifies area | Sparse summary/description | Add detail; the classifier is most-matches-wins over the text/labels |
 | Field write expected but didn't happen | By design — MVP writes comments only | Configure `FIELD_IDS` + allowlist (future work) if you need field writes |
 | `test:readiness:jira` fails on missing issue types | AIGO project missing canonical types | All 14 types are live on the dev site (IDs 10048–10061). For a fresh site, run `npm run provision:jira` then add types in Project Settings → Issue Types; use `AIGO_READINESS_WARN_ONLY=1` during setup |
-| `provision:automation:forge` fails with 403 | Experimental importer scope not consented | Use Jira Automation UI import/rebuild for the supported path, or run `forge install --upgrade --confirm-scopes` only if you intentionally need staging importer evidence |
+| `provision:automation` exits with code 2 | Rules validated and native Jira Automation import/rebuild is still required | Import rendered JSON through Jira Automation or rebuild rules from `automation/jira-automation-rules.md`, then capture native audit-log evidence |
 | `test:readiness:jira` warns about unobserved statuses | Seed issues do not currently occupy every expected workflow state | Verify the workflow statuses in Jira project settings; ACLI cannot prove team-managed statuses that are not visible on issues |
 
 ---
