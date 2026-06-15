@@ -139,11 +139,13 @@ Corollaries you must enforce on every plan:
 
 - **REQUIRED TOOLING.** Before touching ANY Atlassian surface (Jira REST/CLI, Forge
   manifest/modules, Rovo, JSM/Assets, JPD, Confluence, Compass, Bitbucket, Analytics,
-  admin, Terraform), load the matching skill under `skills/` and verify the specifics
-  against current docs via Context7 (ctx7, e.g.
-  `npx ctx7@latest library "<product>" "<task>"`). Never code Atlassian APIs/CLI/manifest
-  from memory. The skill<->surface<->ctx7 map is `_CONVENTIONS.md` §7; each task names its
-  skills + ctx7 topic.
+  admin, Terraform), load the matching skill under `skills/` AND confirm specifics via
+  Context7 using the PINNED library ID from `_CONVENTIONS.md` §7 — never a bare product
+  name (ctx7 "Forge" => Electron Forge, "Terraform" => AWS provider). e.g.
+  `npx ctx7@latest docs /websites/developer_atlassian_platform_forge "forge deploy --json"`.
+  Some surfaces have no ctx7 library (Terraform Operations provider, Rovo, JPD, Analytics,
+  Goals) — use the skill + official doc URLs there. Never code Atlassian APIs/CLI/manifest
+  from memory. The skill<->surface<->library map is `_CONVENTIONS.md` §7.
 - **IaC, native-first.** No manual UI work. No screenshots. No "ask the human"
   fallbacks. No navigation paths as evidence. No hand-written `evidence/*.md`.
   See `IAC_PRINCIPLES.md`.

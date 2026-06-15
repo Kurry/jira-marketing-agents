@@ -55,6 +55,8 @@ You MUST call `library` first to get a valid ID unless the user provides one dir
 
 For version-specific docs, use `/org/project/version` from the `library` output (e.g., `/vercel/next.js/v14.3.0`).
 
+**Atlassian caveat (important).** For any Atlassian surface, do NOT resolve by nickname — `library "Forge"` returns *Electron* Forge, `"Jira"` returns unrelated client libs, `"Terraform"` returns the AWS provider. Use the PINNED Atlassian library IDs in [`../_CONVENTIONS.md`](../_CONVENTIONS.md) §7 (e.g. `/websites/developer_atlassian_platform_forge`, `/websites/developer_atlassian_cloud_jira_platform_rest_v3`, `/websites/developer_atlassian_cloud_acli_reference_commands`). If you must resolve, query `"atlassian <product>"` and confirm the result Title says **Atlassian** before trusting the ID. Several surfaces have no ctx7 library (Terraform Operations provider, Rovo, JPD, Analytics, Goals) — use the matching `skills/` skill and the official doc URLs in its References instead.
+
 If a command fails with a quota error, inform the user and suggest `npx ctx7@latest login` or setting `CONTEXT7_API_KEY` env var for higher limits. Do not silently fall back to training data.
 Run Context7 CLI requests outside Codex's default sandbox. If a Context7 CLI command fails with DNS or network errors such as ENOTFOUND, host resolution failures, or fetch failed, rerun it outside the sandbox instead of retrying inside the sandbox.
 <!-- context7 -->

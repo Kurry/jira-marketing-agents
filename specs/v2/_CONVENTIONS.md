@@ -115,55 +115,72 @@ To prevent the count drift that exists today (issue types 13/14/18, fields
 Agents must **not** code Atlassian REST/CLI/GraphQL/manifest details from memory.
 Before touching any Atlassian surface, an agent MUST:
 
-1. **Load the matching skill** under `skills/` and follow it.
-2. **Verify the specifics against current docs via Context7** (`ctx7`, e.g.
-   `npx ctx7@latest library "<Atlassian product>" "<task>"`) — endpoint paths,
-   scopes, CLI flags, manifest keys, and provider resources change; confirm them
-   live before writing code or evidence.
+1. **Load the matching skill** under `skills/` and follow it. The skills are the
+   primary source — they are already grounded in official docs (with URLs in
+   each skill's References).
+2. **Confirm current specifics via Context7 using the PINNED library ID below** —
+   not a product nickname. Resolve docs with the exact `/websites/...` ID, e.g.
+   `npx ctx7@latest docs /websites/developer_atlassian_platform_forge "forge deploy install --json"`.
+
+> ⚠️ **Never call ctx7 with a bare product name.** `"Forge"` resolves to
+> *Electron* Forge, `"Jira"` to unrelated client libs, `"Terraform"` to the AWS
+> provider. Always pass the pinned `/websites/...` library ID from the table.
+> Where the table says **(no ctx7 library)**, ctx7 has no Atlassian source for
+> that surface — rely on the skill + the official doc URLs in its References, and
+> do NOT force-fit a wrong library.
 
 Every task on the board, in `nih-roadmap.md`, and in `refactor-plan.md` must name
-the skill(s) and the ctx7 topic it requires. A task that touches an Atlassian
-surface without a skill + ctx7 reference is not ready to claim. The
+the skill(s) and the pinned ctx7 library it requires. A task that touches an
+Atlassian surface without a skill + ctx7 reference is not ready to claim. The
 `TaskCompleted` gate (`agent-team/QUALITY_GATES.md`) rejects work that hardcodes
 an Atlassian API/CLI/manifest detail with no skill+ctx7 provenance.
 
-**Canonical surface → skill → ctx7 mapping** (use these exact skill paths):
+**Canonical surface → skill → pinned Context7 library ID** (use these exact strings):
 
-| Atlassian surface | Skill | ctx7 topic |
+| Atlassian surface | Skill | Context7 library ID (pinned) |
 | --- | --- | --- |
-| Jira REST (issues, JQL, fields, transitions, ADF, links, webhooks) | `skills/jira-cloud-rest` | Jira Cloud platform REST v3; `POST /search/jql` |
-| Jira CLI (project/workitem/field/filter/dashboard, bulk) | `skills/jira-acli` | Atlassian CLI `acli jira` |
-| JSM service desk (requests, queues, SLAs, approvals) | `skills/jira-service-management` | JSM `servicedeskapi` |
-| Assets / AQL | `skills/jsm-assets` | JSM Assets API + AQL |
-| Jira Product Discovery (ideas, insights, fields, views) | `skills/jira-product-discovery` | Jira Product Discovery |
-| Confluence (pages, spaces, CQL) | `skills/confluence-cloud-rest` | Confluence Cloud REST v2 / CQL |
-| Goals & projects (Atlas/Home) | `skills/atlassian-goals-atlas` | Atlassian Goals; Teamwork Graph |
-| Forge app/manifest/CLI/storage/scopes | `skills/forge-platform` | Forge manifest reference + CLI |
-| Forge Rovo agents/actions (code) | `skills/forge-rovo-agents` | Forge `rovo:agent` module |
-| Forge workflow validator/condition/post-function | `skills/forge-workflow-modules` | Forge Jira workflow modules |
-| Forge web/scheduled triggers + `@forge/events` | `skills/forge-webtriggers-events` | Forge web-trigger / scheduledTrigger / events |
-| Rovo no-code + Rovo in Automation | `skills/rovo-studio-agents` | Use Rovo in an automation rule |
-| This repo's Jira Automation/Rovo runbook | `skills/jira-automation-rovo-setup`, `skills/jira-automation-browser-edit` | — (repo-grounded) |
-| Compass catalog/scorecards | `skills/compass` | Compass GraphQL |
-| Bitbucket Cloud | `skills/bitbucket-cloud-rest` | Bitbucket Cloud REST 2.0 |
-| Atlassian Analytics / Data Lake | `skills/atlassian-analytics-data-lake` | Atlassian Data Lake SQL |
-| Cloud admin (org, users, SCIM, audit) | `skills/atlassian-admin-cloud` | Atlassian admin REST |
-| Terraform (JSM/Compass Operations only) | `skills/atlassian-terraform` | `atlassian/atlassian-operations` provider |
-| Teamwork Graph / cross-product reads | `skills/twg` (+ `twg-*`) | Teamwork Graph |
+| Jira REST (issues, JQL, fields, transitions, ADF, links, webhooks) | `skills/jira-cloud-rest` | `/websites/developer_atlassian_cloud_jira_platform_rest_v3` |
+| Jira CLI (project/workitem/field/filter/dashboard, bulk) | `skills/jira-acli` | `/websites/developer_atlassian_cloud_acli_reference_commands` (or `/websites/developer_atlassian_cloud_acli`) |
+| JSM service desk (requests, queues, SLAs, approvals) | `skills/jira-service-management` | `/websites/support_atlassian_jira-service-management-cloud` |
+| Assets / AQL | `skills/jsm-assets` | `/websites/developer_atlassian_cloud_assets` |
+| Jira Product Discovery (ideas, insights, fields, views) | `skills/jira-product-discovery` | **(no dedicated ctx7 library)** — JPD ideas are Jira issues: use `/websites/developer_atlassian_cloud_jira_platform_rest_v3` + the skill |
+| Confluence (pages, spaces, CQL) | `skills/confluence-cloud-rest` | `/websites/developer_atlassian_cloud_confluence_rest_v2` |
+| Goals & projects (Atlas/Home) | `skills/atlassian-goals-atlas` | **(no ctx7 library)** — skill + Teamwork Graph (`skills/twg`) |
+| Forge app/manifest/CLI/storage/scopes | `skills/forge-platform` | `/websites/developer_atlassian_platform_forge` |
+| Forge Rovo agents/actions (code) | `skills/forge-rovo-agents` | `/websites/developer_atlassian_platform_forge` |
+| Forge workflow validator/condition/post-function | `skills/forge-workflow-modules` | `/websites/developer_atlassian_platform_forge` |
+| Forge web/scheduled triggers + `@forge/events` | `skills/forge-webtriggers-events` | `/websites/developer_atlassian_platform_forge` |
+| Rovo no-code + Rovo in Automation | `skills/rovo-studio-agents` | **(no dedicated ctx7 library)** — skill + `/websites/developer_atlassian_platform_forge` for the `rovo:agent` module |
+| This repo's Jira Automation/Rovo runbook | `skills/jira-automation-rovo-setup`, `skills/jira-automation-browser-edit` | **(repo-grounded — no ctx7)** |
+| Compass catalog/scorecards | `skills/compass` | `/websites/developer_atlassian_cloud` (general dev docs; no dedicated Compass lib) |
+| Bitbucket Cloud | `skills/bitbucket-cloud-rest` | `/websites/developer_atlassian_cloud_bitbucket_rest_intro` |
+| Atlassian Analytics / Data Lake | `skills/atlassian-analytics-data-lake` | **(no ctx7 library)** — skill + support.atlassian.com/analytics URLs in its References |
+| Cloud admin (org, users, SCIM, audit) | `skills/atlassian-admin-cloud` | `/websites/developer_atlassian_cloud` (admin; confirm the specific page) |
+| Terraform (JSM/Compass Operations only) | `skills/atlassian-terraform` | **(no ctx7 library — ctx7 "Terraform" returns the AWS provider)** — use the skill + the official `github.com/atlassian/terraform-provider-atlassian-operations` registry/docs |
+| Teamwork Graph / cross-product reads | `skills/twg` (+ `twg-*`) | **(repo CLI — no ctx7)** |
+
+If you need a library ID not listed here, resolve it first with
+`npx ctx7@latest library "atlassian <specific product>"` and confirm the result
+Title says **Atlassian** before using the ID — do not accept the first hit.
 
 **Per-task tooling** (each T-NIH task must use at least these):
 
 | Task | Skills | ctx7 |
 | --- | --- | --- |
-| T-NIH-03 ACLI inventory | `jira-acli` | `acli jira` command reference |
-| T-NIH-04 golden template | `jira-cloud-rest`, `jira-acli` | Jira REST project/config; ACLI clone |
-| T-NIH-08 internal-endpoint purge + native import + token auth | `rovo-studio-agents`, `jira-automation-rovo-setup`, `jira-cloud-rest`, `jira-acli` | Jira Automation export/import; Use Rovo in automation; `ATLASSIAN_TOKEN` auth |
-| T-NIH-10 infra audit harness | `forge-platform`, `jira-cloud-rest`, `jira-acli` | `forge … --json`; documented Jira REST GETs |
-| T-NIH-11 Assets/JPD migration | `jsm-assets`, `jira-product-discovery` | Assets schema/AQL; JPD fields |
-| T-NIH-12 ADF + duplicates + prioritization | `forge-platform`, `jira-cloud-rest`, `jira-product-discovery` | `@atlaskit/adf-utils`; JQL relevance + native "Duplicate" link; JPD prioritization |
-| T-NIH-13 forge `--json` parsing | `forge-platform` | Forge CLI `--json` output |
-| Rovo agent/runtime/workflow/trigger work | `forge-rovo-agents`, `forge-workflow-modules`, `forge-webtriggers-events`, `rovo-studio-agents` | matching Forge module refs |
-| Terraform / Operations | `atlassian-terraform` | `atlassian-operations` provider docs |
+
+**Per-task tooling** (each T-NIH task must use at least these):
+
+| Task | Skills | Pinned ctx7 library (+ query) |
+| --- | --- | --- |
+| T-NIH-03 ACLI inventory | `jira-acli` | `/websites/developer_atlassian_cloud_acli_reference_commands` — "acli jira project/workitem/field/filter/dashboard" |
+| T-NIH-04 golden template | `jira-cloud-rest`, `jira-acli` | `/websites/developer_atlassian_cloud_jira_platform_rest_v3` + `/websites/developer_atlassian_cloud_acli_reference_commands` |
+| T-NIH-08 internal-endpoint purge + native import + token auth | `rovo-studio-agents`, `jira-automation-rovo-setup`, `jira-cloud-rest`, `jira-acli` | `/websites/developer_atlassian_cloud_jira_platform_rest_v3` ("auth, ATLASSIAN_TOKEN"); Automation import + Use-Rovo-in-automation are skill/support-doc grounded (no ctx7 lib) |
+| T-NIH-10 infra audit harness | `forge-platform`, `jira-cloud-rest`, `jira-acli` | `/websites/developer_atlassian_platform_forge` ("forge … --json") + `/websites/developer_atlassian_cloud_jira_platform_rest_v3` (GETs) |
+| T-NIH-11 Assets/JPD migration | `jsm-assets`, `jira-product-discovery` | `/websites/developer_atlassian_cloud_assets` (AQL); JPD via `/websites/developer_atlassian_cloud_jira_platform_rest_v3` (no dedicated JPD lib) |
+| T-NIH-12 ADF + duplicates + prioritization | `forge-platform`, `jira-cloud-rest`, `jira-product-discovery` | `/websites/developer_atlassian_cloud_jira_platform_rest_v3` (ADF, JQL, "Duplicate" link); `@atlaskit/adf-utils` is an npm lib (resolve separately) |
+| T-NIH-13 forge `--json` parsing | `forge-platform` | `/websites/developer_atlassian_platform_forge` — "forge install list / webtrigger --json" |
+| Rovo agent/runtime/workflow/trigger work | `forge-rovo-agents`, `forge-workflow-modules`, `forge-webtriggers-events`, `rovo-studio-agents` | `/websites/developer_atlassian_platform_forge` (rovo:agent / workflow / web-trigger modules) |
+| Terraform / Operations | `atlassian-terraform` | **(no ctx7 — "Terraform" returns AWS provider)**; skill + `github.com/atlassian/terraform-provider-atlassian-operations` |
 
 (T-NIH-14 doc-count reconcile touches no Atlassian surface — no skill/ctx7 needed.)
 

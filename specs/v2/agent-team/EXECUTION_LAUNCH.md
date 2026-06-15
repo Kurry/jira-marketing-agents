@@ -51,9 +51,14 @@ MISSION: execute the refactor in the order refactor-plan.md / nih-roadmap.md pre
 HARD RULES (halt rather than violate):
 - REQUIRED TOOLING — before touching ANY Atlassian surface (Jira REST/CLI, Forge manifest/modules,
   Rovo, JSM/Assets, JPD, Confluence, Compass, Bitbucket, Analytics, admin, Terraform), load the
-  matching skill under skills/ and verify the specifics against current docs via Context7 (ctx7,
-  e.g. `npx ctx7@latest library "<product>" "<task>"`). Never code Atlassian APIs/CLI/manifest from
-  memory. The skill<->surface<->ctx7 map is _CONVENTIONS §7; each phase below names its skills.
+  matching skill under skills/ AND confirm specifics via Context7 using the PINNED library ID from
+  _CONVENTIONS §7 — NOT a product nickname. e.g.
+  `npx ctx7@latest docs /websites/developer_atlassian_platform_forge "forge install list --json"`.
+  WARNING: bare names mislead — ctx7 "Forge" => Electron Forge, "Jira" => unrelated client libs,
+  "Terraform" => the AWS provider. Some surfaces have NO ctx7 library (Terraform Operations provider,
+  Rovo, JPD, Analytics, Goals) — for those rely on the skill + the official doc URLs in its
+  References. Never code Atlassian APIs/CLI/manifest from memory. The skill<->surface<->library map
+  is _CONVENTIONS §7; each phase below names its skills.
 - Native-first decision rule. Name the Atlassian-native owner for every change; custom code only
   for Twin-specific policy, agent logic, safety, evidence, or a documented platform gap.
 - No private/internal Atlassian endpoints in any supported path. Webtrigger evidence is NEVER
