@@ -1,0 +1,25 @@
+{
+  "generated_by": "scripts/docs/generate.mjs",
+  "generated_at": "2026-06-15T14:42:46.400Z",
+  "git_sha": "770ed6faab1f3f952088a43d319f41ff7cbf0c45",
+  "instance": "myhealthcaresite.atlassian.net",
+  "exit_code": 0,
+  "summary": "regenerated 3 docs from infra/ (0 errors)",
+  "data": {
+    "files": [
+      {
+        "path": "docs/PORTABILITY.md",
+        "changed": false
+      },
+      {
+        "path": "docs/MVP_RUNBOOK.md",
+        "changed": false
+      },
+      {
+        "path": "docs/INTEGRATION.md",
+        "changed": false
+      }
+    ],
+    "errors": []
+  }
+}

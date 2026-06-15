@@ -1,3 +1,4 @@
+<!-- generated_by: scripts/docs/generate.mjs -->
 # MVP Runbook
 
 This runbook is the operator checklist for taking the Forge/Rovo-only AIGO app
@@ -37,9 +38,9 @@ Current live state (as of 2026-06-15):
 
 Open gates:
 
-- Rovo agent visibility (T-M1-04): confirm all 19 agents visible in Jira UI → Apps → Rovo → Agents.
-- Automation import (T-M3-02): run `forge deploy -e development && npm run provision:automation:forge`.
-- Automation validation (T-M3-03): enable each rule one at a time after import.
+- Rovo agent visibility (T-M1-04): capture Jira UI or public API evidence that all 19 agents are visible.
+- Automation import (T-M3-02): render/validate rules, then import or rebuild them through native Jira Automation UI/export-import.
+- Automation validation (T-M3-03): enable each native **Use Rovo agent** rule one at a time after audit-log proof.
 - Manual agent runs (T-M4-01–06): validate each agent against seed issues.
 
 ## Deploy And Install
@@ -100,46 +101,40 @@ AIGO_INSTANCE_CONFIG=instances/aigo.example.json npm run provision:instance -- -
 
 ## Jira Project Setup
 
-Create or verify these 14 canonical issue types in AIGO (all live as of 2026-06-15,
-IDs 10048–10061 — see `evidence/jira-config/issue-types.json`):
+Create or verify these managed AIGO issue types (generated from `infra/` state —
+do not hand-edit; run `node scripts/docs/generate.mjs`):
 
-- AI Growth Request
-- Creative Request
-- Experiment
-- Segmentation Request
-- Personalization Journey
-- Employer Launch
-- Campaign
-- Dashboard Request
-- Signup Funnel Issue
-- Research Brief
-- Claims Review
-- Decision Memo
-- Positioning Update
-- Bug
+<!-- BEGIN generated:issue-types -->
+13 managed AIGO issue types (IDs 10048–10060):
+
+| Issue type | ID |
+| --- | --- |
+| AI Growth Request | 10048 |
+| Creative Request | 10049 |
+| Experiment | 10050 |
+| Segmentation Request | 10051 |
+| Personalization Journey | 10052 |
+| Employer Launch | 10053 |
+| Campaign | 10054 |
+| Dashboard Request | 10055 |
+| Signup Funnel Issue | 10056 |
+| Research Brief | 10057 |
+| Claims Review | 10058 |
+| Decision Memo | 10059 |
+| Positioning Update | 10060 |
+<!-- END generated:issue-types -->
 
 Create or verify these workflow statuses:
 
-- To Do
-- AI Triage
-- Needs Info
-- Needs Human Review
-- Ready
-- Claims Review
-- In Progress
-- Blocked
-- Experiment Running
-- Readout Needed
-- Decision Needed
-- Done
+<!-- BEGIN generated:workflow -->
+Workflow "AIGO Default" — 3 statuses:
 
-Minimum transition paths:
-
-- To Do -> AI Triage -> Needs Info
-- AI Triage -> Needs Human Review -> Ready -> In Progress
-- Ready -> Claims Review -> In Progress
-- In Progress -> Experiment Running -> Readout Needed -> Decision Needed -> Done
-- Any active status -> Blocked -> prior working status
+| Status | Category |
+| --- | --- |
+| To Do | TODO |
+| In Progress | IN_PROGRESS |
+| Done | DONE |
+<!-- END generated:workflow -->
 
 After the issue types exist, either keep the seed issues as portable `Task`
 examples or re-import a copy of `automation/seed/aigo-seed-issues.csv` with the
@@ -147,7 +142,9 @@ intended AIGO issue type names.
 
 ## Rovo Agent Visibility Check
 
-This is the primary install success criterion.
+This is the actual Rovo visibility criterion. `forge install list` and
+`check:rovo` prove manifest/install state only; they do not prove that the
+agents are visible in the Jira/Rovo UI.
 
 1. Open Jira on `myhealthcaresite.atlassian.net`.
 2. Open an AIGO issue.
@@ -186,31 +183,39 @@ issue.
 
 ## Jira Automation Import (T-M3-02)
 
-The preferred path is the Forge function — it runs inside Atlassian's
-infrastructure and doesn't require a session cookie or admin OAuth token:
+Declared automation rules (generated from `infra/jira/automation/` — do not
+hand-edit; run `node scripts/docs/generate.mjs`):
+
+<!-- BEGIN generated:automation -->
+5 automation rules (imported disabled by policy):
+
+| Rule | State |
+| --- | --- |
+| intake-triage | disabled |
+| creative-claims | disabled |
+| experiment-spec | disabled |
+| employer-launch | disabled |
+| weekly-readout | disabled |
+<!-- END generated:automation -->
+
+The supported path is native Jira Automation import or rebuild. First render and
+validate the rule JSON:
 
 ```bash
-# Step 1: deploy (must include fn-import-automation + manage:jira-configuration scope)
-forge deploy -e development
-
-# Step 2: accept new scope if prompted
-forge install --upgrade -e development -p jira \
-  --site myhealthcaresite.atlassian.net --confirm-scopes
-
-# Step 3: invoke the import function
-npm run provision:automation:forge
+npm run render:automation
+npm run provision:automation -- --dry-run
 ```
 
 This reads all 5 files from `automation/rules/rendered/`, validates each has
-`state: "DISABLED"`, then calls `fn-import-automation` which POSTs each rule to
-the Jira Automation gateway. Evidence is written to
-`evidence/automation/forge-import-output.json`.
+`state: "DISABLED"`, and stops before mutation. Native Jira Automation import
+or rebuild is still required, followed by native **Use Rovo agent** audit-log
+validation.
 
-If the Forge function returns HTTP 403 (scope not yet accepted), re-run
-`forge install --upgrade` and approve `manage:jira-configuration` in the
-consent dialog.
+`npm run provision:automation:forge` is retained only as an experimental staging
+helper that depends on private/internal Automation endpoints. It is not the
+supported portability path.
 
-**Manual fallback** (if Forge function fails):
+**Jira Automation UI import**:
 
 1. Jira: AIGO → Project Settings → Automation → ⋮ → Import rules.
 2. Upload each file from `automation/rules/rendered/` one at a time.
@@ -254,7 +259,8 @@ forge logs -e development --since 30m --limit 100
 ```
 
 Evidence per rule: `evidence/automation/<rule-key>-audit.md` containing the
-audit log row and the posted comment body.
+native **Use Rovo agent** audit-log row and the posted comment body. Webtrigger
+fallback evidence is complete separately; it does not satisfy T-M3-03.
 
 ## Release Checklist
 
@@ -289,7 +295,8 @@ Rollback:
 - No prompt-quality eval suite yet; current integration tests protect
   manifest/action/handler contracts.
 - No production promotion guide yet; the runbook targets the development site.
-- Jira Automation import JSON may drift; the UI rebuild path is the supported
-  fallback.
+- Jira Automation import JSON may drift; Jira UI import/rebuild or a documented
+  public API is the supported path. The Forge importer is experimental staging
+  evidence only.
 - General Jira project configuration is not Terraform-managed in this repo.
   Use golden project cloning plus instance configs for repeatable setup.

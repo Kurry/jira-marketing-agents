@@ -1,3 +1,4 @@
+<!-- generated_by: scripts/docs/generate.mjs -->
 # Jira Integration Guide
 
 End-to-end instructions for deploying the AI Growth Ops Forge/Rovo app into a
@@ -35,12 +36,13 @@ This single command runs all 11 steps in order:
 6. Forge environment variables (`forge variables set` from evidence/jira-config/forge-vars.sh)
 7. `forge deploy` (re-deploy with new variables)
 8. Seed issues (`provision:seeds`)
-9. Automation rules (`provision:automation:forge` — Forge function approach, no OAuth scope issues)
+9. Automation rule JSON render plus optional experimental Forge import
 10. Smoke test (`test:smoke:jira`)
-11. Rovo agent visibility check (`check:rovo`)
+11. Rovo manifest/install check (`check:rovo`)
 
-After `provision:all` completes, see the **UI steps (cannot be automated)** section
-near the end of this document for the remaining manual steps.
+After `provision:all` completes, see the **UI steps (cannot be automated)**
+section near the end of this document. Actual Rovo visibility and native Jira
+Automation `Use Rovo agent` proof still require Jira UI or public API evidence.
 
 ---
 
@@ -127,10 +129,12 @@ The app requests **classic** scopes (`manifest.yml` → `permissions.scopes`):
 | `read:jira-work` | Read issues, comments, JQL search (all read actions) |
 | `write:jira-work` | Add the analysis comment (`addAnalysisComment`) only |
 | `read:chat:rovo` | Rovo agent runtime |
-| `manage:jira-configuration` | Import Jira Automation rules via `fn-import-automation` only |
+| `manage:jira-configuration` | Experimental Forge Automation importer only |
 
-`manage:jira-configuration` is used exclusively by the `fn-import-automation`
-Forge function (invoked by `npm run provision:automation:forge`). All 19 Rovo
+`manage:jira-configuration` is used exclusively by the experimental
+`fn-import-automation` Forge function (invoked by
+`npm run provision:automation:forge`). That importer relies on private/internal
+Automation endpoints and is not the supported portability path. All 19 Rovo
 agents and all other handlers use only the first three scopes.
 
 When you `forge deploy` and `forge install`, the admin is prompted to consent to
@@ -138,7 +142,9 @@ these scopes. If you later switch to **granular** scopes, replace them with the
 equivalents (e.g. `read:issue:jira`, `read:comment:jira`, `write:comment:jira`,
 `read:jql:jira`) and re-deploy. Start classic for the MVP.
 
-**Verify:** `forge deploy` prints all four scopes for consent.
+**Verify:** `forge deploy` prints the expected scopes for consent. If the
+experimental Automation importer is retired, remove `manage:jira-configuration`
+from the manifest and re-consent.
 
 ---
 
@@ -202,12 +208,28 @@ If you need to run it standalone:
 node scripts/provision-jira.cjs --config instances/aigo.example.json
 ```
 
-The 14 canonical types provisioned:
+The canonical managed types (generated from `infra/jira/issue-types.yaml` — do
+not hand-edit; run `node scripts/docs/generate.mjs`):
 
-AI Growth Request · Creative Request · Experiment · Segmentation Request ·
-Personalization Journey · Employer Launch · Campaign · Dashboard Request ·
-Signup Funnel Issue · Research Brief · Claims Review · Decision Memo ·
-Positioning Update · Bug / Tracking Issue
+<!-- BEGIN generated:issue-types -->
+13 managed AIGO issue types (IDs 10048–10060):
+
+| Issue type | ID |
+| --- | --- |
+| AI Growth Request | 10048 |
+| Creative Request | 10049 |
+| Experiment | 10050 |
+| Segmentation Request | 10051 |
+| Personalization Journey | 10052 |
+| Employer Launch | 10053 |
+| Campaign | 10054 |
+| Dashboard Request | 10055 |
+| Signup Funnel Issue | 10056 |
+| Research Brief | 10057 |
+| Claims Review | 10058 |
+| Decision Memo | 10059 |
+| Positioning Update | 10060 |
+<!-- END generated:issue-types -->
 
 These map to the agents' `recommendedIssueType` outputs (see
 [`../skills/issue-classification.md`](../skills/issue-classification.md)).
@@ -262,22 +284,21 @@ returns the imported `AIGO-*` issue keys.
 > statuses via the Jira REST API. Wiring them into the board columns requires
 > the Jira admin UI (see **UI steps** section at the end).
 
-The agents recommend these statuses (`recommendedNextStatus` /
-`recommendedStatus`). `provision:jira` creates them; add them to the board
-workflow in the AIGO project settings:
+The workflow statuses (generated from `infra/jira/workflows/aigo-default.yaml` —
+do not hand-edit; run `node scripts/docs/generate.mjs`):
 
-```
-To Do ─► AI Triage ─► Needs Info ──┐
-                  └─► Needs Human Review ─► Ready ─► In Progress
-Ready ─► Claims Review (for Creative/Claims) ─► In Progress
-In Progress ─► Experiment Running ─► Readout Needed ─► Decision Needed ─► Done
-Any ─► Blocked ─► (back to prior status)
-```
+<!-- BEGIN generated:workflow -->
+Workflow "AIGO Default" — 3 statuses:
 
-Minimum viable set if you want to start small: **To Do, Needs Info, Needs Human
-Review, Ready, In Progress, Blocked, Done** — plus **Claims Review** if you use
-the creative-claims rule. The agents only *recommend* transitions; a human or an
-explicit Automation step performs them.
+| Status | Category |
+| --- | --- |
+| To Do | TODO |
+| In Progress | IN_PROGRESS |
+| Done | DONE |
+<!-- END generated:workflow -->
+
+The agents only *recommend* transitions; a human or an explicit Automation step
+performs them.
 
 **Verify:** the AIGO workflow contains the statuses your Automation rules
 reference (especially `Ready` and `Claims Review`).
@@ -316,9 +337,23 @@ bash evidence/jira-config/forge-vars.sh
 forge deploy -e development
 ```
 
-The fields provisioned:
+The fields (generated from `infra/jira/fields.yaml` — do not hand-edit; run
+`node scripts/docs/generate.mjs`):
 
-Segment · Primary Metric · Claims Risk · Experiment ID · Workflow Area · Priority Score
+<!-- BEGIN generated:fields -->
+8 custom fields:
+
+| Field | ID | Type |
+| --- | --- | --- |
+| Project | customfield_10034 | atlas-project |
+| Design | customfield_10037 | array |
+| Rank | customfield_10019 | any |
+| Start date | customfield_10015 | date |
+| Category | customfield_10040 | option |
+| Budget | customfield_10041 | number |
+| Development | customfield_10000 | any |
+| Team | customfield_10001 | team |
+<!-- END generated:fields -->
 
 Additional fields (future work, create manually if needed):
 AI Agent Owner · Employer / Partner · Channel · Guardrail Metric · Variant ID ·
@@ -354,15 +389,42 @@ returns a structured response on a real issue.
 
 ## 10. Wire Jira Automation
 
-> **Automated via Forge function:** `npm run provision:automation:forge` uses
-> the `fn-import-automation` Forge function to import all five automation rules
-> as **DISABLED** via `api.asApp().requestJira()`. This runs inside Atlassian's
-> infrastructure and does not require an external OAuth admin token.
+Declared rules (generated from `infra/jira/automation/` — do not hand-edit; run
+`node scripts/docs/generate.mjs`):
 
-### 10a. Forge function import (preferred)
+<!-- BEGIN generated:automation -->
+5 automation rules (imported disabled by policy):
 
-After Step 4 (`forge deploy` + `forge install` with `manage:jira-configuration`
-scope accepted):
+| Rule | State |
+| --- | --- |
+| intake-triage | disabled |
+| creative-claims | disabled |
+| experiment-spec | disabled |
+| employer-launch | disabled |
+| weekly-readout | disabled |
+<!-- END generated:automation -->
+
+The supported path is native Jira Automation: import rendered JSON through the
+Jira Automation UI/export-import flow, rebuild the rules from
+[`../automation/jira-automation-rules.md`](../automation/jira-automation-rules.md),
+or use a documented public Atlassian API if one becomes available. The Forge
+importer is retained only as staging evidence.
+
+### 10a. Supported UI import or rebuild
+
+Use rendered JSON from `automation/rules/rendered/` as source material:
+
+1. **Project settings → Automation → ⋯ → Import rules** and upload each JSON
+   one at a time, or rebuild each rule manually from the rules document.
+2. Confirm each rule appears **DISABLED** after import/rebuild. Do not enable yet.
+3. Record the numeric rule ID from each rule's URL
+   (`…/automation/rules/edit/12345`) in `evidence/automation/rule-ids.md`.
+
+### 10b. Experimental Forge import (not supported portability path)
+
+After Step 4 (`forge deploy` + `forge install` with
+`manage:jira-configuration` scope accepted), this staging helper may import the
+rendered rules as **DISABLED**:
 
 ```bash
 npm run provision:automation:forge
@@ -372,23 +434,18 @@ Evidence output: `evidence/automation/forge-import-output.json`
 
 The script reads all 5 rendered files from `automation/rules/rendered/`,
 validates each has `state: "DISABLED"`, and calls
-`forge invoke function fn-import-automation --payload '{...}'`.
+`forge invoke function fn-import-automation --payload '{...}'`. The Forge
+function posts to private/internal Jira Automation gateway endpoints, so this
+is not a supported repeatable import path.
 
 If the function returns HTTP 403, the new scope needs admin consent — re-run
-`forge install --upgrade --confirm-scopes` and retry.
-
-### 10b. Manual import (if Forge function fails) — UI steps
-
-1. **Project settings → Automation → ⋯ → Import rules** and upload each JSON
-   from `automation/rules/rendered/` one at a time.
-2. Confirm each rule appears **DISABLED** after import. Do not enable yet.
-3. Record the numeric rule ID from each rule's URL
-   (`…/automation/rules/edit/12345`) in `evidence/automation/rule-ids.md`.
+`forge install --upgrade --confirm-scopes` if you intentionally want to use the
+experimental helper. Otherwise, use the supported UI import/rebuild path above.
 
 See `docs/OPERATOR_PROMPTS.md` → "Import automation rules (T-M3-02)" for the
-full step-by-step prompt.
+operator prompt.
 
-### 10c. Build the rules by hand (last resort)
+### 10c. Rule shape
 
 Follow
 [`../automation/jira-automation-rules.md`](../automation/jira-automation-rules.md).
@@ -417,18 +474,38 @@ After resolving BLK-02 and connecting Rovo (Settings → Automation → Rovo), e
 4. Confirm `🤖 AI Growth Ops (analysis only)` comment posted to the issue.
 5. If green, leave it enabled and move to the next. If red, disable and fix.
 
-Evidence per rule: `evidence/automation/<rule-key>-audit.md`.
+Evidence per rule: `evidence/automation/<rule-key>-audit.md`. Webtrigger
+fallback evidence does not satisfy this gate; it proves only the CLI-callable
+fallback path.
 
 ```bash
 forge logs -e development --since 30m --limit 100
 ```
 
-**Verify:** create a test `AIGO` issue → the Intake Triage rule runs → an
-`🤖 AI Growth Ops` comment appears within a minute (check the rule's audit log).
+**Verify:** create a test `AIGO` issue → the Intake Triage rule runs its native
+**Use Rovo agent** step → an `🤖 AI Growth Ops` comment appears within a minute
+(check the rule's audit log).
 
 ---
 
 ## 11. Reusable JQL
+
+Saved filters (generated from `infra/jira/filters.yaml` — do not hand-edit; run
+`node scripts/docs/generate.mjs`):
+
+<!-- BEGIN generated:filters -->
+7 saved JQL filters:
+
+| Filter | ID | JQL |
+| --- | --- | --- |
+| AIGO — Blocked | 10005 | `project = AIGO AND (labels = "blocked" OR (status in ("Triage", "Spec Ready", "In Review") AND updated <= "-7d")) ORDER BY updated ASC` |
+| AIGO — Claims Review | 10001 | `project = AIGO AND status = "Claims Review" ORDER BY priority DESC, created DESC` |
+| AIGO — Decision Needed | 10004 | `project = AIGO AND status = "Decision Needed" ORDER BY updated ASC` |
+| AIGO — Experiment Running | 10006 | `project = AIGO AND status = "Experiment Running" ORDER BY created DESC` |
+| AIGO — Intake | 10000 | `project = AIGO AND status = "Intake" ORDER BY created DESC` |
+| AIGO — Launch Readiness | 10002 | `project = AIGO AND status = "Launch Prep" ORDER BY created DESC` |
+| AIGO — Readout Needed | 10003 | `project = AIGO AND labels = "readout-needed" ORDER BY updated DESC` |
+<!-- END generated:filters -->
 
 Boards, queues, and rule conditions can reuse the filters in
 [`../automation/jql-filters.md`](../automation/jql-filters.md) — untriaged
@@ -466,7 +543,7 @@ after the automated provisioning completes.
 
 ### Automation rules — placeholder substitution and enabling
 
-1. After import (automated or manual), open each rule in
+1. After UI import/rebuild or experimental staging import, open each rule in
    **Project settings → Automation**.
 2. Replace any `__MISSING_*` placeholder values with real project/account IDs.
 3. Review the rule's audit log entry.
@@ -478,6 +555,9 @@ after the automated provisioning completes.
 2. Confirm all 19 AIGO agents are visible (names start with "AI Growth Ops").
 3. If agents are missing: `forge install list` to confirm install is Up-to-date;
    re-run `forge deploy` and `forge install --upgrade` if needed.
+
+`check:rovo` and `forge install list` are useful setup checks, but they do not
+replace this UI/API visibility evidence.
 
 ### First manual agent test (T-M4-01 through T-M4-06)
 
@@ -594,15 +674,15 @@ known limitations.
 | Symptom | Likely cause | Fix |
 | --- | --- | --- |
 | Agents don't appear in Rovo | App not deployed/installed to the Jira site, missing `read:chat:rovo` consent, or Rovo disabled | Run `forge deploy -e development`, `forge install -e development -p jira --site "$JIRA_SITE" --confirm-scopes`, then `AIGO_REQUIRE_FORGE_INSTALL=1 npm run test:smoke:jira`; confirm Rovo/Atlassian Intelligence is enabled |
-| Action returns `Jira API failed: 401/403` | Missing scope consent or wrong site | Re-`forge install`; ensure admin consented to all four scopes (including `manage:jira-configuration`) |
+| Action returns `Jira API failed: 401/403` | Missing scope consent or wrong site | Re-`forge install`; ensure admin consented to the required app scopes. `manage:jira-configuration` is only needed for the experimental Automation importer |
 | `Jira API failed: 404` on `getIssueContext` | Bad issue key or app lacks project access | Confirm the key; ensure the app is installed where the project lives |
 | No comment after a rule runs | Rule disabled, condition didn't match, or actor lacks comment permission | Check the rule **audit log**; verify the actor account can comment |
 | Weekly readout empty | JQL matched nothing / wrong project key | Test the JQL in search; set `AIGO_PROJECT_KEY` if your key isn't `AIGO` |
-| Imported rule errors on the Rovo action | Site uses a different internal action type | Import the rule, then re-select the agent in the builder (see rules README) |
+| Imported rule errors on the Rovo action | Imported JSON is brittle across Jira sites or the selected agent was not bound | Re-select the agent in the Automation builder, or rebuild the rule from the documented steps |
 | Triage misclassifies area | Sparse summary/description | Add detail; the classifier is most-matches-wins over the text/labels |
 | Field write expected but didn't happen | By design — MVP writes comments only | Configure `FIELD_IDS` + allowlist (future work) if you need field writes |
 | `test:readiness:jira` fails on missing issue types | AIGO project missing canonical types | All 14 types are live on the dev site (IDs 10048–10061). For a fresh site, run `npm run provision:jira` then add types in Project Settings → Issue Types; use `AIGO_READINESS_WARN_ONLY=1` during setup |
-| `provision:automation:forge` fails with 403 | `manage:jira-configuration` scope not yet consented | Run `forge install --upgrade --confirm-scopes` and approve the scope |
+| `provision:automation:forge` fails with 403 | Experimental importer scope not consented | Use Jira Automation UI import/rebuild for the supported path, or run `forge install --upgrade --confirm-scopes` only if you intentionally need staging importer evidence |
 | `test:readiness:jira` warns about unobserved statuses | Seed issues do not currently occupy every expected workflow state | Verify the workflow statuses in Jira project settings; ACLI cannot prove team-managed statuses that are not visible on issues |
 
 ---
