@@ -1,7 +1,7 @@
 # AIGO Agent-Team Status
 
-_Last updated: 2026-06-15T14:40Z_
-_Current tick: 26_
+_Last updated: 2026-06-15T15:00Z_
+_Current tick: 27_
 
 ## Milestone
 - Active: **M0-M3 ✓ · M6 ✓ · IaC ✓ · docs ✓ · safety ✓ · evidence ✓ — awaiting operator: T-M3-03 only (connect Rovo, enable rules, capture audit logs)**
@@ -41,9 +41,9 @@ _Current tick: 26_
 3. **T-M5-live** — Capture live audit-log evidence once automation rules are enabled
 
 ## Top 3 risks
-1. **R-01 (Node v26):** forge CLI warns unsupported. 435 tests pass. Low active risk.
-2. **R-03 (Rovo UI visibility):** 19 agents in manifest; UI confirmation pending T-M1-04.
-3. **R-05 (Automation import):** Forge function ready; needs operator `forge deploy` first.
+1. **R-01 (Node v26):** forge CLI warns unsupported. 1046 tests pass. Low active risk.
+2. **R-04 (Rovo connection):** All 5 automation rules are DISABLED and use placeholder comment actions. Rovo must be connected to Automation via Settings → Automation → Rovo before rules can fire agents.
+3. **R-06 (Trigger gaps):** Rule 4 fires on all transitions (toStatus filter UI-only). Rule 5 CRON trigger is UI-only. Both need operator edits before enabling.
 
 ## Completed this tick (ticks 19–22 — coverage sweep)
 | Task | Owner | Notes |

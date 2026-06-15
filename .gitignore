@@ -12,3 +12,5 @@ automation/seed/generated/
 .idea/
 *.tsbuildinfo
 *.err.log
+.mcp.json
+.claude/worktrees/
