@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "name": "AIGO – Employer Launch Plan",
+      "description": "When an Employer Launch issue is created, run the AI Employer Launch Agent and post the workback plan and readiness score. Does not launch.",
+      "state": "DISABLED",
+      "ruleScope": {
+        "resources": ["ari:cloud:jira:__MISSING_PROJECT_ID__:project/__MISSING_PROJECT_ID__"]
+      },
+      "actor": { "type": "ACCOUNT_ID", "value": "__MISSING_ACTOR_ACCOUNT_ID__" },
+      "trigger": {
+        "component": "TRIGGER",
+        "type": "jira.issue.event.trigger:created",
+        "value": {}
+      },
+      "components": [
+        {
+          "component": "CONDITION",
+          "type": "jira.jql.condition",
+          "value": {
+            "jql": "project = AIGO AND issuetype = \"Employer Launch\""
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.rovo.agent.action",
+          "value": {
+            "agentKey": "employer-launch-agent",
+            "prompt": "Build an employer launch workback plan: readiness score, launch phases with tasks, blockers, required assets, QA checklist, and suggested subtasks. Go/no-go and claims approval are human steps.",
+            "issueKey": "{{issue.key}}",
+            "outputVar": "agentResponse"
+          }
+        },
+        {
+          "component": "ACTION",
+          "type": "jira.issue.comment",
+          "value": {
+            "body": "🤖 AI Growth Ops — Employer Launch Plan (analysis only)\n\n{{agentResponse}}",
+            "visibility": "INTERNAL"
+          }
+        }
+      ]
+    }
+  ]
+}

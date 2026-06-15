@@ -38,35 +38,52 @@ Portable provisioning evidence:
 - `docs/PORTABILITY.md` documents the scalable approach: one Forge app, many
   instance configs, and Jira project cloning from a golden template project.
 
+Additional evidence (2026-06-14 sprint):
+
+- forge deploy successful: version 2.1.0 (evidence/gates/forge-deploy.log)
+- forge install list: myhealthcaresite.atlassian.net → development → Up-to-date
+  (evidence/gates/forge-install.log)
+- VM-LOCAL-GATES GREEN: npm ci + build + 112 unit tests + 10 integration +
+  forge lint 0 errors (evidence/gates/local-2026-06-15T0044Z.log)
+- CI workflow extended: integration tests + automation JSON validation + seed
+  render steps added
+- CLAUDE.md updated with safety contract, file ownership map, and
+  plan-approval gates
+- specs/issue-types.md: 14 canonical types defined
+- specs/custom-fields.md: 37 outcome fields cataloged
+- specs/workflows.md: 12 MVP statuses + transition matrices + human approval
+  gates defined
+- docs/TROUBLESHOOTING.md: created with Rovo/Forge/Automation distinction and
+  log recipes
+- safety-reviewer scope audit: PASS (19 agents, 3 scopes,
+  addAnalysisComment only mutating action)
+
 ## Blockers
 
-1. Rovo UI visibility is unverified.
+1. BLK-01 (forge not installed): RESOLVED — forge 12.22.0 authenticated on
+   operator machine.
+
+2. Rovo UI visibility is unverified (T-M1-04 in progress).
    - The CLI proves Forge installation, not that a human can see all 19 agents
      in Jira/Rovo.
    - TWG Rovo app discovery failed with `Downstream(s) failed: third_party` in
-     prior checks, so UI confirmation is still required.
+     prior checks. Operator browser confirmation still required.
 
-2. The live AIGO project is not configured with the intended issue types.
-   - Missing: Growth Task, Experiment, Creative Request, Claims Review,
-     Dashboard Request, Automation Request, Employer Launch, Segmentation
-     Request, Signup Funnel Issue, Insight / Research Brief, Bug / Tracking
-     Issue, Decision Memo.
+3. Issue types: specs complete (specs/issue-types.md, 14 types defined).
+   - Jira configuration pending T-M2-03 (awaiting lead plan approval).
 
-3. The live workflow is not configured with the intended MVP statuses.
-   - Unobserved on seeded issues: AI Triage, Needs Info, Needs Human Review,
-     Ready, Claims Review, Blocked, Experiment Running, Readout Needed, Decision
-     Needed.
-   - ACLI cannot prove team-managed workflow statuses that are not visible on
-     issues, so Jira project settings must be checked manually or via a future
-     admin API client.
+4. Workflow: specs complete (specs/workflows.md, 12 statuses + transitions).
+   - Jira configuration pending T-M2-05 (awaiting safety-reviewer + lead plan
+     approval).
+   - ACLI cannot prove team-managed workflow statuses not visible on issues.
 
-4. Jira Automation is not validated live.
-   - Rule JSON exists, but import, placeholder replacement, enablement, and
-     audit-log validation have not been completed in Jira.
+5. Automation: rule JSON exists and renders without placeholder tokens.
+   - Import, placeholder replacement, enablement, and audit-log validation
+     pending T-M3.
 
-5. Manual Rovo agent behavior checks are not complete.
-   - The six required manual checks from `specs/tasks.md` still need to run in
-     Jira/Rovo against seeded issues.
+6. Manual Rovo checks pending T-M4.
+   - Unblocks after T-M2-07 seed re-import completes.
+   - Six required checks from `specs/tasks.md` still need to run in Jira/Rovo.
 
 ## Safety Review
 

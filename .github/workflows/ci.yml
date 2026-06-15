@@ -40,5 +40,20 @@ jobs:
       - name: Type check / build (Forge + domain)
         run: npm run build
 
-      - name: Run tests
+      - name: Run unit tests
         run: npm test
+
+      - name: Run integration tests
+        run: npm run test:integration
+
+      - name: Validate automation JSON schemas
+        run: |
+          for f in automation/rules/*.json; do
+            echo "Validating $f"
+            node -e "JSON.parse(require('fs').readFileSync('$f', 'utf8')); console.log('OK: $f')"
+          done
+
+      - name: Render seed (smoke check)
+        env:
+          AIGO_INSTANCE_CONFIG: instances/aigo.example.json
+        run: npm run seed:render

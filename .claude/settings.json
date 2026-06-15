@@ -1,0 +1,11 @@
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "teammateMode": "auto",
+  "hooks": {
+    "TaskCompleted": ".claude/hooks/task-completed.sh",
+    "TeammateIdle": ".claude/hooks/teammate-idle.sh",
+    "TaskCreated": ".claude/hooks/task-created.sh"
+  }
+}

@@ -161,6 +161,11 @@ Growth Ops agents.
 > [`docs/MVP_RUNBOOK.md`](docs/MVP_RUNBOOK.md).
 > Multi-site/project provisioning guidance lives in
 > [`docs/PORTABILITY.md`](docs/PORTABILITY.md).
+> For diagnosing Rovo UI visibility, Forge install/deploy failures, Automation
+> audit logs, and log-search recipes, see
+> [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md).
+> Release steps for manifest and prompt changes live in
+> [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md).
 
 For CLI seed import, install/authenticate ACLI and import the portable seed CSV:
 
@@ -270,8 +275,14 @@ prompts/              One Markdown prompt per agent
 skills/               Reusable agent skill modules (grounded in src/ + manifest)
 policies/             Safety, claims-risk, and experiment policies
 automation/           Jira Automation rules and JQL filters
-docs/                 INTEGRATION.md and MVP_RUNBOOK.md
+docs/                 INTEGRATION.md, MVP_RUNBOOK.md, TROUBLESHOOTING.md,
+                      PORTABILITY.md, MVP_READINESS.md, RELEASE_CHECKLIST.md
 instances/            Per-site/project provisioning config templates
 specs/                MVP requirements, design, and task roadmap
+specs/agent-team/     Agent team mission, quality gates, task board, and
+                      verification matrix (MISSION.md, QUALITY_GATES.md,
+                      TASK_BOARD.md, VERIFICATION_MATRIX.md)
 tests/                Vitest unit tests (TDD)
+evidence/             Verified evidence files (agent runs, automation, gates,
+                      rovo visibility, safety, team notes)
 ```

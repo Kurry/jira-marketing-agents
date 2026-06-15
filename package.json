@@ -12,6 +12,7 @@
     "test:smoke:jira": "bash scripts/live-jira-smoke.sh",
     "test:watch": "vitest",
     "seed:render": "node scripts/render-seed.cjs",
+    "render:automation": "node scripts/render-automation-rules.cjs",
     "provision:instance": "node scripts/provision-instance.cjs",
     "lint": "tsc --noEmit"
   },
