@@ -219,12 +219,6 @@ linked.
   objects, claims/SOP knowledge, readouts, and outcome rollups. Product-level
   subtasks are T-NIH-05A through T-NIH-05F in `specs/outcome-roadmap.md`.
   (Evidence: `specs/atlassian-product-adoption-spike.md`)
-- `[ ]` **T-NIH-06: Third-party Terraform disposable-site spike.** Test
-  third-party Terraform providers only against a disposable Jira site/project
-  for create, import, plan, drift, and destroy behavior before any production
-  `.tf` resources are allowed.
-  (Baseline report: `specs/terraform-provider-spike.md`; live disposable-site
-  provider execution still pending.)
 - `[x]` **T-NIH-07: Custom script label inventory.** Label every supported
   custom script as exactly one of: native wrapper, documented API gap, or
   Twin-specific logic. (Evidence: `docs/script-label-inventory.md`,

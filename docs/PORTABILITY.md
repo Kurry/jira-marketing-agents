@@ -61,40 +61,13 @@ work rather than marking the task complete here.
 | T-NIH-03 | ACLI capability inventory for project, workitem, field, filter, and dashboard commands. | Native command owner, coverage, gaps, and supported fallback are documented for each resource. |
 | T-NIH-04 | Golden template project validation. | A disposable clone passes readiness for issue types, statuses, screens, fields, board columns, queues, filters, dashboards, seeds, and Automation placeholders with fewer custom REST mutations than fresh provisioning. |
 | T-NIH-05 | Atlassian product adoption spike. | JPD, Assets, Confluence, Analytics/Data Lake, and Goals each have a fit recommendation, prerequisites, custom-code reduction estimate, blockers, and rollback/manual fallback. |
-| T-NIH-06 | Third-party Terraform disposable-site spike. | Create, import, plan, drift detection, and destroy behavior are proven in a disposable site before any production `.tf` resources are added. |
 | T-NIH-07 | Custom script label inventory. | Every supported script is labeled `native wrapper`, `documented API gap`, or `Twin-specific logic`. |
 
-## Terraform Provider Shortlist
+## Terraform
 
-Evaluate Terraform after the Jira control plane is stable. Use a disposable Jira
-site/project and prove create, import, plan, drift, and destroy behavior before
-making any provider part of the supported setup path.
-
-- [`atlassian/terraform-provider-atlassian-operations`](https://github.com/atlassian/terraform-provider-atlassian-operations):
-  official Atlassian provider for JSM/Compass operations resources, not general
-  Jira project/workflow configuration.
-- [`gothub97/terraform-provider-atlassian`](https://github.com/gothub97/terraform-provider-atlassian):
-  experimental Jira Cloud provider candidate with project, field, screen,
-  status, workflow, and scheme resources.
-- [`lbajsarowicz/terraform-provider-atlassian`](https://github.com/lbajsarowicz/terraform-provider-atlassian):
-  experimental Jira/Confluence config-as-code provider candidate with import and
-  drift-detection claims.
-- [`fourplusone/terraform-provider-jira`](https://github.com/fourplusone/terraform-provider-jira):
-  older Jira provider with project, issue type, filter, group, issue, role,
-  user, and webhook resources.
-- [`Vestmark/terraform-provider-jira`](https://github.com/Vestmark/terraform-provider-jira):
-  fork/variant of the older Jira provider; do not assume modern Jira Cloud
-  workflow coverage without testing.
-- [`alc0der/terraform-provider-jira-automation`](https://github.com/alc0der/terraform-provider-jira-automation):
-  Jira Automation rule provider candidate with raw JSON fallback.
-
-T-NIH-06 acceptance:
-- Use a disposable Jira site/project, not the reference development project.
-- Test project configuration and Automation surfaces separately.
-- Record create, import, plan, drift, destroy, unsupported-resource, provider
-  maturity, and rollback results.
-- Keep Forge, ACLI, documented Jira REST APIs, and golden-template cloning as
-  the supported path unless the spike proves Terraform is smaller and safer.
+Terraform is out of scope for the current MVP/NIH completion path. Keep the
+portable implementation on Forge/Rovo, ACLI, documented Jira REST, native Jira
+Automation import/rebuild, and golden-template cloning.
 
 ## Atlassian Product Adoption Spike
 

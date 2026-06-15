@@ -265,23 +265,6 @@ evidence is linked; do not mark it complete from this document alone.
     admin path, and rollback/manual fallback documented.
   - Evidence: `specs/atlassian-product-adoption-spike.md`.
 
-- `[ ]` **T-NIH-06: Third-party Terraform disposable-site spike.**
-  Keep third-party Terraform providers out of the critical path until they pass
-  a disposable-site spike. Test create, import, plan, drift detection, and
-  destroy safety for project configuration and Automation surfaces, and compare
-  the result to Forge, ACLI, Jira REST, and golden-template cloning.
-
-  Acceptance:
-  - No production `.tf` resources are added before the disposable-site report is
-    accepted.
-  - The report covers import, plan, drift, destroy, unsupported resources,
-    provider maturity, and rollback risk.
-  - If coverage is incomplete, the supported path remains Forge, ACLI, Jira
-    REST documented endpoints, and golden-template cloning.
-  - Current evidence: `specs/terraform-provider-spike.md` and
-    `evidence/nih/terraform-provider-spike.json` keep Terraform out of the MVP
-    path pending live disposable-site tests.
-
 - `[x]` **T-NIH-07: Custom script label inventory.**
   Label every custom script as one of: native wrapper, documented API gap, or
   Twin-specific logic. The label should explain why the script exists and the

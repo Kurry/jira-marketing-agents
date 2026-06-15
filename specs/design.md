@@ -160,28 +160,11 @@ The provision script intentionally does not pretend to Terraform-manage every
 Jira admin object. It automates the supported CLI surfaces and documents the
 remaining UI/template-project gates.
 
-### Terraform Provider Strategy
+### Terraform
 
-Terraform is a post-MVP option, not the MVP foundation.
-
-The official Atlassian Operations Terraform provider is useful for JSM/Compass
-operations resources such as teams, schedules, escalations, services, alert
-policies, notification rules, and routing rules. It does not cover the general
-Jira project, workflow, board, screen, field, Automation, or Rovo surfaces this
-system needs.
-
-The most relevant Jira Cloud provider candidates are third-party:
-
-- [`gothub97/terraform-provider-atlassian`](https://github.com/gothub97/terraform-provider-atlassian)
-- [`lbajsarowicz/terraform-provider-atlassian`](https://github.com/lbajsarowicz/terraform-provider-atlassian)
-- [`alc0der/terraform-provider-jira-automation`](https://github.com/alc0der/terraform-provider-jira-automation)
-- [`fourplusone/terraform-provider-jira`](https://github.com/fourplusone/terraform-provider-jira)
-- [`Vestmark/terraform-provider-jira`](https://github.com/Vestmark/terraform-provider-jira)
-
-The spike must prove create, import, plan, drift, and destroy behavior against a
-disposable Jira site before any `.tf` resources become the supported path. If
-coverage is incomplete, keep the portable implementation on Forge CLI, ACLI,
-Jira REST scripts, Automation JSON templates, and golden-project cloning.
+Terraform is out of scope for the current MVP. Keep the portable implementation
+on Forge CLI, ACLI, documented Jira REST scripts, Automation JSON templates, and
+golden-project cloning.
 
 ### Jira Automation
 

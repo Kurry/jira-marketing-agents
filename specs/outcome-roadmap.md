@@ -134,23 +134,6 @@ or production signup systems.
   ideas/insights, employer or segment objects, claims/SOP knowledge, readouts,
   or outcome rollups out of Jira issue/field/dashboard surfaces.
   (Done: `specs/atlassian-product-adoption-spike.md`)
-- `[ ]` Complete T-NIH-06 Terraform/provider spike after the control plane spec
-  is stable. Compare:
-  [`gothub97/terraform-provider-atlassian`](https://github.com/gothub97/terraform-provider-atlassian),
-  [`lbajsarowicz/terraform-provider-atlassian`](https://github.com/lbajsarowicz/terraform-provider-atlassian),
-  [`alc0der/terraform-provider-jira-automation`](https://github.com/alc0der/terraform-provider-jira-automation),
-  [`fourplusone/terraform-provider-jira`](https://github.com/fourplusone/terraform-provider-jira),
-  [`Vestmark/terraform-provider-jira`](https://github.com/Vestmark/terraform-provider-jira),
-  and
-  [`atlassian/terraform-provider-atlassian-operations`](https://github.com/atlassian/terraform-provider-atlassian-operations).
-  (Baseline report: `specs/terraform-provider-spike.md`; live disposable-site
-  provider create/import/plan/drift/destroy evidence still pending.)
-- `[ ]` Do not add production `.tf` resources until the spike proves coverage
-  for projects, issue types, custom fields, screens, workflows, workflow
-  schemes, boards/filters, Automation, import/drift behavior, and destroy
-  safety.
-- `[ ]` If Terraform remains incomplete, keep Jira REST and ACLI fallback scripts
-  as the portable implementation path.
 - `[x]` Complete T-NIH-07 custom-script label inventory before treating any
   custom script as a long-term portability primitive.
   (Done: `docs/script-label-inventory.md`, guarded by

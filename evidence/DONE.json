@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/verify/run-all.mjs",
-  "generated_at": "2026-06-15T15:02:37.528Z",
-  "git_sha": "0e35fe5f610c1778c30b8213ac009eeaecde8040",
+  "generated_at": "2026-06-15T15:05:45.348Z",
+  "git_sha": "4a6f6e2a0fd38dccad71fd491f19dc43a722dcea",
   "instance": "myhealthcaresite.atlassian.net",
   "exit_code": 0,
   "summary": "all 8 verify rows green or blocked — IaC converged",
