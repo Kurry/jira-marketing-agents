@@ -12,7 +12,6 @@ permissions:
     - read:jira-work
     - write:jira-work
     - read:chat:rovo
-    - manage:jira-configuration
 
 resources:
   - key: agent-prompts
@@ -573,8 +572,6 @@ modules:
       handler: index.proposeActivationPlan
     - key: fn-add-comment
       handler: index.addAnalysisComment
-    - key: fn-import-automation
-      handler: index.importAutomationRules
     - key: fn-agent-webtrigger
       handler: index.agentWebtrigger
 

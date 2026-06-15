@@ -1,30 +1,17 @@
 schemaVersion: 1
-# Default workflow statuses observed live, from evidence/jira-config/statuses.json.
+# AIGO is a team-managed (next-gen) Jira project. Team-managed projects use
+# a simplified board-based workflow exposed by GET /project/{key}/statuses.
+# The three statuses below are the live statuses returned by that API.
+# Custom statuses (Intake, Triage, etc.) exist as global Jira statuses but
+# are not assigned to this project's workflow scheme.
 workflow:
   name: AIGO Default
+  type: team-managed
   statuses:
-    - name: Intake
-      id: "10003"
+    - name: To Do
       category: TODO
-    - name: Triage
-      id: "10004"
+    - name: In Progress
       category: IN_PROGRESS
-    - name: Spec Ready
-      id: "10005"
-      category: IN_PROGRESS
-    - name: In Review
-      id: "10006"
-      category: IN_PROGRESS
-    - name: Claims Review
-      id: "10007"
-      category: IN_PROGRESS
-    - name: Experiment Running
-      id: "10008"
-      category: IN_PROGRESS
-    - name: Decision Needed
-      id: "10009"
-      category: IN_PROGRESS
-    - name: Launch Prep
-      id: "10010"
-      category: IN_PROGRESS
+    - name: Done
+      category: DONE
   transitions: []

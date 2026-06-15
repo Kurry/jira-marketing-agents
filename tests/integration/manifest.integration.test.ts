@@ -46,6 +46,7 @@ describe("Forge/Rovo manifest integration contract", () => {
     expect(manifest.permissions.scopes).toEqual(
       expect.arrayContaining(["read:jira-work", "write:jira-work", "read:chat:rovo"]),
     );
+    expect(manifest.permissions.scopes).not.toContain("manage:jira-configuration");
     expect(manifest.resources).toContainEqual({ key: "agent-prompts", path: "prompts" });
   });
 
@@ -117,11 +118,19 @@ describe("Forge/Rovo manifest integration contract", () => {
     }
   });
 
+  it("does not expose private Automation import as a Forge module or scope", () => {
+    expect(manifest.permissions.scopes).not.toContain("manage:jira-configuration");
+    expect(functions.map((fn) => fn.key)).not.toContain("fn-import-automation");
+    expect(functions.map((fn) => fn.handler)).not.toContain("index.importAutomationRules");
+  });
+
   it("standalone Forge functions map to exported handlers in src/index.ts", () => {
     // Actions' backing functions are already checked above. This test covers
-    // functions that are NOT backing a Rovo action (e.g. fn-import-automation).
+    // functions that are NOT backing a Rovo action.
     const actionFnKeys = new Set(actions.map((action) => action.function));
     const standaloneFns = functions.filter((fn) => !actionFnKeys.has(fn.key));
+
+    expect(standaloneFns.map((fn) => fn.key)).toEqual(["fn-agent-webtrigger"]);
 
     for (const fn of standaloneFns) {
       expect(fn.handler.startsWith("index."), `${fn.key} handler must be index.<name>`).toBe(true);

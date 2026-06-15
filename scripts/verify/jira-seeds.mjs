@@ -33,20 +33,14 @@ guard(GENERATED_BY, ROW, async () => {
 
   const client = createClient();
   const jql = `project = ${PROJECT_KEY} AND labels = "${label}"`;
-  // searchForIssuesUsingJql returns 410 Gone on this instance; use the
-  // enhanced (token-paginated) search and walk all pages.
-  const liveIssues = [];
-  let nextPageToken;
-  do {
-    const res = await client.issueSearch.searchForIssuesUsingJqlEnhancedSearch({
-      jql,
-      maxResults: 100,
-      fields: ['issuetype', 'labels'],
-      nextPageToken,
-    });
-    liveIssues.push(...(res.issues || []));
-    nextPageToken = res.isLast ? undefined : res.nextPageToken;
-  } while (nextPageToken);
+  // GET and POST /search return 410 on this Cloud instance.
+  // Use POST /rest/api/3/search/jql (enhanced search POST) instead.
+  const res = await client.issueSearch.searchForIssuesUsingJqlEnhancedSearchPost({
+    jql,
+    maxResults: 200,
+    fields: ['issuetype', 'labels'],
+  });
+  const liveIssues = res.issues || [];
   const liveTypeNames = new Set(liveIssues.map((i) => i.fields?.issuetype?.name));
 
   // Declared seeds reference issue type by key; map key→name via the matrix

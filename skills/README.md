@@ -45,6 +45,43 @@ The copied wrapper scripts can use `TWG_BIN`, a bundled
 `skills/twg/bin/twg-bin`, a repo-root `bin/twg-bin`, `twg-bin` on `PATH`, or the
 original local `/Users/kurrytran/.local/bin/twg-bin` fallback.
 
+## Atlassian product reference skills
+
+Portable, product-agnostic references covering the full Atlassian surface. Each
+is grounded in current official docs (developer.atlassian.com /
+support.atlassian.com) and defaults to read/draft/recommend — destructive or
+bulk/org-level mutations require explicit human approval.
+
+Jira family:
+
+- [`jira-cloud-rest/`](jira-cloud-rest/) — Jira Cloud platform REST API v3 (issues, JQL `POST /search/jql`, transitions, ADF comments, links, webhooks).
+- [`jira-acli/`](jira-acli/) — Atlassian CLI (`acli jira workitem` create/search/transition/bulk).
+- [`jira-service-management/`](jira-service-management/) — JSM REST (`/rest/servicedeskapi`): requests, queues, SLAs, approvals, organizations.
+- [`jsm-assets/`](jsm-assets/) — Assets (Insight): object schemas, AQL, the workspace Assets API.
+- [`jira-product-discovery/`](jira-product-discovery/) — JPD ideas, insights, fields, views, delivery links.
+
+Confluence & collaboration:
+
+- [`confluence-cloud-rest/`](confluence-cloud-rest/) — Confluence v2 REST (pages/spaces/comments) + v1 CQL search.
+- [`atlassian-goals-atlas/`](atlassian-goals-atlas/) — Goals & projects (Atlas / Atlassian Home); programmatic access via Teamwork Graph/Rovo.
+- [`trello/`](trello/) — Trello REST API (boards, lists, cards, webhooks).
+
+Forge / Rovo developer platform:
+
+- [`forge-platform/`](forge-platform/) — manifest, CLI, `@forge/api`, storage, scopes, lifecycle.
+- [`forge-rovo-agents/`](forge-rovo-agents/) — `rovo:agent` + `action` modules in code.
+- [`forge-workflow-modules/`](forge-workflow-modules/) — Jira workflow validators/conditions/post functions (Preview).
+- [`forge-webtriggers-events/`](forge-webtriggers-events/) — web/scheduled triggers, product events, `@forge/events` queues.
+- [`rovo-studio-agents/`](rovo-studio-agents/) — no-code Rovo Studio agents, Rovo in Automation (`{{agentResponse}}`).
+
+DevOps, data & admin:
+
+- [`compass/`](compass/) — Compass GraphQL, scorecards/metrics, `compass.yml` catalog.
+- [`bitbucket-cloud-rest/`](bitbucket-cloud-rest/) — Bitbucket Cloud REST 2.0 (repos, PRs, pipelines); app-password deprecation.
+- [`atlassian-analytics-data-lake/`](atlassian-analytics-data-lake/) — Atlassian Analytics + Data Lake SQL.
+- [`atlassian-admin-cloud/`](atlassian-admin-cloud/) — org admin REST, users/groups, SCIM, audit-log events.
+- [`atlassian-terraform/`](atlassian-terraform/) — official `atlassian/atlassian-operations` Terraform provider.
+
 ## Design principle
 
 > Agents can **draft, classify, route, summarize, and recommend**. They cannot

@@ -67,6 +67,16 @@ Employer Launch, Weekly Readout).
 Rovo agents are **not** Automation rules and do not appear in the Automation
 rules list. Automation rules do not appear in the Rovo agents tab.
 
+### Webtrigger fallback vs native Automation proof
+
+The Forge webtrigger (`fn-agent-webtrigger`) is a CLI-callable fallback that can
+invoke the same domain logic and post AI-labeled Jira comments. Current
+webtrigger evidence proves that fallback path is working.
+
+It does **not** prove that Jira Automation invoked a Rovo agent. Native
+Automation proof requires a Jira Automation audit-log row from a rule containing
+the **Use Rovo agent** action, followed by the configured **Add comment** step.
+
 ### "Use agent" blocked by "your org admin needs to activate AI" (R-07 / BLK-02)
 
 If the "Use agent" (Rovo AI) step in the Automation flow builder shows this

@@ -85,26 +85,24 @@ confirm all agents appear in the Rovo UI.
 **When to use:** After issue types and seeds are in place (T-M2-03b + T-M2-07
 done), to import the 5 Jira Automation rules **all disabled by default**.
 
-### Automated path (preferred)
+### Supported path
 
-Deploy the updated app (which now includes the `fn-import-automation` Forge
-function) and invoke it:
+Render and validate the automation rule JSON, then import or rebuild the rules
+through native Jira Automation:
 
 ```bash
-forge deploy -e development
-npm run provision:automation:forge
+npm run render:automation
+npm run provision:automation -- --dry-run
 ```
 
-The script reads all 5 rendered rule files from `automation/rules/rendered/`,
-packages them into a single payload, and calls `fn-import-automation` which
-uses `api.asApp().requestJira()` to POST each rule to the Jira Automation
-gateway. Output is written to `evidence/automation/forge-import-output.json`.
+The supported path does not call private/internal Atlassian Automation import
+APIs. `npm run provision:automation:forge` is retained only as an experimental
+staging helper and is not the portability path.
 
-If the function returns HTTP 403, the `manage:jira-configuration` scope (already
-in `manifest.yml`) must be accepted by a site admin during the OAuth consent
-step — re-run `forge install --upgrade` and approve the new scope.
+If Jira import is unavailable or the JSON drifts, rebuild the same rules from
+`automation/jira-automation-rules.md`.
 
-### Manual fallback (if Forge function fails)
+### Jira Automation UI import
 
 **Pre-requisite:** Run `npm run render:automation` first to render the rules.
 
@@ -126,5 +124,6 @@ step — re-run `forge install --upgrade` and approve the new scope.
 > 5 rule IDs.
 
 **After completion:** Record rule IDs in `evidence/automation/rule-ids.md`,
-then proceed to T-M3-03 (enable one rule at a time, trigger on a seed issue,
-capture audit log output before enabling the next).
+then proceed to T-M3-03 (wire the native **Use Rovo agent** action, enable one
+rule at a time, trigger on a seed issue, and capture audit-log output before
+enabling the next).

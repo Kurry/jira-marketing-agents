@@ -114,9 +114,12 @@ or production signup systems.
   manifest agent key, add AI-analysis comment text, stay disabled by default,
   and never approve claims or launch work.
   (Resolved: T-M3-04 — `tests/automation.test.ts` + `tests/integration/automation.test.ts`)
-- `[ ]` Complete the golden template project validation. A clone should pass
+- `[ ]` Complete T-NIH-03 ACLI capability inventory. Document project,
+  workitem, field, filter, and dashboard command coverage before expanding the
+  portable setup path.
+- `[ ]` Complete T-NIH-04 golden-template validation. A clone should pass
   readiness with the canonical issue types, statuses, screens, fields, board,
-  queues, filters, and Automation placeholders.
+  queues, filters, dashboards, seeds, and Automation placeholders.
 - `[x]` Add transition-path verification to `scripts/aigo-project-readiness.cjs`.
   (Resolved: T-M2-08 — readiness script verifies transition paths)
 - `[~]` Add Rovo UI visibility and Jira Automation audit-log checks to the
@@ -125,8 +128,11 @@ or production signup systems.
 - `[~]` Add repo CI for build, unit tests, integration tests, automation JSON
   validation, seed rendering, and spec/link checks.
   (Partial: CI covers build/test/integration; automation JSON validation and link checks via npm scripts)
-- `[ ]` Run a bounded Terraform/provider spike after the control plane spec is
-  stable. Compare:
+- `[ ]` Complete T-NIH-05 Atlassian product adoption spike before moving
+  ideas/insights, employer or segment objects, claims/SOP knowledge, readouts,
+  or outcome rollups out of Jira issue/field/dashboard surfaces.
+- `[ ]` Complete T-NIH-06 Terraform/provider spike after the control plane spec
+  is stable. Compare:
   [`gothub97/terraform-provider-atlassian`](https://github.com/gothub97/terraform-provider-atlassian),
   [`lbajsarowicz/terraform-provider-atlassian`](https://github.com/lbajsarowicz/terraform-provider-atlassian),
   [`alc0der/terraform-provider-jira-automation`](https://github.com/alc0der/terraform-provider-jira-automation),
@@ -140,6 +146,42 @@ or production signup systems.
   safety.
 - `[ ]` If Terraform remains incomplete, keep Jira REST and ACLI fallback scripts
   as the portable implementation path.
+- `[ ]` Complete T-NIH-07 custom-script label inventory before treating any
+  custom script as a long-term portability primitive.
+
+Acceptance:
+- Native Atlassian product ownership is explicit before custom code is expanded.
+- Golden-template, product-adoption, Terraform, and script-label decisions each
+  have evidence and follow-up gaps.
+- No platform task adopts private endpoints or production Terraform resources as
+  the supported path without a completed spike and documented decision.
+
+## Atlassian Product Adoption Tasks
+
+- `[ ]` **T-NIH-05A: Jira Product Discovery fit.** Map idea capture, insights,
+  prioritization, and delivery links from the outcome workflows to JPD.
+- `[ ]` **T-NIH-05B: JSM Assets fit.** Map employers, partners, segments,
+  services, and reusable launch objects to Assets schemas if the tenant is
+  licensed.
+- `[ ]` **T-NIH-05C: Confluence knowledge fit.** Map claims rules, SOPs,
+  approved messaging, research synthesis, and prompt source references to
+  Confluence pages, databases, or knowledge sources.
+- `[ ]` **T-NIH-05D: Analytics/Data Lake fit.** Map weekly readouts, dashboard
+  metrics, and decision evidence to Atlassian Analytics/Data Lake where
+  available, with Jira dashboards as fallback.
+- `[ ]` **T-NIH-05E: Atlassian Goals fit.** Map growth outcomes and rollups to
+  Goals/Projects where available, with Jira links and labels as fallback.
+- `[ ]` **T-NIH-05F: Adoption decision memo.** Summarize product prerequisites,
+  custom code reduced, migration cost, blockers, rollback/manual fallback, and
+  final recommendation for each product.
+
+Acceptance:
+- Each product has a sample object or workflow mapping and a clear adopt,
+  defer, or reject recommendation.
+- Tenant licensing, admin prerequisites, migration steps, and rollback/manual
+  fallback are documented before adoption.
+- Existing Jira execution workflows remain the fallback until the product path
+  is proven.
 
 ## Forge Workflow Rule Tasks
 

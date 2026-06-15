@@ -8,14 +8,18 @@
 //   10022498 – AIGO Creative Claims Review  → issue transitioned → Ready
 //   10022499 – AIGO Weekly Growth Readout   → scheduled CRON Mon 8AM ET
 //
-// The script tries multiple trigger format candidates (most-likely-first) and
-// falls back gracefully if the internal API rejects all of them, printing
-// actionable UI instructions.
+// Historical staging helper. The script tries multiple trigger format
+// candidates (most-likely-first) and falls back gracefully if the internal API
+// rejects all of them, printing actionable UI instructions. Live use requires
+// explicit experimental opt-in because the endpoint is private/internal and is
+// not part of the supported portability path.
 //
 // Usage:
-//   ATLASSIAN_TOKEN=<pat> node scripts/fix-automation-triggers.cjs [--dry-run]
+//   node scripts/fix-automation-triggers.cjs --dry-run
+//   AIGO_EXPERIMENTAL_AUTOMATION_IMPORT=1 ATLASSIAN_TOKEN=<pat> node scripts/fix-automation-triggers.cjs
 //
 // Environment:
+//   AIGO_EXPERIMENTAL_AUTOMATION_IMPORT — must be 1 for live private API calls
 //   ATLASSIAN_TOKEN   — Atlassian Personal Access Token (required unless --dry-run)
 //   ATLASSIAN_USER    — email address for Basic-auth (optional; PAT Bearer is preferred)
 //
@@ -261,9 +265,13 @@ const RULES = [
 // ---------------------------------------------------------------------------
 
 function parseArgs(argv) {
-  const args = { dryRun: false };
+  const args = { dryRun: false, experimentalInternalApi: false };
   for (const arg of argv) {
     if (arg === "--dry-run") args.dryRun = true;
+    if (arg === "--experimental-internal-api") args.experimentalInternalApi = true;
+  }
+  if (process.env.AIGO_EXPERIMENTAL_AUTOMATION_IMPORT === "1") {
+    args.experimentalInternalApi = true;
   }
   return args;
 }
@@ -587,6 +595,15 @@ async function main() {
   console.log(`CloudID: ${CLOUD_ID}`);
   console.log(`Mode:    ${args.dryRun ? "DRY-RUN (no mutations)" : "LIVE"}`);
   console.log("=".repeat(70));
+
+  if (!args.dryRun && !args.experimentalInternalApi) {
+    console.error(
+      "\nERROR: Live trigger fixes use a private/internal Jira Automation API.\n" +
+      "Use the native Jira Automation UI for the supported path, or opt in explicitly:\n" +
+      "  AIGO_EXPERIMENTAL_AUTOMATION_IMPORT=1 ATLASSIAN_TOKEN=<token> node scripts/fix-automation-triggers.cjs\n"
+    );
+    process.exit(2);
+  }
 
   // Resolve auth (skip in dry-run)
   let auth = null;

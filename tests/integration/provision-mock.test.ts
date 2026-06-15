@@ -58,7 +58,7 @@ const provisionAutomation = require("../../scripts/provision-automation.cjs") as
 const BASE_HOSTNAME = "example.atlassian.net";
 const BASE_URL = `https://${BASE_HOSTNAME}`;
 const TOKEN = "test-bearer-token";
-const CLOUD_ID = "76683cc1-6501-400f-8b59-01eaad4418d2";
+const CLOUD_ID = "test-cloud-id";
 
 /** Minimal valid jira config matching validateConfig requirements */
 function makeJiraConfig(overrides: Record<string, unknown> = {}) {

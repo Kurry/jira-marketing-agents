@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, it, expect } from "vitest";
 
 // Import pure functions from the CJS automation provisioning script.
@@ -15,6 +17,8 @@ const {
   filterNewRules: (existingNames: Set<string>, desiredRules: object[]) => object[];
 };
 
+const REPO_ROOT = join(__dirname, "..");
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -27,6 +31,22 @@ function makeRule(overrides: Record<string, unknown> = {}) {
     ...overrides,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Supported path: private Atlassian Automation endpoints require opt-in
+// ---------------------------------------------------------------------------
+
+describe("provision-automation supported-path contract", () => {
+  it("gates any private Automation endpoint behind explicit experimental opt-in", () => {
+    const source = readFileSync(join(REPO_ROOT, "scripts", "provision-automation.cjs"), "utf8");
+
+    expect(source).toMatch(/gateway\/api\/automation\/internal-api/i);
+    expect(source).toContain("AIGO_EXPERIMENTAL_AUTOMATION_IMPORT");
+    expect(source).toMatch(/if\s*\(\s*!args\.experimentalApiImport\s*\)/);
+    expect(source).toMatch(/Manual import required/);
+    expect(source).toMatch(/supported repo path does not call private\/internal Atlassian import APIs/);
+  });
+});
 
 // ---------------------------------------------------------------------------
 // validateRule

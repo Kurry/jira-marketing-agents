@@ -20,6 +20,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const { loadInstanceConfig, envForConfig } = require("./instance-config.cjs");
 
 // ---------------------------------------------------------------------------
 // Argument parsing
@@ -29,8 +30,8 @@ function parseArgs(argv) {
   const args = {
     dryRun: false,
     config: null,
-    env: process.env.FORGE_ENV || "development",
-    site: process.env.JIRA_SITE || null,
+    env: process.env.FORGE_ENV || process.env.AIGO_FORGE_ENV || null,
+    site: process.env.JIRA_SITE || process.env.AIGO_JIRA_SITE || null,
   };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--config" && argv[i + 1]) {
@@ -105,8 +106,8 @@ function runNodeScript(label, scriptPath, extraArgs, repoRoot, options = {}) {
     label,
     process.execPath,
     [scriptPath, ...extraArgs],
-    { cwd: repoRoot },
-    options
+    { cwd: repoRoot, env: options.env || process.env },
+    { allowExitCode2: options.allowExitCode2 }
   );
 }
 
@@ -120,7 +121,13 @@ function runNodeScript(label, scriptPath, extraArgs, repoRoot, options = {}) {
 function runNpmScript(label, script, repoRoot, options = {}) {
   // Use npm run <script> — cross-platform
   const npm = process.platform === "win32" ? "npm.cmd" : "npm";
-  return runStep(label, npm, ["run", script], { cwd: repoRoot }, options);
+  return runStep(
+    label,
+    npm,
+    ["run", script],
+    { cwd: repoRoot, env: options.env || process.env },
+    { allowExitCode2: options.allowExitCode2 }
+  );
 }
 
 /**
@@ -131,7 +138,13 @@ function runNpmScript(label, script, repoRoot, options = {}) {
  * @param {object} [options]
  */
 function runForge(label, forgeArgs, repoRoot, options = {}) {
-  return runStep(label, "forge", forgeArgs, { cwd: repoRoot }, options);
+  return runStep(
+    label,
+    "forge",
+    forgeArgs,
+    { cwd: repoRoot, env: options.env || process.env },
+    { allowExitCode2: options.allowExitCode2 }
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -142,7 +155,7 @@ function runForge(label, forgeArgs, repoRoot, options = {}) {
  * Run forge install, but skip if already installed (detected via output text).
  * Returns { ok: boolean, skipped: boolean }
  */
-function runForgeInstall(site, forgeEnv, repoRoot) {
+function runForgeInstall(site, forgeEnv, repoRoot, env = process.env) {
   console.log(`\n${"=".repeat(60)}`);
   console.log(`STEP: forge install`);
   console.log(`CMD:  forge install --site ${site} --product jira --environment ${forgeEnv}`);
@@ -151,7 +164,7 @@ function runForgeInstall(site, forgeEnv, repoRoot) {
   const result = spawnSync(
     "forge",
     ["install", "--site", site, "--product", "jira", "--environment", forgeEnv],
-    { cwd: repoRoot, encoding: "utf8" }
+    { cwd: repoRoot, encoding: "utf8", env }
   );
 
   const combined = (result.stdout || "") + (result.stderr || "");
@@ -179,7 +192,7 @@ function runForgeInstall(site, forgeEnv, repoRoot) {
  * Source the generated forge-vars.sh and run each `forge variables set` command.
  * Returns { ok: boolean }
  */
-function applyForgeVars(forgeVarsPath, repoRoot) {
+function applyForgeVars(forgeVarsPath, repoRoot, env = process.env) {
   console.log(`\n${"=".repeat(60)}`);
   console.log("STEP: Apply forge variables");
   console.log(`FILE: ${forgeVarsPath}`);
@@ -209,7 +222,7 @@ function applyForgeVars(forgeVarsPath, repoRoot) {
     // parts[0]=forge parts[1]=variables parts[2]=set parts[3]=KEY parts[4]=VALUE parts[5+]=flags
     const varArgs = parts.slice(1); // drop "forge"
     console.log(`  Running: forge ${varArgs.join(" ")}`);
-    const result = spawnSync("forge", varArgs, { cwd: repoRoot, stdio: "inherit" });
+    const result = spawnSync("forge", varArgs, { cwd: repoRoot, stdio: "inherit", env });
     if (result.status !== 0) {
       console.error(`  ERROR: forge ${varArgs.join(" ")} failed (exit ${result.status})`);
       allOk = false;
@@ -220,6 +233,20 @@ function applyForgeVars(forgeVarsPath, repoRoot) {
     console.log(`  ✓ Applied ${forgeSetLines.length} forge variable(s).`);
   }
   return { ok: allOk };
+}
+
+function selectProvisionConfig(configPath, args) {
+  const config = loadInstanceConfig(configPath);
+  if (args.site) config.site = String(args.site).trim();
+  if (args.env) config.forgeEnvironment = String(args.env).trim();
+  return config;
+}
+
+function buildChildEnv(config, configPath) {
+  return {
+    ...envForConfig(config),
+    AIGO_INSTANCE_CONFIG: configPath,
+  };
 }
 
 // ---------------------------------------------------------------------------
@@ -272,8 +299,17 @@ async function main() {
     ? path.resolve(args.config)
     : path.join(repoRoot, "instances", "aigo.example.json");
 
-  const forgeEnv = args.env;
-  const site = args.site;
+  let config;
+  try {
+    config = selectProvisionConfig(configPath, args);
+  } catch (err) {
+    console.error(`ERROR: Failed to load instance config: ${err.message}`);
+    process.exit(1);
+  }
+
+  const childEnv = buildChildEnv(config, configPath);
+  const forgeEnv = config.forgeEnvironment;
+  const site = config.site;
 
   console.log("=".repeat(60));
   console.log("AIGO Provision-All Orchestrator");
@@ -290,7 +326,8 @@ async function main() {
     "Step 1: Validate config (provision-jira --dry-run)",
     "scripts/provision-jira.cjs",
     ["--config", configPath, "--dry-run"],
-    repoRoot
+    repoRoot,
+    { env: childEnv }
   );
   if (!step1.ok) {
     console.error("\nFAIL at Step 1: Config validation. Fix config before continuing.");
@@ -300,7 +337,7 @@ async function main() {
   // -------------------------------------------------------------------------
   // Step 2: forge lint
   // -------------------------------------------------------------------------
-  const step2 = runForge("Step 2: forge lint (validate manifest)", ["lint"], repoRoot);
+  const step2 = runForge("Step 2: forge lint (validate manifest)", ["lint"], repoRoot, { env: childEnv });
   if (!step2.ok) {
     console.error("\nFAIL at Step 2: forge lint. Fix manifest.yml before continuing.");
     process.exit(1);
@@ -319,7 +356,8 @@ async function main() {
   const step3 = runForge(
     `Step 3: forge deploy -e ${forgeEnv}`,
     ["deploy", "-e", forgeEnv],
-    repoRoot
+    repoRoot,
+    { env: childEnv }
   );
   if (!step3.ok) {
     console.error(`\nFAIL at Step 3: forge deploy -e ${forgeEnv}.`);
@@ -329,17 +367,7 @@ async function main() {
   // -------------------------------------------------------------------------
   // Step 4: forge install
   // -------------------------------------------------------------------------
-  // Determine site — load from config if not provided
-  let installSite = site;
-  if (!installSite) {
-    try {
-      const cfgRaw = fs.readFileSync(configPath, "utf8");
-      const cfg = JSON.parse(cfgRaw);
-      installSite = cfg.site;
-    } catch {
-      // ignore
-    }
-  }
+  const installSite = site;
 
   if (!installSite) {
     console.error("\nERROR: No --site provided and config has no 'site' field. Cannot run forge install.");
@@ -347,19 +375,21 @@ async function main() {
     process.exit(1);
   }
 
-  const step4 = runForgeInstall(installSite, forgeEnv, repoRoot);
+  const step4 = runForgeInstall(installSite, forgeEnv, repoRoot, childEnv);
   if (!step4.ok) {
     console.error(`\nFAIL at Step 4: forge install --site ${installSite}.`);
     process.exit(1);
   }
 
   // -------------------------------------------------------------------------
-  // Step 5: npm run provision:jira
+  // Step 5: provision Jira configuration
   // -------------------------------------------------------------------------
-  const step5 = runNpmScript(
-    "Step 5: npm run provision:jira (issue types, fields, statuses, options)",
-    "provision:jira",
-    repoRoot
+  const step5 = runNodeScript(
+    "Step 5: node scripts/provision-jira.cjs (issue types, fields, statuses, options)",
+    "scripts/provision-jira.cjs",
+    ["--config", configPath],
+    repoRoot,
+    { env: childEnv }
   );
   if (!step5.ok) {
     console.error("\nFAIL at Step 5: provision:jira.");
@@ -370,7 +400,7 @@ async function main() {
   // Step 6: Apply forge variables from evidence/jira-config/forge-vars.sh
   // -------------------------------------------------------------------------
   const forgeVarsPath = path.join(repoRoot, "evidence", "jira-config", "forge-vars.sh");
-  const step6 = applyForgeVars(forgeVarsPath, repoRoot);
+  const step6 = applyForgeVars(forgeVarsPath, repoRoot, childEnv);
   if (!step6.ok) {
     console.error("\nFAIL at Step 6: apply forge variables.");
     process.exit(1);
@@ -382,7 +412,8 @@ async function main() {
   const step7 = runForge(
     `Step 7: forge deploy -e ${forgeEnv} (re-deploy with new variables)`,
     ["deploy", "-e", forgeEnv],
-    repoRoot
+    repoRoot,
+    { env: childEnv }
   );
   if (!step7.ok) {
     console.error(`\nFAIL at Step 7: forge re-deploy -e ${forgeEnv}.`);
@@ -390,9 +421,15 @@ async function main() {
   }
 
   // -------------------------------------------------------------------------
-  // Step 8: npm run provision:seeds
+  // Step 8: provision seed issues
   // -------------------------------------------------------------------------
-  const step8 = runNpmScript("Step 8: npm run provision:seeds", "provision:seeds", repoRoot);
+  const step8 = runNodeScript(
+    "Step 8: node scripts/provision-seeds.cjs",
+    "scripts/provision-seeds.cjs",
+    ["--config", configPath],
+    repoRoot,
+    { env: childEnv }
+  );
   if (!step8.ok) {
     console.error("\nFAIL at Step 8: provision:seeds.");
     process.exit(1);
@@ -405,7 +442,7 @@ async function main() {
     "Step 8b: npm run provision:filters (create 7 JQL saved filters)",
     "provision:filters",
     repoRoot,
-    { allowExitCode2: true }
+    { env: childEnv, allowExitCode2: true }
   );
   if (!step8b.ok) {
     console.error("\nFAIL at Step 8b: provision:filters.");
@@ -419,7 +456,7 @@ async function main() {
     "Step 8c: npm run provision:dashboards (create 6 Jira dashboards)",
     "provision:dashboards",
     repoRoot,
-    { allowExitCode2: true }
+    { env: childEnv, allowExitCode2: true }
   );
   if (!step8c.ok) {
     console.error("\nFAIL at Step 8c: provision:dashboards.");
@@ -427,47 +464,53 @@ async function main() {
   }
 
   // -------------------------------------------------------------------------
-  // Step 9: npm run provision:automation:forge
-  // Uses the Forge function (fn-import-automation) deployed in Step 3/7 to
-  // import automation rules via api.asApp().requestJira() — no OAuth scope
-  // issue because the request runs inside Atlassian's infrastructure.
+  // Step 9: npm run provision:automation
+  // Renders and validates rules, then stops at the native Jira Automation
+  // import/audit-log gate. Exit code 2 means manual/native import is required.
   // -------------------------------------------------------------------------
-  const step9 = runNpmScript(
-    "Step 9: npm run provision:automation:forge (import rules via Forge function)",
-    "provision:automation:forge",
+  const step9 = runNodeScript(
+    "Step 9: node scripts/provision-automation.cjs (render/validate Automation rules)",
+    "scripts/provision-automation.cjs",
+    ["--config", configPath],
     repoRoot,
-    { allowExitCode2: true }
+    { env: childEnv, allowExitCode2: true }
   );
   if (!step9.ok) {
-    console.error("\nFAIL at Step 9: provision:automation:forge.");
-    console.error("Fallback: run 'npm run provision:automation' or import rules manually via Jira UI.");
+    console.error("\nFAIL at Step 9: provision:automation.");
+    console.error("Import rules manually via native Jira Automation after validation passes.");
     console.error("See docs/OPERATOR_PROMPTS.md → 'Import automation rules (T-M3-02)'.");
     process.exit(1);
   }
   if (step9.code === 2) {
-    console.log("  NOTE: Automation import requires manual UI steps — see docs/OPERATOR_PROMPTS.md.");
+    console.log("  NOTE: Automation import requires native Jira Automation UI/API steps — see docs/OPERATOR_PROMPTS.md.");
   }
 
   // -------------------------------------------------------------------------
   // Step 10: npm run test:smoke:jira
   // -------------------------------------------------------------------------
-  const step10 = runNpmScript("Step 10: npm run test:smoke:jira (verify)", "test:smoke:jira", repoRoot);
+  const step10 = runNpmScript(
+    "Step 10: npm run test:smoke:jira (verify)",
+    "test:smoke:jira",
+    repoRoot,
+    { env: childEnv }
+  );
   if (!step10.ok) {
     console.error("\nFAIL at Step 10: smoke test.");
     process.exit(1);
   }
 
   // -------------------------------------------------------------------------
-  // Step 11: npm run check:rovo (Rovo agent visibility verification)
+  // Step 11: npm run check:rovo (Rovo manifest/install verification)
   // -------------------------------------------------------------------------
   const step11 = runNpmScript(
-    "Step 11: npm run check:rovo (verify Rovo agent count and install status)",
+    "Step 11: npm run check:rovo (verify Rovo manifest count and Forge install status)",
     "check:rovo",
-    repoRoot
+    repoRoot,
+    { env: childEnv }
   );
   if (!step11.ok) {
-    console.error("\nFAIL at Step 11: Rovo agent visibility check.");
-    console.error("Run 'npm run check:rovo' for details. If agents are missing, re-deploy and re-install.");
+    console.error("\nFAIL at Step 11: Rovo manifest/install check.");
+    console.error("Run 'npm run check:rovo' for details. If manifest/install checks fail, re-deploy and re-install.");
     process.exit(1);
   }
 
@@ -492,4 +535,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { parseArgs };
+module.exports = { parseArgs, selectProvisionConfig, buildChildEnv };

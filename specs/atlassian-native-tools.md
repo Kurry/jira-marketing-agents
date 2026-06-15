@@ -175,31 +175,111 @@ Repo-owned layer
   Small fallback scripts for documented platform gaps
 ```
 
-## Near-Term Tasks
+## NIH Reduction Task Board
 
-- `[ ]` Replace "guaranteed visible" wording in `scripts/check-rovo-visibility.cjs`
-  and docs with "manifest/install verified; UI confirmation pending" unless a
-  public Rovo listing API is added.
-- `[ ]` Split MVP evidence into two rows: webtrigger fallback proof and native
-  Jira Automation/Rovo audit-log proof.
-- `[ ]` Remove `gateway/api/automation/internal-api/...` from the supported
-  automation import path or mark it explicitly experimental.
-- `[ ]` Remove `fn-import-automation` and the `manage:jira-configuration` scope
-  if the Automation importer is retired from the supported path.
-- `[ ]` Reconcile any README language that implies there are no manual UI steps;
-  Rovo UI visibility and native Automation/Rovo audit-log checks are still
-  product-gated unless Atlassian exposes public APIs for them.
-- `[ ]` Add an ACLI capability inventory to `docs/PORTABILITY.md` covering
-  project, workitem, field, filter, and dashboard commands.
-- `[ ]` Add a golden-template project validation task that proves a new project
-  clone can pass readiness with fewer custom REST mutations.
-- `[ ]` Add a bounded "Atlassian product adoption" spike:
-  Jira Product Discovery for ideas/insights, JSM Assets for employer/segment
-  objects, Confluence for claims/SOP knowledge, Analytics for readouts, and
-  Goals for outcome rollups.
-- `[ ]` Keep third-party Terraform providers in a disposable-site spike only;
-  do not add `.tf` resources to the critical path until import, plan, drift,
-  and destroy behavior are proven.
+These tasks track the remaining unchecked NIH-reduction work. If another worker
+has already implemented part of a task, keep the task as a reference until the
+evidence is linked; do not mark it complete from this document alone.
+
+- `[ ]` **T-NIH-01: Rovo visibility and evidence wording.**
+  Replace "guaranteed visible" wording with "manifest/install verified; UI
+  confirmation pending" unless a public Rovo listing API is added. Split
+  evidence into separate webtrigger fallback and native Jira Automation/Rovo
+  audit-log proof rows. Reconcile README/runbook language so no production doc
+  implies a fully automated path while Rovo UI visibility and native
+  Automation/Rovo audit-log proof still require product validation.
+
+  Acceptance:
+  - `check:rovo` and docs distinguish Forge manifest/install checks from Jira UI
+    visibility.
+  - Webtrigger evidence and native Automation/Rovo audit-log evidence are
+    tracked separately.
+  - Manual UI/product-gated steps remain visible in setup and readiness docs.
+
+- `[ ]` **T-NIH-02: Supported Automation import path cleanup.**
+  Remove `gateway/api/automation/internal-api/...` from the supported import
+  path or mark it explicitly experimental and non-default. Remove
+  `fn-import-automation` and `manage:jira-configuration` only if the Forge
+  Automation importer is retired from the supported path; otherwise keep them
+  documented as temporary implementation details tied to the blocker.
+
+  Acceptance:
+  - The supported path does not depend on private Atlassian endpoints.
+  - Any remaining internal/import fallback is labeled experimental with a
+    platform-blocker note and a manual native alternative.
+  - Scope removal is tracked as a follow-up only after no supported command uses
+    the Forge importer.
+
+- `[ ]` **T-NIH-03: ACLI capability inventory.**
+  Add a portability inventory for ACLI `jira project`, `jira workitem`,
+  `jira field`, `jira filter`, and `jira dashboard` commands, including what
+  each command can own, where Jira REST or UI/template cloning is still needed,
+  and which scripts are only wrappers around supported native commands.
+
+  Acceptance:
+  - `docs/PORTABILITY.md` names the Atlassian-native owner for each listed
+    resource.
+  - Every ACLI gap has a documented fallback and no private endpoint is named as
+    the supported fallback.
+
+- `[ ]` **T-NIH-04: Golden template validation.**
+  Validate a clone from a company-managed golden template project into a
+  disposable target project. The clone must pass readiness for canonical issue
+  types, statuses, screens, fields, board columns, queues, filters, dashboards,
+  seed coverage, and Automation placeholders, with fewer custom REST mutations
+  than a fresh project provisioning run.
+
+  Acceptance:
+  - Evidence records template project key, clone project key, readiness command,
+    and readiness result.
+  - The validation reports which resources came from the template, ACLI, Jira
+    REST, UI/manual setup, or scripts.
+  - Any missing clone coverage becomes a follow-up task rather than a hidden
+    script mutation.
+
+- `[ ]` **T-NIH-05: Atlassian product adoption spike.**
+  Run a bounded product-fit spike for Jira Product Discovery, JSM Assets,
+  Confluence, Atlassian Analytics/Data Lake, and Atlassian Goals. Evaluate each
+  product for the specific Growth Ops surface it could own and whether it
+  reduces custom Jira issue types, fields, dashboards, or scripts. Track the
+  product-level subtasks as T-NIH-05A through T-NIH-05F in
+  `specs/outcome-roadmap.md`.
+
+  Acceptance:
+  - The spike includes a decision matrix with recommendation, prerequisites,
+    sample mapping, custom code reduced, migration cost, and blockers for each
+    product.
+  - JPD covers ideas/insights; Assets covers employer, partner, segment, or
+    service objects; Confluence covers claims/SOP knowledge; Analytics/Data Lake
+    covers readouts; Goals covers outcome rollups.
+  - No product is adopted into the critical path without tenant licensing,
+    admin path, and rollback/manual fallback documented.
+
+- `[ ]` **T-NIH-06: Third-party Terraform disposable-site spike.**
+  Keep third-party Terraform providers out of the critical path until they pass
+  a disposable-site spike. Test create, import, plan, drift detection, and
+  destroy safety for project configuration and Automation surfaces, and compare
+  the result to Forge, ACLI, Jira REST, and golden-template cloning.
+
+  Acceptance:
+  - No production `.tf` resources are added before the disposable-site report is
+    accepted.
+  - The report covers import, plan, drift, destroy, unsupported resources,
+    provider maturity, and rollback risk.
+  - If coverage is incomplete, the supported path remains Forge, ACLI, Jira
+    REST documented endpoints, and golden-template cloning.
+
+- `[ ]` **T-NIH-07: Custom script label inventory.**
+  Label every custom script as one of: native wrapper, documented API gap, or
+  Twin-specific logic. The label should explain why the script exists and the
+  native owner or documented endpoint it binds to.
+
+  Acceptance:
+  - Every supported `scripts/*` entrypoint has exactly one label.
+  - Documented API gap scripts name the missing native/API capability and do not
+    depend on private endpoints as the supported path.
+  - Twin-specific scripts are limited to policy, agent logic, safety, evidence,
+    or instance binding behavior.
 
 ## Acceptance Criteria
 

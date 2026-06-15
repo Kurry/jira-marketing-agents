@@ -18,9 +18,15 @@ Forge actions and Rovo agents that run inside Jira
 
 ## Infrastructure as Code
 
-This is the **v2 IaC reset**: the entire Jira/Forge control plane is brought up
-from code, with no manual UI steps. Nothing is considered done unless a script
-produced the evidence and a fresh clone can reproduce it via three commands:
+This repo follows an **Atlassian-native first** provisioning model. Scripts
+cover Forge deploy/install, supported Jira primitives, seed data, filters,
+dashboards, and evidence generation; product-gated Jira UI or public API checks
+are still required for Rovo agent visibility and native Jira Automation
+`Use Rovo agent` audit-log proof.
+
+The v2 IaC reset remains a design direction, not the current proof standard.
+Do not treat the following three-command contract as complete until the
+remaining Atlassian UI/API gaps are closed:
 
 ```bash
 npm run infra:plan     # show the diff between desired and live state
@@ -169,8 +175,9 @@ forge install list
 
 This repo now has a registered Forge app id in `manifest.yml`. Only run
 `forge register` again if you intentionally want a different app identity.
-The primary install success check is that the Rovo panel in Jira lists the AI
-Growth Ops agents.
+`forge install list` proves the Forge app installation. Actual Rovo visibility
+requires Jira UI or public API evidence that the AI Growth Ops agents appear to
+the user.
 
 > **Full step-by-step install & wiring:** see
 > [`docs/INTEGRATION.md`](docs/INTEGRATION.md) — tooling, register/deploy/install,
@@ -223,11 +230,15 @@ Import rules**, then replace the documented placeholders. In short:
 `scripts/provision-dashboards.cjs` (idempotent — skips existing by name). Uses
 filter IDs from `provision-filters.cjs` as gadget data sources.
 
-**Automation rule import (IaC):** Rendered rule JSON in `automation/rules/rendered/`
-is imported via the Forge function `fn-import-automation` using
-`npm run provision:automation:forge`. All rules are imported **DISABLED**; an
-operator enables them one at a time after reviewing the audit log (see T-M3-03).
-This requires the `manage:jira-configuration` scope to be accepted at `forge install`.
+**Automation rule import:** Rendered rule JSON in `automation/rules/rendered/`
+is the portable source material. The supported path is Jira Automation UI
+import/export, rebuilding the rules from
+[`automation/jira-automation-rules.md`](automation/jira-automation-rules.md), or
+a documented public Atlassian API if one becomes available. `npm run
+provision:automation` renders and validates the rules, then stops before
+mutation so the native import/audit step remains explicit. All imported or
+rebuilt rules must remain **DISABLED** until native `Use Rovo agent` audit-log
+proof is captured one rule at a time (see T-M3-03).
 
 > **Rovo/AI activation required (BLK-02):** The "Use agent" / "Use Rovo agent"
 > step in Automation requires Rovo/AI to be active for the organization. Current
@@ -271,8 +282,10 @@ Issue, Insight / Research Brief, Bug / Tracking Issue, Decision Memo.
 7. `forge deploy -e development`
 8. `forge install -e development -p jira --site myhealthcaresite.atlassian.net --confirm-scopes`
 9. `forge install list` and confirm the Jira installation is `Up-to-date`
-10. Open Jira/Rovo and confirm the agents are visible before configuring Automation.
-11. Configure the Automation rules from section 7.
+10. Open Jira/Rovo and capture UI/API evidence that the agents are visible
+    before configuring Automation.
+11. Configure the Automation rules from section 7 and capture native
+    `Use Rovo agent` audit-log evidence before enabling them broadly.
 
 ## 10. Test commands
 
@@ -292,12 +305,12 @@ npm run provision:instance -- --help
 All provisioning scripts are idempotent (safe to re-run):
 
 ```bash
-npm run provision:all               # full single-shot: deploy → jira → seeds → filters → dashboards → automation:forge
+npm run provision:all               # current orchestrator: deploy → jira → seeds → filters → dashboards → automation render/validation
 npm run provision:jira              # issue types, custom fields, workflow statuses, field options
 npm run provision:seeds             # seed issues (15 issues, one per canonical type)
 npm run provision:filters           # 7 JQL saved filters
 npm run provision:dashboards        # 6 operational dashboards
-npm run provision:automation:forge  # import 5 automation rules (DISABLED) via Forge function
+npm run provision:automation        # render/validate rules; native Jira Automation import still required
 ```
 
 Dry-run any script before executing:
@@ -305,7 +318,7 @@ Dry-run any script before executing:
 ```bash
 node scripts/provision-jira.cjs --dry-run
 node scripts/provision-dashboards.cjs --dry-run
-node scripts/forge-import-automation.cjs --dry-run
+node scripts/provision-automation.cjs --dry-run
 ```
 
 Full per-instance guide: [`docs/PORTABILITY.md`](docs/PORTABILITY.md).

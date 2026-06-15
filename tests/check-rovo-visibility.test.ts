@@ -1,30 +1,31 @@
 /**
  * tests/check-rovo-visibility.test.ts
  *
- * Unit tests for the pure-function exports of scripts/check-rovo-visibility.cjs:
+ * Unit tests for scripts/check-rovo-visibility.cjs:
  *   - countManifestAgents: parses rovo:agent entries from manifest.yml
- *   - checkForgeInstallStatus: parses `forge install list` stdout for site status
+ *   - parseForgeInstallStatus: parses `forge install list` stdout for site status
+ *   - CLI output: reports manifest/install proof only, not UI visibility proof
  *
- * No live Forge CLI calls are made — checkForgeInstallStatus is tested via
- * the function's output-parsing logic on fixture strings.
+ * No live Forge CLI calls are made.
  */
 
 import { describe, expect, it } from "vitest";
 import path from "node:path";
 import os from "node:os";
 import fs from "node:fs";
+import { execFileSync } from "node:child_process";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
-const { countManifestAgents, checkForgeInstallStatus } = require("../scripts/check-rovo-visibility.cjs") as {
+const { countManifestAgents, parseForgeInstallStatus } = require("../scripts/check-rovo-visibility.cjs") as {
   countManifestAgents: (manifestPath: string) => { count: number; keys: string[] };
-  checkForgeInstallStatus: (site: string) => { found: boolean; status: string; raw: string };
+  parseForgeInstallStatus: (raw: string, site: string) => { found: boolean; status: string; raw: string };
 };
 
 // ---------------------------------------------------------------------------
-// Suite 1: countManifestAgents — manifest.yml parsing
+// Suite 1: countManifestAgents - manifest.yml parsing
 // ---------------------------------------------------------------------------
 
-describe("countManifestAgents — manifest.yml parsing", () => {
+describe("countManifestAgents - manifest.yml parsing", () => {
   it("counts all 19 rovo:agent entries in the real manifest.yml", () => {
     const manifestPath = path.resolve(__dirname, "../manifest.yml");
     const result = countManifestAgents(manifestPath);
@@ -99,36 +100,81 @@ describe("countManifestAgents — manifest.yml parsing", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Suite 2: checkForgeInstallStatus — output parsing (no live forge call)
+// Suite 2: parseForgeInstallStatus - output parsing (no live forge call)
 // ---------------------------------------------------------------------------
-// We can't call `forge install list` in CI (no Forge auth), so we test the
-// parsing logic by monkey-patching spawnSync results. Instead we test the
-// function indirectly via the raw string that the implementation parses.
-//
-// The function is called with a site name; internally it runs spawnSync.
-// Since the live forge CLI is not available in test, we verify the parsing
-// logic using a slightly different angle: provide a known-bad site name that
-// won't be in any output, which should return { found: false }.
 
-describe("checkForgeInstallStatus — output parsing", () => {
-  it("returns found=false for an unregistered site name", () => {
-    // With no matching interceptor the function runs spawnSync which
-    // either fails with ENOENT or returns empty stdout — neither contains
-    // the fake site name, so found must be false.
-    const result = checkForgeInstallStatus("this-site-does-not-exist.atlassian.net");
-    expect(result.found).toBe(false);
-    expect(typeof result.raw).toBe("string");
-    // Status should be either NOT_FOUND or ERROR (if forge isn't on PATH)
-    expect(["NOT_FOUND", "ERROR"]).toContain(result.status);
+describe("parseForgeInstallStatus - output parsing", () => {
+  it("returns Up-to-date when the target site row is current", () => {
+    const raw = [
+      "| Installation ID | Environment | Site | Product | Version | Status |",
+      "| 7e844a39 | development | myhealthcaresite.atlassian.net | Jira | 2 | Up-to-date |",
+    ].join("\n");
+
+    const result = parseForgeInstallStatus(raw, "myhealthcaresite.atlassian.net");
+
+    expect(result).toEqual({ found: true, status: "Up-to-date", raw });
   });
 
-  it("returns an object with the expected shape", () => {
-    const result = checkForgeInstallStatus("example.atlassian.net");
-    expect(result).toHaveProperty("found");
-    expect(result).toHaveProperty("status");
-    expect(result).toHaveProperty("raw");
-    expect(typeof result.found).toBe("boolean");
-    expect(typeof result.status).toBe("string");
-    expect(typeof result.raw).toBe("string");
+  it("returns Out-of-date for a stale target site row", () => {
+    const raw = "| 7e844a39 | development | myhealthcaresite.atlassian.net | Jira | 1 | Out-of-date |";
+
+    const result = parseForgeInstallStatus(raw, "myhealthcaresite.atlassian.net");
+
+    expect(result.found).toBe(true);
+    expect(result.status).toBe("Out-of-date");
+  });
+
+  it("returns NOT_FOUND when the target site is absent", () => {
+    const raw = "| 7e844a39 | development | other.atlassian.net | Jira | 2 | Up-to-date |";
+
+    const result = parseForgeInstallStatus(raw, "myhealthcaresite.atlassian.net");
+
+    expect(result).toEqual({ found: false, status: "NOT_FOUND", raw });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Suite 3: CLI output contract
+// ---------------------------------------------------------------------------
+
+describe("CLI output contract", () => {
+  it("reports manifest/install proof and leaves Rovo UI/API visibility pending", () => {
+    const site = "myhealthcaresite.atlassian.net";
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "fake-forge-"));
+    const fakeForge = path.join(tmpDir, "forge");
+    fs.writeFileSync(fakeForge, [
+      "#!/bin/sh",
+      "cat <<'EOF'",
+      `| 7e844a39 | development | ${site} | Jira | 2 | Up-to-date |`,
+      "EOF",
+      "",
+    ].join("\n"));
+    fs.chmodSync(fakeForge, 0o755);
+
+    try {
+      const output = execFileSync(process.execPath, [
+        path.resolve(__dirname, "../scripts/check-rovo-visibility.cjs"),
+        "--site",
+        site,
+        "--expected",
+        "19",
+      ], {
+        cwd: path.resolve(__dirname, ".."),
+        env: {
+          ...process.env,
+          PATH: `${tmpDir}${path.delimiter}${process.env.PATH || ""}`,
+        },
+        encoding: "utf8",
+      });
+
+      expect(output).toContain("=== Rovo Manifest/Install Check ===");
+      expect(output).toContain(`PASS: manifest declares 19 rovo:agent entries and Forge reports ${site} Up-to-date.`);
+      expect(output).toContain("UI/API confirmation is pending for actual Rovo visibility.");
+      expect(output).not.toMatch(/guaranteed visible/i);
+      expect(output).not.toContain("=== Rovo Visibility Summary ===");
+      expect(output).not.toContain("=== Rovo Agent Visibility Check ===");
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
   });
 });

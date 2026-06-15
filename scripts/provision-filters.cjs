@@ -9,55 +9,65 @@
 
 const https = require("https");
 const { execSync } = require("child_process");
+const { loadInstanceConfig } = require("./instance-config.cjs");
 
-const CLOUD_ID = "76683cc1-6501-400f-8b59-01eaad4418d2";
-const BASE_URL = `https://api.atlassian.com/ex/jira/${CLOUD_ID}`;
-const PROJECT_KEY = process.env.AIGO_PROJECT_KEY || "AIGO";
+function parseArgs(argv) {
+  const args = { config: null };
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === "--config" && argv[i + 1]) {
+      args.config = argv[i + 1];
+      i++;
+    }
+  }
+  return args;
+}
 
-const FILTERS = [
-  {
-    name: "AIGO — Intake",
-    description: "All AIGO issues in Intake status awaiting triage.",
-    jql: `project = ${PROJECT_KEY} AND status = "Intake" ORDER BY created DESC`,
-    favourite: true,
-  },
-  {
-    name: "AIGO — Claims Review",
-    description: "AIGO issues flagged for health/clinical claims review.",
-    jql: `project = ${PROJECT_KEY} AND status = "Claims Review" ORDER BY priority DESC, created DESC`,
-    favourite: true,
-  },
-  {
-    name: "AIGO — Launch Readiness",
-    description: "AIGO employer launch issues in Launch Prep status.",
-    jql: `project = ${PROJECT_KEY} AND status = "Launch Prep" ORDER BY created DESC`,
-    favourite: true,
-  },
-  {
-    name: "AIGO — Readout Needed",
-    description: "AIGO issues labeled readout-needed for weekly growth readout.",
-    jql: `project = ${PROJECT_KEY} AND labels = "readout-needed" ORDER BY updated DESC`,
-    favourite: true,
-  },
-  {
-    name: "AIGO — Decision Needed",
-    description: "AIGO issues stalled in Decision Needed status.",
-    jql: `project = ${PROJECT_KEY} AND status = "Decision Needed" ORDER BY updated ASC`,
-    favourite: true,
-  },
-  {
-    name: "AIGO — Blocked",
-    description: "AIGO issues labeled blocked or with no activity in 7 days while in progress.",
-    jql: `project = ${PROJECT_KEY} AND (labels = "blocked" OR (status in ("Triage", "Spec Ready", "In Review") AND updated <= "-7d")) ORDER BY updated ASC`,
-    favourite: true,
-  },
-  {
-    name: "AIGO — Experiment Running",
-    description: "AIGO experiments currently live in the Experiment Running status.",
-    jql: `project = ${PROJECT_KEY} AND status = "Experiment Running" ORDER BY created DESC`,
-    favourite: true,
-  },
-];
+function buildFilters(projectKey) {
+  return [
+    {
+      name: "AIGO — Intake",
+      description: "All AIGO issues in Intake status awaiting triage.",
+      jql: `project = ${projectKey} AND status = "Intake" ORDER BY created DESC`,
+      favourite: true,
+    },
+    {
+      name: "AIGO — Claims Review",
+      description: "AIGO issues flagged for health/clinical claims review.",
+      jql: `project = ${projectKey} AND status = "Claims Review" ORDER BY priority DESC, created DESC`,
+      favourite: true,
+    },
+    {
+      name: "AIGO — Launch Readiness",
+      description: "AIGO employer launch issues in Launch Prep status.",
+      jql: `project = ${projectKey} AND status = "Launch Prep" ORDER BY created DESC`,
+      favourite: true,
+    },
+    {
+      name: "AIGO — Readout Needed",
+      description: "AIGO issues labeled readout-needed for weekly growth readout.",
+      jql: `project = ${projectKey} AND labels = "readout-needed" ORDER BY updated DESC`,
+      favourite: true,
+    },
+    {
+      name: "AIGO — Decision Needed",
+      description: "AIGO issues stalled in Decision Needed status.",
+      jql: `project = ${projectKey} AND status = "Decision Needed" ORDER BY updated ASC`,
+      favourite: true,
+    },
+    {
+      name: "AIGO — Blocked",
+      description: "AIGO issues labeled blocked or with no activity in 7 days while in progress.",
+      jql: `project = ${projectKey} AND (labels = "blocked" OR (status in ("Triage", "Spec Ready", "In Review") AND updated <= "-7d")) ORDER BY updated ASC`,
+      favourite: true,
+    },
+    {
+      name: "AIGO — Experiment Running",
+      description: "AIGO experiments currently live in the Experiment Running status.",
+      jql: `project = ${projectKey} AND status = "Experiment Running" ORDER BY created DESC`,
+      favourite: true,
+    },
+  ];
+}
 
 function resolveToken() {
   if (process.env.ATLASSIAN_TOKEN) return process.env.ATLASSIAN_TOKEN.trim();
@@ -108,6 +118,24 @@ function jiraCall({ method, url, body, token }) {
 }
 
 async function main() {
+  const args = parseArgs(process.argv.slice(2));
+  let config;
+  try {
+    config = loadInstanceConfig(args.config || undefined);
+  } catch (err) {
+    console.error(`ERROR: Failed to load instance config: ${err.message}`);
+    process.exit(1);
+  }
+
+  const cloudId = config.cloudId;
+  if (!cloudId) {
+    console.error("ERROR: Missing cloudId. Set AIGO_CLOUD_ID or provide an instance config with cloudId.");
+    process.exit(1);
+  }
+
+  const baseUrl = `https://api.atlassian.com/ex/jira/${cloudId}`;
+  const filters = buildFilters(config.projectKey || "AIGO");
+
   const token = resolveToken();
   if (!token) {
     console.error("No token found. Set ATLASSIAN_TOKEN or ensure acli is logged in.");
@@ -117,7 +145,7 @@ async function main() {
   // Get existing filters owned by me (search by name not available, so list and match)
   let existingFilters = [];
   try {
-    const resp = await jiraCall({ method: "GET", url: `${BASE_URL}/rest/api/3/filter/my?expand=jql`, token });
+    const resp = await jiraCall({ method: "GET", url: `${baseUrl}/rest/api/3/filter/my?expand=jql`, token });
     existingFilters = Array.isArray(resp) ? resp : [];
   } catch (e) {
     console.warn("Could not list existing filters:", e.message);
@@ -126,7 +154,7 @@ async function main() {
 
   const results = [];
 
-  for (const filter of FILTERS) {
+  for (const filter of filters) {
     if (existingByName.has(filter.name)) {
       const existing = existingByName.get(filter.name);
       console.log(`  EXISTS  "${filter.name}" (id: ${existing.id})`);
@@ -135,7 +163,7 @@ async function main() {
       try {
         const created = await jiraCall({
           method: "POST",
-          url: `${BASE_URL}/rest/api/3/filter`,
+          url: `${baseUrl}/rest/api/3/filter`,
           token,
           body: {
             name: filter.name,
@@ -158,7 +186,11 @@ async function main() {
   return results;
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
+}
+
+module.exports = { parseArgs, buildFilters };

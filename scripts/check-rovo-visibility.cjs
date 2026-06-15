@@ -2,19 +2,18 @@
 "use strict";
 
 // scripts/check-rovo-visibility.cjs
-// Verifies that all declared rovo:agent entries in manifest.yml are deployed
-// and installed on the target site.
+// Verifies the repo-local Rovo manifest contract and Forge installation status.
 //
 // Strategy:
-//   1. Count rovo:agent keys in manifest.yml (ground truth of what SHOULD be there)
+//   1. Count rovo:agent keys in manifest.yml (ground truth of what SHOULD be
+//      declared)
 //   2. Run `forge install list` and check the target site shows "Up-to-date"
-//   3. Cross-check: if (1) matches expected count AND (2) is Up-to-date → exit 0
-//      Any mismatch or "Out-of-date" → exit 1 with a clear diagnostic
+//   3. Cross-check: if (1) matches expected count AND (2) is Up-to-date, exit 0.
+//      Any mismatch or "Out-of-date" exits 1 with a clear diagnostic.
 //
-// The Atlassian REST API does not expose a "list deployed Rovo agents" endpoint
-// accessible with standard OAuth scopes, so we infer visibility from the Forge
-// deployment guarantee: a Forge app that is Up-to-date on a site exposes all
-// modules declared in its manifest.yml to that site.
+// This script does not perform UI inspection or call a public Rovo agent listing
+// API. Passing output means manifest/install are verified; actual Rovo UI/API
+// visibility remains a separate confirmation step.
 //
 // Usage:
 //   node scripts/check-rovo-visibility.cjs [--site <site>] [--expected <n>]
@@ -24,12 +23,12 @@
 //   --expected   19 (AIGO manifest agent count)
 //
 // Exit codes:
-//   0 — all checks pass (agents are visible in Rovo)
-//   1 — a check failed (see output for which one)
+//   0 - manifest count and Forge install status checks pass
+//   1 - a check failed (see output for which one)
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { execSync, spawnSync } = require("node:child_process");
+const { spawnSync } = require("node:child_process");
 
 // ---------------------------------------------------------------------------
 // Argument parsing
@@ -82,7 +81,7 @@ function countManifestAgents(manifestPath) {
     if (!inRovoSection) continue;
 
     // Exit the section when we hit a peer-level module key (2-space indent + non-space)
-    // or a top-level key (no indent). Blank lines are fine — stay in section.
+    // or a top-level key (no indent). Blank lines are fine; stay in section.
     if (line.length > 0 && !/^\s/.test(line)) {
       break; // top-level key (e.g., "permissions:")
     }
@@ -105,6 +104,32 @@ function countManifestAgents(manifestPath) {
 // ---------------------------------------------------------------------------
 
 /**
+ * Parse `forge install list` output for the target site status.
+ * Returns { found: boolean, status: string, raw: string }
+ * @param {string} raw
+ * @param {string} site
+ * @returns {{ found: boolean, status: string, raw: string }}
+ */
+function parseForgeInstallStatus(raw, site) {
+  // Look for the site in the output table
+  // Table row format (approximate): | <uuid> | development | <site> | Jira | <version> | <status> |
+  const lines = raw.split("\n");
+  for (const line of lines) {
+    if (line.includes(site)) {
+      // Extract status from the row containing the target site.
+      const statusMatch = line.match(/\b(Up-to-date|Out-of-date|Pending)\b/i);
+      if (statusMatch) {
+        return { found: true, status: statusMatch[0], raw };
+      }
+      // Site found but status not parsed
+      return { found: true, status: "UNKNOWN", raw };
+    }
+  }
+
+  return { found: false, status: "NOT_FOUND", raw };
+}
+
+/**
  * Run `forge install list` and check that the given site is "Up-to-date".
  * Returns { found: boolean, status: string, raw: string }
  * @param {string} site
@@ -118,26 +143,14 @@ function checkForgeInstallStatus(site) {
       timeout: 30000,
     });
     raw = (result.stdout || "") + (result.stderr || "");
+    if (result.error) {
+      return { found: false, status: "ERROR", raw: raw || String(result.error.message) };
+    }
   } catch (err) {
     return { found: false, status: "ERROR", raw: String(err.message) };
   }
 
-  // Look for the site in the output table
-  // Table row format (approximate): │ <uuid> │ development │ <site> │ Jira │ <version> │ <status> │
-  const lines = raw.split("\n");
-  for (const line of lines) {
-    if (line.includes(site)) {
-      // Extract status — it's the last cell before │ at end of row
-      const statusMatch = line.match(/Up-to-date|Out-of-date|Pending/i);
-      if (statusMatch) {
-        return { found: true, status: statusMatch[0], raw };
-      }
-      // Site found but status not parsed
-      return { found: true, status: "UNKNOWN", raw };
-    }
-  }
-
-  return { found: false, status: "NOT_FOUND", raw };
+  return parseForgeInstallStatus(raw, site);
 }
 
 // ---------------------------------------------------------------------------
@@ -149,7 +162,7 @@ function main() {
   const repoRoot = path.resolve(__dirname, "..");
   const manifestPath = path.join(repoRoot, "manifest.yml");
 
-  console.log("=== Rovo Agent Visibility Check ===");
+  console.log("=== Rovo Manifest/Install Check ===");
   console.log(`Manifest:  ${manifestPath}`);
   console.log(`Site:      ${args.site}`);
   console.log(`Expected:  ${args.expected} rovo:agent entries`);
@@ -189,10 +202,17 @@ function main() {
   // -------------------------------------------------------------------------
   // Check 2: forge install list shows Up-to-date for target site
   // -------------------------------------------------------------------------
-  console.log(`Check 2: forge install list — verify site "${args.site}" is Up-to-date`);
+  console.log(`Check 2: forge install list - verify site "${args.site}" is Up-to-date`);
   const installCheck = checkForgeInstallStatus(args.site);
 
-  if (!installCheck.found) {
+  if (installCheck.status === "ERROR") {
+    console.error("  FAIL: Unable to run or parse `forge install list`.");
+    console.error("  Raw output:");
+    for (const line of installCheck.raw.split("\n").slice(0, 20)) {
+      console.error(`    ${line}`);
+    }
+    allPassed = false;
+  } else if (!installCheck.found) {
     console.error(`  FAIL: Site "${args.site}" not found in forge install list output.`);
     console.error("  Run: forge install --site <site> --product jira --environment development");
     console.error("  Raw output:");
@@ -213,18 +233,15 @@ function main() {
   // -------------------------------------------------------------------------
   // Summary
   // -------------------------------------------------------------------------
-  console.log("=== Rovo Visibility Summary ===");
+  console.log("=== Rovo Manifest/Install Summary ===");
   if (allPassed) {
-    console.log(`PASS: ${count} rovo:agent entries declared in manifest AND site is Up-to-date.`);
-    console.log(`All ${count} agents are guaranteed visible in Rovo on ${args.site}.`);
+    console.log(`PASS: manifest declares ${count} rovo:agent entries and Forge reports ${args.site} Up-to-date.`);
+    console.log("This proves only manifest agent count plus Forge installation status.");
+    console.log("UI/API confirmation is pending for actual Rovo visibility.");
     console.log("");
-    console.log("Deployment guarantee: Forge apps expose all modules in manifest.yml to the");
-    console.log("installed site when status is Up-to-date. No separate per-agent verification");
-    console.log("endpoint exists in the Atlassian REST API with standard OAuth scopes.");
-    console.log("");
-    console.log("Manual spot-check (optional): navigate to");
+    console.log("Confirmation step: inspect the Rovo UI, or use a public Atlassian agent");
+    console.log("listing API if Atlassian exposes one for this tenant.");
     console.log(`  https://${args.site}/jira/apps/rovo/agents`);
-    console.log("and confirm agents with 'AI' prefix are listed.");
     process.exit(0);
   } else {
     console.error("FAIL: One or more checks did not pass. See above for details.");
@@ -240,4 +257,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { countManifestAgents, checkForgeInstallStatus };
+module.exports = { countManifestAgents, parseForgeInstallStatus, checkForgeInstallStatus };

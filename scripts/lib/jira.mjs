@@ -10,14 +10,32 @@
 // Exit code 3 if no auth is resolvable.
 
 import { execSync } from "node:child_process";
-import { readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
+import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import { Version3Client } from "jira.js";
 
-const SITE = "https://myhealthcaresite.atlassian.net";
-const CLOUD_ID = "76683cc1-6501-400f-8b59-01eaad4418d2"; // from instances/aigo.example.json
-const CLOUD_API_HOST = `https://api.atlassian.com/ex/jira/${CLOUD_ID}`;
+const require = createRequire(import.meta.url);
+const { loadInstanceConfig } = require("../instance-config.cjs");
+const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+
+// Automatically use infra/instances/staging.yaml when no explicit config is set.
+if (!process.env.AIGO_INSTANCE_CONFIG && !process.env.AIGO_INSTANCE_YAML_CONFIG) {
+  process.env.AIGO_INSTANCE_YAML_CONFIG = join(REPO_ROOT, "infra", "instances", "staging.yaml");
+}
+const config = loadInstanceConfig();
+
+function normalizeSiteHost(site) {
+  return String(site || "")
+    .trim()
+    .replace(/^https?:\/\//i, "")
+    .replace(/\/.*$/, "");
+}
+
+const SITE_HOST = normalizeSiteHost(config.site);
+const SITE = SITE_HOST ? `https://${SITE_HOST}` : "";
+const CLOUD_ID = config.cloudId;
+const CLOUD_API_HOST = CLOUD_ID ? `https://api.atlassian.com/ex/jira/${CLOUD_ID}` : "";
 
 /**
  * Resolve Atlassian auth credentials from env vars or macOS keychain.
@@ -51,7 +69,7 @@ export function resolveAuth() {
 }
 
 /**
- * Create a jira.js Version3Client for the staging site.
+ * Create a jira.js Version3Client for the configured site.
  * Throws with exit code 3 if no auth is available.
  */
 export function createClient() {
@@ -69,11 +87,20 @@ export function createClient() {
   process.stderr.write(`Jira auth: ${auth.method}\n`);
 
   if (auth.type === "bearer") {
+    if (!CLOUD_API_HOST) {
+      process.stderr.write("ERROR: Jira bearer auth requires cloudId in AIGO_INSTANCE_CONFIG or AIGO_CLOUD_ID.\n");
+      process.exit(3);
+    }
     // Bearer (OAuth2/ACLI) tokens must use the cloud-ID API host
     return new Version3Client({
       host: CLOUD_API_HOST,
       authentication: { oauth2: { accessToken: auth.token } },
     });
+  }
+
+  if (!SITE) {
+    process.stderr.write("ERROR: Jira basic auth requires site in AIGO_INSTANCE_CONFIG, JIRA_SITE, or AIGO_JIRA_SITE.\n");
+    process.exit(3);
   }
 
   // Basic auth works with the site URL directly

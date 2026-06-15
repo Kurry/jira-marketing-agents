@@ -1,6 +1,7 @@
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 const { parseCsv, renderSeed, stringifyCsv } = require("../../scripts/render-seed.cjs") as {
@@ -12,6 +13,19 @@ const { parseCsv, renderSeed, stringifyCsv } = require("../../scripts/render-see
     seedTemplate: string;
     renderedSeedFile: string;
   }) => { targetPath: string; count: number };
+};
+
+const { selectProvisionConfig, buildChildEnv } = require("../../scripts/provision-all.cjs") as {
+  selectProvisionConfig: (configPath: string, args: { site?: string | null; env?: string | null }) => Record<string, unknown>;
+  buildChildEnv: (config: Record<string, unknown>, configPath: string) => Record<string, string>;
+};
+
+const { buildFilters } = require("../../scripts/provision-filters.cjs") as {
+  buildFilters: (projectKey: string) => Array<{ jql: string }>;
+};
+
+const { dashboardUrl } = require("../../scripts/provision-dashboards.cjs") as {
+  dashboardUrl: (site: string, dashboardId: string) => string;
 };
 
 // ---------------------------------------------------------------------------
@@ -135,5 +149,81 @@ describe("render-seed stringifyCsv — round-trip fidelity", () => {
   it("escapes embedded double-quotes", () => {
     const csv = stringifyCsv([['say "hi"']]);
     expect(parseCsv(csv)[0]).toEqual(['say "hi"']);
+  });
+});
+
+describe("portable provisioning — selected instance propagation", () => {
+  let dir: string;
+  let savedEnv: NodeJS.ProcessEnv;
+
+  beforeEach(() => {
+    dir = mkdtempSync(path.join(tmpdir(), "aigo-portable-config-"));
+    savedEnv = { ...process.env };
+  });
+
+  afterEach(() => {
+    rmSync(dir, { recursive: true, force: true });
+    for (const k of Object.keys(process.env)) {
+      if (!(k in savedEnv)) delete process.env[k];
+      else process.env[k] = savedEnv[k];
+    }
+  });
+
+  function writeConfig(overrides: Record<string, unknown> = {}) {
+    const configPath = path.join(dir, "instance.json");
+    writeFileSync(configPath, JSON.stringify({
+      site: "customer.atlassian.net",
+      cloudId: "cloud-customer",
+      projectId: "20000",
+      forgeEnvironment: "development",
+      projectKey: "CUST",
+      projectName: "Customer Growth Ops",
+      seedLabel: "customer-seed",
+      ...overrides,
+    }));
+    return configPath;
+  }
+
+  it("provision-all child env carries selected config and CLI overrides", () => {
+    const configPath = writeConfig();
+    const selected = selectProvisionConfig(configPath, {
+      site: "override.atlassian.net",
+      env: "staging",
+    });
+    const env = buildChildEnv(selected, configPath);
+
+    expect(env["AIGO_INSTANCE_CONFIG"]).toBe(configPath);
+    expect(env["JIRA_SITE"]).toBe("override.atlassian.net");
+    expect(env["AIGO_JIRA_SITE"]).toBe("override.atlassian.net");
+    expect(env["AIGO_CLOUD_ID"]).toBe("cloud-customer");
+    expect(env["AIGO_PROJECT_ID"]).toBe("20000");
+    expect(env["AIGO_PROJECT_KEY"]).toBe("CUST");
+    expect(env["FORGE_ENV"]).toBe("staging");
+  });
+
+  it("filter JQL is generated for the selected project key", () => {
+    const filters = buildFilters("CUST");
+
+    expect(filters.length).toBeGreaterThan(0);
+    expect(filters.every((filter) => filter.jql.includes("project = CUST"))).toBe(true);
+    expect(filters.every((filter) => !filter.jql.includes("project = AIGO"))).toBe(true);
+  });
+
+  it("dashboard evidence URLs use the configured site", () => {
+    expect(dashboardUrl("https://customer.atlassian.net/wiki", "2001")).toBe(
+      "https://customer.atlassian.net/jira/dashboards/2001",
+    );
+  });
+
+  it("shared Jira client constants come from the configured instance", async () => {
+    const configPath = writeConfig({ site: "client.atlassian.net", cloudId: "cloud-client" });
+    process.env.AIGO_INSTANCE_CONFIG = configPath;
+
+    const moduleUrl = `${pathToFileURL(path.resolve("scripts/lib/jira.mjs")).href}?portable=${Date.now()}`;
+    const jira = await import(moduleUrl);
+
+    expect(jira.SITE).toBe("https://client.atlassian.net");
+    expect(jira.CLOUD_ID).toBe("cloud-client");
+    expect(jira.CLOUD_API_HOST).toBe("https://api.atlassian.com/ex/jira/cloud-client");
   });
 });

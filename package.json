@@ -22,7 +22,6 @@
     "provision:all": "node scripts/provision-all.cjs",
     "provision:filters": "node scripts/provision-filters.cjs",
     "provision:dashboards": "node scripts/provision-dashboards.cjs",
-    "provision:automation:forge": "node scripts/forge-import-automation.cjs",
     "check:rovo": "node scripts/check-rovo-visibility.cjs",
     "audit": "node scripts/audit/run-all.mjs",
     "infra:plan": "node scripts/infra/plan.mjs",

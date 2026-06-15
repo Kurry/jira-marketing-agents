@@ -56,10 +56,28 @@ describe("loadInstanceConfig — defaults", () => {
     expect(cfg.minSeedCount).toBe(15);
   });
 
+  it("does not infer site or cloudId from staging files by default", () => {
+    const cfg = loadInstanceConfig();
+    expect(cfg.site).toBe("");
+    expect(cfg.cloudId).toBe("");
+  });
+
   it("auto-derives renderedSeedFile from projectKey when not set", () => {
     const cfg = loadInstanceConfig();
     expect(String(cfg.renderedSeedFile)).toContain("AIGO");
     expect(String(cfg.renderedSeedFile)).toMatch(/\.csv$/);
+  });
+
+  it("loads portable site and cloud defaults from env at call time", () => {
+    process.env.JIRA_SITE = "tenant.atlassian.net";
+    process.env.AIGO_CLOUD_ID = "cloud-tenant";
+    process.env.AIGO_PROJECT_ID = "20000";
+
+    const cfg = loadInstanceConfig();
+
+    expect(cfg.site).toBe("tenant.atlassian.net");
+    expect(cfg.cloudId).toBe("cloud-tenant");
+    expect(cfg.projectId).toBe("20000");
   });
 });
 
@@ -144,6 +162,31 @@ describe("envForConfig — env var mapping", () => {
   it("stringifies minSeedCount in the env output", () => {
     const env = envForConfig({ site: "", projectKey: "P", seedLabel: "s", minSeedCount: 7, renderedSeedFile: "f.csv", forgeEnvironment: "development" });
     expect(env["AIGO_MIN_SEED_COUNT"]).toBe("7");
+  });
+
+  it("maps cloudId, projectId, templates, and automation file to env", () => {
+    const env = envForConfig({
+      site: "tenant.atlassian.net",
+      cloudId: "cloud-tenant",
+      projectId: "20000",
+      projectKey: "P",
+      projectName: "Portable",
+      projectDescription: "Portable tenant",
+      templateProjectKey: "TPL",
+      seedLabel: "s",
+      minSeedCount: 7,
+      seedTemplate: "automation/seed/template.csv",
+      renderedSeedFile: "automation/seed/rendered.csv",
+      automationRulesFile: "automation/rules/custom.json",
+      forgeEnvironment: "staging",
+    });
+
+    expect(env["AIGO_CLOUD_ID"]).toBe("cloud-tenant");
+    expect(env["AIGO_PROJECT_ID"]).toBe("20000");
+    expect(env["AIGO_PROJECT_DESCRIPTION"]).toBe("Portable tenant");
+    expect(env["AIGO_TEMPLATE_PROJECT_KEY"]).toBe("TPL");
+    expect(env["AIGO_SEED_TEMPLATE"]).toBe("automation/seed/template.csv");
+    expect(env["AIGO_AUTOMATION_RULES_FILE"]).toBe("automation/rules/custom.json");
   });
 
   it("includes all existing process.env keys (pass-through)", () => {

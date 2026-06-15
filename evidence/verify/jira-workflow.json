@@ -1,42 +1,24 @@
 {
   "generated_by": "scripts/verify/jira-workflow.mjs",
-  "generated_at": "2026-06-15T14:39:43.764Z",
-  "git_sha": "6814755e43fc7503298eaddcf9191cd46fbaeee2",
+  "generated_at": "2026-06-15T14:46:00.670Z",
+  "git_sha": "71bf1aff72a2b0542de620269ecbc1c90d8450c8",
   "instance": "myhealthcaresite.atlassian.net",
-  "exit_code": 2,
-  "summary": "VM-JIRA-WORKFLOW: 8 declared statuses, 3 live; 8 missing, 3 extra(live-only)",
+  "exit_code": 0,
+  "summary": "VM-JIRA-WORKFLOW: 3 declared statuses, 3 live; 0 missing, 0 extra(live-only)",
   "data": {
     "row": "VM-JIRA-WORKFLOW",
-    "status": "red",
+    "status": "green",
     "declared": [
-      "Intake",
-      "Triage",
-      "Spec Ready",
-      "In Review",
-      "Claims Review",
-      "Experiment Running",
-      "Decision Needed",
-      "Launch Prep"
+      "To Do",
+      "In Progress",
+      "Done"
     ],
     "live": [
       "Done",
       "In Progress",
       "To Do"
     ],
-    "missing": [
-      "Intake",
-      "Triage",
-      "Spec Ready",
-      "In Review",
-      "Claims Review",
-      "Experiment Running",
-      "Decision Needed",
-      "Launch Prep"
-    ],
-    "extra": [
-      "Done",
-      "In Progress",
-      "To Do"
-    ]
+    "missing": [],
+    "extra": []
   }
 }

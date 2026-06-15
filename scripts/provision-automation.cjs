@@ -2,20 +2,22 @@
 "use strict";
 
 // scripts/provision-automation.cjs
-// Imports rendered Jira Automation rules (DISABLED by default). Idempotent:
-// rules whose name already exists in Jira are skipped.
+// Renders and validates Jira Automation rule JSON for native Jira Automation
+// import. The supported path stops before mutation because Atlassian does not
+// expose a stable public import surface for every tenant.
 //
 // Usage:
 //   node scripts/provision-automation.cjs [--config <path>] [--dry-run]
+//   AIGO_EXPERIMENTAL_AUTOMATION_IMPORT=1 node scripts/provision-automation.cjs
 //
 // Defaults:
 //   --config   instances/aigo.example.json
 //   --dry-run  validate rendered rule JSONs, no API calls, exit 0
 //
 // Exit codes:
-//   0 — success (or dry-run passed)
+//   0 — validation success (or dry-run passed)
 //   1 — fatal error
-//   2 — auth/permission error (manual import required)
+//   2 — manual Jira Automation import required
 
 const fs = require("node:fs");
 const path = require("node:path");
@@ -26,14 +28,19 @@ const { execSync, spawnSync } = require("node:child_process");
 // ---------------------------------------------------------------------------
 
 function parseArgs(argv) {
-  const args = { dryRun: false, config: null };
+  const args = { dryRun: false, config: null, experimentalApiImport: false };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === "--config" && argv[i + 1]) {
       args.config = argv[i + 1];
       i++;
     } else if (argv[i] === "--dry-run") {
       args.dryRun = true;
+    } else if (argv[i] === "--experimental-api-import") {
+      args.experimentalApiImport = true;
     }
+  }
+  if (process.env.AIGO_EXPERIMENTAL_AUTOMATION_IMPORT === "1") {
+    args.experimentalApiImport = true;
   }
   return args;
 }
@@ -174,6 +181,24 @@ function writeAutomationOutput(repoRoot, output) {
   return outPath;
 }
 
+function printManualImportSteps({ baseUrl, renderedDir, repoRoot }) {
+  console.log("\nManual import required.");
+  console.log("Jira Automation rule JSON has been rendered and validated, but the");
+  console.log("supported repo path does not call private/internal Atlassian import APIs.");
+  console.log("");
+  console.log("Native import steps:");
+  console.log(`  1. Open ${baseUrl} → Project settings → Automation → Import rules`);
+  console.log(`  2. Upload JSON from: ${path.relative(repoRoot, renderedDir)}/`);
+  console.log("  3. Review rule actor, project scope, and any Rovo agent selections.");
+  console.log("  4. Keep rules DISABLED until each rule is reviewed.");
+  console.log("  5. Enable one rule at a time, trigger it on a seed issue, and capture");
+  console.log("     the native Jira Automation audit-log row.");
+  console.log("");
+  console.log("Experimental escape hatch:");
+  console.log("  AIGO_EXPERIMENTAL_AUTOMATION_IMPORT=1 node scripts/provision-automation.cjs");
+  console.log("  This is not the supported portability path.");
+}
+
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
@@ -278,6 +303,30 @@ async function main() {
     process.exit(0);
   }
 
+  const { cloudId } = config;
+  const baseUrl = cloudId
+    ? `https://api.atlassian.com/ex/jira/${cloudId}`
+    : `https://${config.site}`;
+
+  if (!args.experimentalApiImport) {
+    printManualImportSteps({ baseUrl, renderedDir, repoRoot });
+    writeAutomationOutput(repoRoot, {
+      timestamp: new Date().toISOString(),
+      cloudId,
+      importMethod: "manual-required",
+      supportedPath: "native-jira-automation-import",
+      renderedFiles,
+      validatedRules: allRules.map((r) => r.name),
+      imported: [],
+      skipped: [],
+      errors: ["Native Jira Automation import and audit-log verification required"],
+    });
+    process.exit(2);
+  }
+
+  console.log("\nEXPERIMENTAL: API import requested.");
+  console.log("This path is not the supported portability path and may use undocumented Atlassian endpoints.");
+
   // Resolve auth
   const token = resolveToken();
   if (!token) {
@@ -286,11 +335,6 @@ async function main() {
     );
     process.exit(1);
   }
-
-  const { cloudId } = config;
-  const baseUrl = cloudId
-    ? `https://api.atlassian.com/ex/jira/${cloudId}`
-    : `https://${config.site}`;
 
   // Step 4: GET existing rules for idempotency
   console.log("\nFetching existing automation rules (idempotency check)...");
@@ -345,14 +389,15 @@ async function main() {
 
   console.log(`\nImporting ${newRules.length} new rule(s)...`);
 
-  // Step 5: Attempt import via two endpoints
+  // Step 5: Experimental API import. This is intentionally outside the
+  // supported portability path; prefer native Jira Automation import/audit logs.
   const ENDPOINTS = [
     {
-      label: "primary (REST v3)",
+      label: "experimental REST v3 candidate",
       url: `${baseUrl}/rest/api/3/automation/service/1.0/rules/imports`,
     },
     {
-      label: "gateway fallback",
+      label: "experimental private gateway fallback",
       url: `${baseUrl}/gateway/api/automation/internal-api/jira/${cloudId}/pro/rest/GLOBAL/rules/import`,
     },
   ];

@@ -184,6 +184,53 @@ Acceptance:
   platform/IaC spikes.
 - Terraform is treated as an evaluated option, not an assumed MVP dependency.
 
+## Milestone 9: Atlassian-Native NIH Reduction
+
+Do not mark these done only because a worker has touched the related code or
+docs elsewhere. Close each task only when the evidence or final doc reference is
+linked.
+
+- `[ ]` **T-NIH-01: Rovo visibility and evidence wording.** Replace
+  "guaranteed visible" wording with "manifest/install verified; UI confirmation
+  pending" unless a public Rovo listing API exists. Split webtrigger fallback
+  proof from native Jira Automation/Rovo audit-log proof, and keep manual UI
+  checks visible in README/runbook/readiness docs.
+- `[ ]` **T-NIH-02: Supported Automation import path cleanup.** Remove the
+  private `gateway/api/automation/internal-api/...` path from the supported
+  setup flow or label it experimental and non-default. Track removal of
+  `fn-import-automation` and `manage:jira-configuration` only after no supported
+  importer path depends on them.
+- `[ ]` **T-NIH-03: ACLI capability inventory.** Document ACLI ownership for
+  project, workitem, field, filter, and dashboard commands in
+  `docs/PORTABILITY.md`, with supported fallback paths for each gap.
+- `[ ]` **T-NIH-04: Golden template validation.** Clone a company-managed golden
+  template project into a disposable project and prove readiness for canonical
+  issue types, statuses, screens, fields, board columns, queues, filters,
+  dashboards, seeds, and Automation placeholders with fewer custom REST
+  mutations than fresh provisioning.
+- `[ ]` **T-NIH-05: Atlassian product adoption spike.** Evaluate Jira Product
+  Discovery, JSM Assets, Confluence, Atlassian Analytics/Data Lake, and
+  Atlassian Goals as native owners for ideas/insights, employer or segment
+  objects, claims/SOP knowledge, readouts, and outcome rollups. Product-level
+  subtasks are T-NIH-05A through T-NIH-05F in `specs/outcome-roadmap.md`.
+- `[ ]` **T-NIH-06: Third-party Terraform disposable-site spike.** Test
+  third-party Terraform providers only against a disposable Jira site/project
+  for create, import, plan, drift, and destroy behavior before any production
+  `.tf` resources are allowed.
+- `[ ]` **T-NIH-07: Custom script label inventory.** Label every supported
+  custom script as exactly one of: native wrapper, documented API gap, or
+  Twin-specific logic.
+
+Acceptance:
+- The supported path names the Atlassian-native owner for every platform
+  concern, and every gap has a documented fallback.
+- Every custom script has one label and no supported path relies on private
+  Atlassian endpoints.
+- Golden-template cloning, product adoption, and Terraform provider decisions
+  each have evidence, decision criteria, and rollback/manual fallback notes.
+- Production docs never claim native Jira Automation/Rovo proof from webtrigger
+  fallback evidence.
+
 ## Outcome 1 Tasks: AI Growth Intake and Triage
 
 - `[x]` Expose Growth Triage, Requirements Gap, Acceptance Criteria, and
@@ -436,12 +483,20 @@ Acceptance:
 - `[x]` Add Automation template contract tests for manifest agent references,
   AI-analysis comments, disabled-by-default rules, claims safety, and no launch
   behavior.
-- `[ ]` Validate the golden template project with canonical issue types,
-  statuses, screens, fields, board, queues, filters, and Automation placeholders.
+- `[ ]` Complete T-NIH-03 ACLI capability inventory before expanding portable
+  provisioning beyond the current supported surfaces.
+- `[ ]` Complete T-NIH-04 golden-template validation for canonical issue types,
+  statuses, screens, fields, board, queues, filters, dashboards, seeds, and
+  Automation placeholders.
+- `[ ]` Complete T-NIH-05 Atlassian product adoption spike before replacing Jira
+  issue/field/dashboard surfaces with JPD, Assets, Confluence, Analytics/Data
+  Lake, or Goals.
 - `[~]` Extend readiness checks for transition paths, required fields, screens,
   seed coverage, Rovo UI visibility, and Automation audit logs.
-- `[ ]` Run the Terraform/provider spike against a disposable Jira site before
-  adding production `.tf` resources.
+- `[ ]` Complete T-NIH-06 Terraform/provider spike against a disposable Jira
+  site before adding production `.tf` resources.
+- `[ ]` Complete T-NIH-07 custom-script label inventory before promoting any
+  custom script into the long-term supported portability path.
 
 ## Post-MVP Backlog
 

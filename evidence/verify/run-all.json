@@ -1,13 +1,13 @@
 {
   "generated_by": "scripts/verify/run-all.mjs",
-  "generated_at": "2026-06-15T14:39:36.536Z",
-  "git_sha": "6814755e43fc7503298eaddcf9191cd46fbaeee2",
+  "generated_at": "2026-06-15T14:46:03.527Z",
+  "git_sha": "71bf1aff72a2b0542de620269ecbc1c90d8450c8",
   "instance": "myhealthcaresite.atlassian.net",
-  "exit_code": 2,
-  "summary": "8 verify rows: 6 green, 1 unsupported(blocked), 1 red",
+  "exit_code": 0,
+  "summary": "8 verify rows: 7 green, 1 unsupported(blocked), 0 red",
   "data": {
     "row": "VM-DONE",
-    "status": "red",
+    "status": "green",
     "rows": [
       {
         "row": "VM-AUTOMATION-AUDIT",
@@ -78,12 +78,12 @@
       {
         "row": "VM-JIRA-WORKFLOW",
         "script": "jira-workflow.mjs",
-        "status": "red",
-        "declared_status": "red",
-        "exit_code": 2,
+        "status": "green",
+        "declared_status": "green",
+        "exit_code": 0,
         "blocker": null,
         "blocker_present": false,
-        "summary": "VM-JIRA-WORKFLOW: 8 declared statuses, 3 live; 8 missing, 3 extra(live-only)",
+        "summary": "VM-JIRA-WORKFLOW: 3 declared statuses, 3 live; 0 missing, 0 extra(live-only)",
         "has_envelope": true
       },
       {

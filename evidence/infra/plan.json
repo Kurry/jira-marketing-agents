@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/infra/plan.mjs",
-  "generated_at": "2026-06-15T14:39:06.950Z",
-  "git_sha": "6814755e43fc7503298eaddcf9191cd46fbaeee2",
+  "generated_at": "2026-06-15T14:41:00.018Z",
+  "git_sha": "770ed6faab1f3f952088a43d319f41ff7cbf0c45",
   "instance": "myhealthcaresite.atlassian.net",
   "exit_code": 0,
   "summary": "infra plan: converged — 0 changes",

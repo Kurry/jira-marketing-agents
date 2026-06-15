@@ -18,14 +18,36 @@ const fs = require("node:fs");
 const path = require("node:path");
 const https = require("node:https");
 const { execSync } = require("node:child_process");
+const { loadInstanceConfig } = require("./instance-config.cjs");
 
 // ---------------------------------------------------------------------------
 // Config
 // ---------------------------------------------------------------------------
 
-const CLOUD_ID = process.env.AIGO_CLOUD_ID || "76683cc1-6501-400f-8b59-01eaad4418d2";
-const BASE_URL = `https://api.atlassian.com/ex/jira/${CLOUD_ID}`;
-const PROJECT_KEY = process.env.AIGO_PROJECT_KEY || "AIGO";
+function parseArgs(argv) {
+  const args = { dryRun: false, config: null };
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === "--dry-run") {
+      args.dryRun = true;
+    } else if (argv[i] === "--config" && argv[i + 1]) {
+      args.config = argv[i + 1];
+      i++;
+    }
+  }
+  return args;
+}
+
+function normalizeSiteHost(site) {
+  return String(site || "")
+    .trim()
+    .replace(/^https?:\/\//i, "")
+    .replace(/\/.*$/, "");
+}
+
+function dashboardUrl(site, dashboardId) {
+  const host = normalizeSiteHost(site);
+  return host ? `https://${host}/jira/dashboards/${dashboardId}` : "";
+}
 
 // Filter IDs provisioned by T-M6-01 (provision-filters.cjs)
 // These are used as savedFilterId references in dashboard gadgets.
@@ -243,7 +265,7 @@ function resolveToken() {
 // HTTP helper
 // ---------------------------------------------------------------------------
 
-function jiraRequest({ method, path: reqPath, token, body = null }) {
+function jiraRequest({ method, path: reqPath, token, cloudId, body = null }) {
   return new Promise((resolve, reject) => {
     const bodyStr = body ? JSON.stringify(body) : null;
     const headers = {
@@ -258,7 +280,7 @@ function jiraRequest({ method, path: reqPath, token, body = null }) {
       {
         hostname: "api.atlassian.com",
         port: 443,
-        path: `/ex/jira/${CLOUD_ID}${reqPath}`,
+        path: `/ex/jira/${cloudId}${reqPath}`,
         method,
         headers,
       },
@@ -283,11 +305,25 @@ function jiraRequest({ method, path: reqPath, token, body = null }) {
 // ---------------------------------------------------------------------------
 
 async function main() {
-  const dryRun = process.argv.includes("--dry-run");
+  const args = parseArgs(process.argv.slice(2));
+  const dryRun = args.dryRun;
   const repoRoot = path.resolve(__dirname, "..");
+  let config;
+  try {
+    config = loadInstanceConfig(args.config || undefined);
+  } catch (err) {
+    console.error(`ERROR: Failed to load instance config: ${err.message}`);
+    process.exit(1);
+  }
+
+  const cloudId = config.cloudId;
+  const projectKey = config.projectKey || "AIGO";
+  const site = config.site;
 
   console.log("=== AIGO Dashboard Provisioner (T-M6-02) ===");
   console.log(`Dashboards to create: ${DASHBOARDS.length}`);
+  console.log(`Site: ${site || "(not configured)"}`);
+  console.log(`Project: ${projectKey}`);
   console.log(`Dry run: ${dryRun}`);
 
   if (dryRun) {
@@ -306,9 +342,14 @@ async function main() {
     process.exit(2);
   }
 
+  if (!cloudId) {
+    console.error("ERROR: Missing cloudId. Set AIGO_CLOUD_ID or provide an instance config with cloudId.");
+    process.exit(1);
+  }
+
   // List existing dashboards (my dashboards — idempotency check)
   console.log("\nFetching existing dashboards...");
-  const listResp = await jiraRequest({ method: "GET", path: "/rest/api/3/dashboard?maxResults=100", token });
+  const listResp = await jiraRequest({ method: "GET", path: "/rest/api/3/dashboard?maxResults=100", token, cloudId });
   if (listResp.status === 401 || listResp.status === 403) {
     console.error(`ERROR: Auth failed (HTTP ${listResp.status}). Check ATLASSIAN_TOKEN or acli credentials.`);
     process.exit(2);
@@ -340,6 +381,7 @@ async function main() {
       method: "POST",
       path: "/rest/api/3/dashboard",
       token,
+      cloudId,
       body: createBody,
     });
 
@@ -360,6 +402,7 @@ async function main() {
         method: "POST",
         path: `/rest/api/3/dashboard/${dashboardId}/gadget`,
         token,
+        cloudId,
         body: {
           moduleKey: gadget.moduleKey,
           color: gadget.color,
@@ -383,7 +426,7 @@ async function main() {
     results.push({
       name: dashboard.name,
       id: dashboardId,
-      url: `https://myhealthcaresite.atlassian.net/jira/dashboards/${dashboardId}`,
+      url: dashboardUrl(site, dashboardId),
       status: "created",
       gadgets: gadgetResults,
     });
@@ -402,8 +445,8 @@ async function main() {
     "# AIGO Dashboards",
     "",
     `Provisioned: ${new Date().toISOString().slice(0, 10)} (T-M6-02)`,
-    `Site: myhealthcaresite.atlassian.net`,
-    `Project: AIGO`,
+    `Site: ${site || "(not configured)"}`,
+    `Project: ${projectKey}`,
     `Script: \`scripts/provision-dashboards.cjs\` (idempotent — re-run is safe)`,
     "",
     "## Created Dashboards",
@@ -412,7 +455,7 @@ async function main() {
     "|---|---|---|---|",
     ...results.map((r) =>
       r.id
-        ? `| ${r.name} | ${r.id} | [Open](${r.url}) | ${(r.gadgets || []).length} |`
+        ? `| ${r.name} | ${r.id} | ${r.url ? `[Open](${r.url})` : "—"} | ${(r.gadgets || []).length} |`
         : `| ${r.name} | — | — | ${r.status} |`
     ),
     "",
@@ -451,7 +494,11 @@ async function main() {
   console.log("\nDone.");
 }
 
-main().catch((err) => {
-  console.error("FATAL:", err);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((err) => {
+    console.error("FATAL:", err);
+    process.exit(1);
+  });
+}
+
+module.exports = { parseArgs, normalizeSiteHost, dashboardUrl };
