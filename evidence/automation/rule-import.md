@@ -11,7 +11,7 @@ CloudID: 76683cc1-6501-400f-8b59-01eaad4418d2
 | 1 | AIGO – Intake Triage | 10022485 | DISABLED | issue:created | issue:created ✓ |
 | 2 | AIGO – Employer Launch Plan | 10022489 | DISABLED | issue:created | issue:created ✓ |
 | 3 | AIGO – Experiment Spec | 10022493 | DISABLED | issue:created | issue:created ✓ |
-| 4 | AIGO – Creative Claims Review | 10022498 | DISABLED | issue:created ⚠ | issue transitioned → Ready |
+| 4 | AIGO – Creative Claims Review | 10022498 | DISABLED | issue:transitioned (all) ⚠ | issue transitioned → Ready |
 | 5 | AIGO – Weekly Growth Readout | 10022499 | DISABLED | issue:created ⚠ | Scheduled CRON Mon 8AM ET |
 
 ## Operator follow-up required (before enabling rules 4 & 5)
@@ -23,12 +23,13 @@ The `jira.rovo.agent.action` component type returns HTTP 500 via the internal AP
 **Fix:** Settings → Automation → (connect Rovo) — one-time admin step.
 After connecting, edit each rule and replace the placeholder comment action with a Rovo action.
 
-### Constraint 2: Only `issue:created` trigger works via internal API
-`jira.issue.event.trigger:transitioned` and `jira.scheduled.trigger` both return HTTP 500.
-**Fix:** Edit rules 4 and 5 via UI flow builder and change the trigger:
-- Rule 4 (Creative Claims Review): change to "Work item transitioned → Ready"
-  - Add JQL condition: `project = AIGO AND issuetype = "Creative Request"`
-- Rule 5 (Weekly Growth Readout): change to "Scheduled" → CRON `0 0 8 ? * MON` (America/New_York)
+### Constraint 2: Trigger type `transitioned` works via API but toStatus filter and CRON do not
+Updated 2026-06-15 after extended API discovery:
+- `jira.issue.event.trigger:transitioned` type: **accepted** via PUT /rule/{id} with value `{eventKey:'jira:issue_transitioned', issueEvent:'issue_transitioned'}`
+- `toStatus` filter in transitioned trigger: **500 for all tested formats** (plain string, object with name, object with id) — must set via UI
+- `jira.scheduled.trigger` (CRON): **500 for all tested formats** (scheduleType+cronExpression, flat cronExpression, nested schedule object) — must set via UI
+**Fix for rule 4:** Rule 10022498 now has `issue:transitioned` trigger (all transitions). Edit via UI to add "→ Ready" toStatus filter and JQL condition.
+**Fix for rule 5:** Edit rule 10022499 via UI flow builder → change trigger to "Scheduled" → CRON `0 0 8 ? * MON` (America/New_York).
 
 ### JQL project scoping (all rules)
 The `jira.jql.condition` component also returns HTTP 500 via API.

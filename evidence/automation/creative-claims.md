@@ -12,7 +12,7 @@
 
 | Field | Value |
 |---|---|
-| Trigger (current) | issue:created — PLACEHOLDER; change to "transitioned → Ready" via UI |
+| Trigger (current) | jira.issue.event.trigger:transitioned (all transitions) — updated 2026-06-15; toStatus filter still needs UI |
 | Intended trigger | jira.issue.event.trigger:transitioned → toStatus: Ready |
 | Intended scope | project = AIGO AND issuetype = "Creative Request" |
 | Agent | creative-claims-agent |
@@ -25,8 +25,11 @@
 4. Change action to Rovo: `creative-claims-agent` (never approves claims)
 5. Validate via T-M3-03 → `evidence/automation/creative-claims-audit.md`
 
-## VM-AUTOMATION-IMPORT verdict: PASS (with trigger placeholder)
+## VM-AUTOMATION-IMPORT verdict: PASS (trigger type fixed; toStatus still needs UI)
 - Rule exists in Jira Automation: ✓
 - State = DISABLED at import: ✓
 - Source file rendered: `automation/rules/rendered/creative-claims.json` ✓
-- Note: trigger type `jira.issue.event.trigger:transitioned` returns HTTP 500 via internal API; rule uses placeholder `created` trigger until operator updates via UI
+- Trigger updated 2026-06-15: `jira.issue.event.trigger:transitioned` now set via API (PUT /rule/10022498)
+  - Working format: `{eventKey:'jira:issue_transitioned', issueEvent:'issue_transitioned'}`
+  - toStatus filter returns 500 for all tested formats — must be set to "Ready" via UI flow builder
+  - JQL condition returns 500 — add `project = AIGO AND issuetype = "Creative Request"` via UI

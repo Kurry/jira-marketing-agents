@@ -4,7 +4,7 @@ _Last updated: 2026-06-15T14:40Z_
 _Current tick: 26_
 
 ## Milestone
-- Active: **M0-M3 ✓ · M6 ✓ · IaC ✓ · docs ✓ · safety ✓ — awaiting operator: T-M3-03 (enable rules + audit), T-M4-01..06 (Rovo connect + manual runs)**
+- Active: **M0-M3 ✓ · M6 ✓ · IaC ✓ · docs ✓ · safety ✓ · evidence ✓ — awaiting operator: T-M3-03 only (connect Rovo, enable rules, capture audit logs)**
 - M0 ✓ · M1 ✓ · M2 ✓ · M3 ✓ · M6 ✓ · IaC layer ✓ · docs ✓ · T-M8-01 ✓ · T-M8-02 ✓ · T-M8-03 ✓
 - Tests: **1046 passing** (73 files) — build clean (0 TS errors) — all src/ modules covered
 - Issue types: all 14 canonical live (IDs 10048-10061) ✓
