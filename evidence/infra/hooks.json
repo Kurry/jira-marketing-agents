@@ -1,10 +1,18 @@
 {
   "generated_by": "scripts (T-B-03 manual verification)",
-  "generated_at": "2026-06-15T14:20:41.131Z",
-  "hooks": [
-    { "path": ".claude/hooks/task-completed.sh", "executable": true },
-    { "path": ".claude/hooks/task-created.sh", "executable": true },
-    { "path": ".claude/hooks/teammate-idle.sh", "executable": true }
-  ],
-  "settings_wired": true
+  "generated_at": "2026-06-15T14:23:16.000Z",
+  "git_sha": "cdd8d9b80cefa1852c8d914e9571d8908da2d88a",
+  "instance": "staging",
+  "exit_code": 0,
+  "summary": "3/3 team hooks present + executable; settings wired (CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1, teammateMode=auto, all 3 hooks registered)",
+  "data": {
+    "settings_wired": true,
+    "env_experimental_agent_teams": "1",
+    "teammate_mode": "auto",
+    "hooks": [
+      { "path": ".claude/hooks/task-completed.sh", "executable": true, "mode": "711", "registered_event": "TaskCompleted" },
+      { "path": ".claude/hooks/task-created.sh", "executable": true, "mode": "711", "registered_event": "TaskCreated" },
+      { "path": ".claude/hooks/teammate-idle.sh", "executable": true, "mode": "711", "registered_event": "TeammateIdle" }
+    ]
+  }
 }
