@@ -22,7 +22,8 @@ or production signup systems.
 - Context7 Jira REST documentation confirms Jira Cloud has admin APIs for
   resources such as issue types and workflows, but workflow creation support has
   important transition-rule limitations and requires admin permissions.
-- Provider code/docs checked from GitHub:
+- Terraform/provider code docs checked from GitHub are archived background
+  only; Terraform is out of scope for the current MVP/NIH completion path:
   - [`atlassian/terraform-provider-atlassian-operations`](https://github.com/atlassian/terraform-provider-atlassian-operations)
     is official but operations-focused, not general Jira project/workflow
     configuration.
@@ -41,8 +42,7 @@ or production signup systems.
     users, roles, comments, issues, and webhooks, but not the full workflow and
     screen surface this system needs.
   - [`alc0der/terraform-provider-jira-automation`](https://github.com/alc0der/terraform-provider-jira-automation)
-    exposes a Jira Automation rule resource and raw JSON fallback; it should be
-    evaluated separately from Jira project/workflow Terraform.
+    exposes a Jira Automation rule resource and raw JSON fallback.
 
 ## Status Key
 
@@ -141,10 +141,10 @@ or production signup systems.
 
 Acceptance:
 - Native Atlassian product ownership is explicit before custom code is expanded.
-- Golden-template, product-adoption, Terraform, and script-label decisions each
-  have evidence and follow-up gaps.
-- No platform task adopts private endpoints or production Terraform resources as
-  the supported path without a completed spike and documented decision.
+- Golden-template, product-adoption, and script-label decisions each have
+  evidence and follow-up gaps.
+- No platform task adopts private endpoints as the supported path without a
+  completed spike and documented decision.
 
 ## Atlassian Product Adoption Tasks
 

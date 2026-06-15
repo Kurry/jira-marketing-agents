@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/verify/rovo-agents.mjs",
-  "generated_at": "2026-06-15T15:06:36.290Z",
-  "git_sha": "7f9310aa3f364687abf6a03c94509b011a664ab0",
+  "generated_at": "2026-06-15T15:17:32.032Z",
+  "git_sha": "6d5b561539f82e638f1f7abb0b3feff588409285",
   "instance": "myhealthcaresite.atlassian.net",
   "exit_code": 0,
   "summary": "19 Rovo agents declared; webtrigger reachable (HTTP 400)",

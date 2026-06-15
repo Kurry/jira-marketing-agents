@@ -145,13 +145,11 @@ Every `scripts/infra/*-apply.ts` must be **idempotent**:
 `scripts/infra/plan.ts` computes and prints the delta without applying.
 This is the Terraform-equivalent behaviour for Jira configuration.
 
-> **NIH note.** "Terraform-equivalent behaviour for Jira" is precisely what
-> the official/third-party Atlassian Terraform providers and ACLI already
-> provide. Building a hand-rolled equivalent is the central NIH risk in this
-> bundle. The reduction (per `specs/atlassian-native-tools.md` and
-> `specs/design.md` "Terraform Provider Strategy") is to run the bounded
-> provider/ACLI spike first and only own the slim gaps those tools cannot
-> cover — not to ship a parallel convergence engine.
+> **NIH note.** "Terraform-equivalent behaviour for Jira" is precisely the
+> parallel-control-plane risk this bundle must avoid. Terraform is out of scope
+> for the current MVP/NIH completion path; the reduction is to run the ACLI and
+> golden-template checks first and only own the slim documented gaps those tools
+> cannot cover — not to ship a parallel convergence engine.
 
 ## Failure is visible
 

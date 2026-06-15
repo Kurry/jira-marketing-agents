@@ -144,7 +144,8 @@ Acceptance:
 - `[x]` Launch six focused subagents to audit:
   Intake/Triage, Segmentation/Personalization, Creative/Experimentation,
   Research/Positioning, Campaign/Funnel/Readouts, and Platform/IaC.
-- `[x]` Review the Terraform provider shortlist:
+- `[x]` Archive the Terraform provider shortlist as background only; Terraform
+  is out of scope for the current MVP/NIH completion path:
   [`atlassian/terraform-provider-atlassian-operations`](https://github.com/atlassian/terraform-provider-atlassian-operations),
   [`gothub97/terraform-provider-atlassian`](https://github.com/gothub97/terraform-provider-atlassian),
   [`lbajsarowicz/terraform-provider-atlassian`](https://github.com/lbajsarowicz/terraform-provider-atlassian),
@@ -171,9 +172,6 @@ Acceptance:
   anomaly summary, decision recommendation, and any separated launch-readiness
   or regression-check logic.
 - `[x]` Add per-instance Automation rule rendering and contract tests.
-- `[ ]` Run the bounded Terraform/provider spike after the control-plane spec is
-  stable; keep Forge, ACLI, Jira REST, and golden-project cloning as the
-  supported portable path until a provider is proven.
 - `[~]` Update the integration, portability, runbook, workflow, claims,
   operating-model, and agent-skill docs as the roadmap tasks land.
 
@@ -181,8 +179,8 @@ Acceptance:
 - The repo has a clear, reviewable path from the current Forge/Rovo MVP to the
   10 initial AI Growth Ops outcomes.
 - Tasks distinguish implemented code, manual Jira validation, and post-MVP
-  platform/IaC spikes.
-- Terraform is treated as an evaluated option, not an assumed MVP dependency.
+  platform gates.
+- Terraform is out of scope for the current MVP/NIH completion path.
 
 ## Milestone 9: Atlassian-Native NIH Reduction
 
@@ -229,8 +227,8 @@ Acceptance:
   concern, and every gap has a documented fallback.
 - Every custom script has one label and no supported path relies on private
   Atlassian endpoints.
-- Golden-template cloning, product adoption, and Terraform provider decisions
-  each have evidence, decision criteria, and rollback/manual fallback notes.
+- Golden-template cloning, product adoption, and script-label decisions each
+  have evidence, decision criteria, and rollback/manual fallback notes.
 - Production docs never claim native Jira Automation/Rovo proof from webtrigger
   fallback evidence.
 
@@ -496,8 +494,6 @@ Acceptance:
   Lake, or Goals.
 - `[~]` Extend readiness checks for transition paths, required fields, screens,
   seed coverage, Rovo UI visibility, and Automation audit logs.
-- `[ ]` Complete T-NIH-06 Terraform/provider spike against a disposable Jira
-  site before adding production `.tf` resources.
 - `[ ]` Complete T-NIH-07 custom-script label inventory before promoting any
   custom script into the long-term supported portability path.
 

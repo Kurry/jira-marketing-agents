@@ -1,0 +1,268 @@
+# Task Board (v2 — native-first audit → reduce → prove)
+
+Date: 2026-06-15
+Status: Proposal — re-alignment of the live board to the Atlassian-native / NIH-reduction refactor.
+Supersedes: `specs/agent-team/TASK_BOARD.md` (the v1 board lives at `specs/agent-team/v1/TASK_BOARD.md`).
+
+The lead seeds the shared task list from this file at startup. Task ids are
+stable; the v1 board is archived. Tasks with unsatisfied `deps` cannot be
+claimed.
+
+Legend: `owner:<name>` matches [`TEAM_CHARTER.md`](TEAM_CHARTER.md);
+`vm:<row>` points to [`SCRIPTABLE_VERIFICATION.md`](SCRIPTABLE_VERIFICATION.md);
+`deps=*` means no dependency.
+
+## What changed from v1, and why
+
+The v1 board sequenced a bespoke `infra/` reconciler (Phase 4–5: per-resource
+`*-apply.mjs` convergence engines, a Terraform-equivalent `infra:plan/apply/
+verify` contract) **before** confirming which native surface owns each
+resource. The NIH second-pass review (`specs/nih-review-2026-06-15.md`,
+themes 1–5) ruled that backwards. This board re-aligns to the native-first
+decision rule in `specs/v2/_CONVENTIONS.md §1` and the Native Tool Fit Matrix
+(§2):
+
+- **The refactor backlog is the consolidated NIH roadmap.** The `T-NIH-*`
+  work items (definitions, acceptance, dependencies) are owned by author A4 in
+  [`specs/v2/nih-roadmap.md`](../nih-roadmap.md). This board **references** them
+  rather than restating their definitions; it adds only the agent-team
+  scheduling, owners, and verification wiring around them.
+- **Inventory and validation precede any converge engine.** No per-resource
+  apply/converge script is built until the ACLI capability inventory and the
+  golden-template clone validation prove what native tooling already owns.
+- **The reconciler is reframed as a read-only audit harness** over documented
+  native output (see [`AUDIT_PLAN.md`](AUDIT_PLAN.md)); mutations route through
+  ACLI, the golden template, or Forge.
+
+Canonical entity counts/names are **not** restated here — see the canonical
+data model in [`issue-types.md`](../issue-types.md), [`custom-fields.md`](../custom-fields.md),
+and [`workflows.md`](../workflows.md).
+
+## Phase 0 — Bootstrap
+
+- **T-B-01** [owner:native-architect] [deps:*]
+  Land the accepted v2 spec bundle under `specs/v2/` (excluding the `v1/`
+  archive, which stays as-is). Commit.
+  Evidence: `evidence/audit/spec-copy.json` from `scripts/audit/spec-copy.mjs`.
+
+- **T-B-02** [owner:script-eng] [deps:*]
+  Create the scripts-tree skeleton and npm scripts per
+  [`SCRIPTS_CONTRACT.md`](SCRIPTS_CONTRACT.md). Every new script exits 0 with a
+  stub JSON report until real logic lands. Commit.
+  Evidence: `evidence/infra/bootstrap.json`.
+
+- **T-B-03** [owner:safety-tester] [deps:*]
+  Install hooks from [`QUALITY_GATES.md`](QUALITY_GATES.md) under
+  `.claude/hooks/`, `chmod +x`, and verify they trigger with the local
+  `claude` CLI if possible. Commit. Evidence: `evidence/infra/hooks.json`.
+
+- **T-B-04** [owner:docs-scribe] [deps:T-B-01]
+  Create `STATUS.md` (template in [`RUNBOOK.md`](RUNBOOK.md)). Confirm the repo
+  `CLAUDE.md` summarises [`IAC_PRINCIPLES.md`](IAC_PRINCIPLES.md), the
+  native-first decision rule, and the ownership map. Commit.
+
+## Phase 1 — Audit (read-only; all of A-x from `AUDIT_PLAN.md`)
+
+The audit reads **documented native output only**. The v1-attempt scan and any
+private-endpoint probe are flagged experimental per `AUDIT_PLAN.md` and never
+gate a green row.
+
+- **T-A-01** [owner:script-eng] [deps:T-B-02]
+  Implement `scripts/audit/repo-snapshot.mjs`. Emits `evidence/audit/repo.json`
+  per `AUDIT_PLAN.md` A1.
+
+- **T-A-02** [owner:forge-rovo-eng] [deps:T-B-02]
+  Implement `scripts/audit/forge-snapshot.mjs` (A2). Distinguishes Forge
+  manifest/install checks from Jira UI/Rovo visibility — no "guaranteed
+  visible" claim (NIH theme 4).
+
+- **T-A-03** [owner:jira-native-eng] [deps:T-B-02]
+  Implement `scripts/audit/jira-snapshot.mjs` (A3). Read-only; documented Jira
+  REST + ACLI output only; no internal/private endpoint on the supported path.
+
+- **T-A-04** [owner:native-architect] [deps:T-B-02]
+  Implement `scripts/audit/v1-attempt.mjs` (A4). Classifies prior commits/files
+  as `iac-ok` / `manual-artifact` / `to-rewrite` / `to-revert`. **Marked
+  experimental**: reads the historical `v1/` archive, not a supported path.
+
+- **T-A-05** [owner:safety-tester] [deps:T-B-02]
+  Implement `scripts/audit/safety-snapshot.mjs` (A5). Scope audit + banned-phrase
+  scan + automation-action audit + PHI scan.
+
+- **T-A-06** [owner:native-architect] [deps:T-A-01..T-A-05]
+  Implement `scripts/audit/summarize.mjs` producing `evidence/audit/summary.json`.
+  Print the delta summary to stderr.
+
+- **T-A-07** [owner:lead] [deps:T-A-06]
+  Run `scripts/audit/summary-to-tasks.mjs`; inject resulting `T-S-*`, `T-D-*`,
+  `T-R-*` tasks into the shared list, ordered per the dependencies below.
+
+## Phase 2 — Safety-first findings (`T-S-*`, generated by audit)
+
+Generated by the audit. Highest priority — nothing else may be claimed while
+any `T-S-*` is pending. Templates (ids assigned at runtime):
+
+- Any extra Forge scope → revert task.
+- Any prompt containing banned phrases → rewrite task + safety test.
+- Any automation rule action that could approve/send/mutate audiences → remove task.
+- Any PHI in output/logs/evidence → redact task + regression test.
+- Any policy referenced but missing → restore or rewrite task.
+
+## Phase 3 — Delete manual artefacts (`T-D-*`, generated)
+
+For every v1 `evidence/` file classified `manual-artifact`: delete it; if its
+intent is still useful, open a `T-R-*` to regenerate from a script. Also delete
+any v1 `docs/*.md` that directs the operator to perform manual UI actions;
+`docs-scribe` rewrites them to point at the scripted verb (or marks the
+capability a documented platform gap if no native/scriptable surface exists).
+
+## Phase 4 — NIH refactor backlog (the spine of the refactor)
+
+The refactor work items are defined in [`specs/v2/nih-roadmap.md`](../nih-roadmap.md)
+(owner A4). This board wires each to an agent-team owner, a verification-matrix
+row, and an evidence path. **Do not** restate `T-NIH-*` acceptance here — read
+the roadmap. Sequencing is the load-bearing constraint:
+
+> **Gate.** The ACLI capability inventory (**T-NIH-03**) and the golden-template
+> clone validation (**T-NIH-04**) MUST be green before any per-resource converge
+> engine in Phase 5 is authored. Until then, every Phase-5 apply task is a thin
+> wrapper/diff over its native owner, and the verify task is the real
+> deliverable. This is the NIH theme-3 resolution (`_CONVENTIONS.md §3`).
+
+| Roadmap item (see nih-roadmap.md) | Agent owner | Verify (vm) |
+| --- | --- | --- |
+| **T-NIH-03** ACLI capability inventory | jira-native-eng | VM-ACLI-INVENTORY |
+| **T-NIH-04** Golden-template clone validation | jira-native-eng | VM-GOLDEN-TEMPLATE |
+| **T-NIH-08** Purge internal/private endpoints from supported paths; documented `ATLASSIAN_TOKEN` auth | script-eng + safety-tester | VM-NO-INTERNAL-API |
+| **T-NIH-09** Golden template = source of truth; demote provisioning to clone-diff (deps T-NIH-04) | jira-native-eng | VM-GOLDEN-TEMPLATE |
+| **T-NIH-10** Reframe `infra/` plan/apply as read-only audit harness (deps T-NIH-03/04) | native-architect | VM-AUDIT-HARNESS |
+| **T-NIH-11** Segment/partner/service → JSM Assets; confidence/lift/discovery → JPD (deps T-NIH-05) | jira-native-eng | VM-NATIVE-ENTITIES |
+| **T-NIH-12** `@atlaskit/adf-utils` for ADF; JQL + native Duplicate links; JPD prioritization (behavior change — approval-gated) | forge-rovo-eng + safety-tester | VM-SRC-DELEGATION |
+| **T-NIH-13** Forge `--json` output instead of box-table parsing | forge-rovo-eng | VM-FORGE-JSON |
+| **T-NIH-14** Reconcile entity counts via the doc generator, not by hand (canonical model owns counts) | docs-scribe | VM-DOC-PARITY |
+
+Each task's acceptance lives in `nih-roadmap.md`; the agent-team addendum for
+every row: (1) evidence is script-generated with a `generated_by` header;
+(2) the verify row exits 0; (3) no supported path names an internal/private
+Atlassian endpoint; (4) behavior-changing rows (T-NIH-12, any rule-JSON /
+manifest / policy change) carry a lead-approved plan + safety-tester sign-off.
+
+## Phase 5 — Per-resource wrappers + verify (gated on Phase 4)
+
+> **NIH note.** Before authoring any apply script, confirm via **T-NIH-03**
+> whether ACLI (`jira project`/`workitem`/`field`/`filter`/`dashboard`) or a
+> golden-template clone (**T-NIH-04**) already owns the resource. Issue types,
+> fields, filters, dashboards, and seeds map to ACLI + documented REST;
+> screens/workflow/screen-schemes map to golden-template cloning; Rovo
+> derivation reads `manifest.yml` (no second catalog). Each apply script labels
+> itself per T-NIH-07 (native wrapper / documented API gap / Twin-specific) and
+> binds to a documented endpoint — never an internal Atlassian API.
+
+For each resource category, one apply wrapper + one verify script:
+
+| Resource        | Apply (thin wrapper/diff)                      | Verify                               | VM                  |
+| --------------- | ---------------------------------------------- | ------------------------------------ | ------------------- |
+| Issue types     | `scripts/infra/jira-issue-types-apply.mjs`     | `scripts/verify/jira-issue-types.mjs`| VM-JIRA-ISSUE-TYPES |
+| Fields+screens  | `scripts/infra/jira-fields-apply.mjs`          | `scripts/verify/jira-fields.mjs`     | VM-JIRA-FIELDS      |
+| Workflow        | `scripts/infra/jira-workflow-apply.mjs`        | `scripts/verify/jira-workflow.mjs`   | VM-JIRA-WORKFLOW    |
+| Filters         | `scripts/infra/jira-filters-apply.mjs`         | `scripts/verify/jira-filters.mjs`    | VM-JIRA-FILTERS     |
+| Dashboards      | `scripts/infra/jira-dashboards-apply.mjs`      | `scripts/verify/jira-dashboards.mjs` | VM-JIRA-DASHBOARDS  |
+| Seeds           | `scripts/infra/jira-seeds-apply.mjs`           | `scripts/verify/jira-seeds.mjs`      | VM-JIRA-SEEDS       |
+| Automation      | `scripts/infra/automation-apply.mjs`           | `scripts/verify/automation-audit.mjs`| VM-AUTOMATION-*     |
+| Rovo derivation | `scripts/infra/rovo-derive.mjs`                | `scripts/verify/rovo-agents.mjs`     | VM-ROVO-*           |
+
+One `T-R-P5-<resource>` task per row, owned by `jira-native-eng` (Jira rows) or
+`forge-rovo-eng` (Rovo/Forge rows), with `script-eng` as reviewer. Each is
+blocked on the Phase-4 gate (T-NIH-03 + T-NIH-04 green). Acceptance:
+
+1. Apply wrapper converges (or diffs) Jira to match the native owner's output.
+2. Verify script exits 0.
+3. Re-run of apply reports `changes: []` (idempotent).
+4. Scripted evidence file exists with a `generated_by` header.
+5. Automation rows: rule imported **disabled**; only enabled after a captured
+   **native** Jira Automation audit-log run (not webtrigger reachability — NIH
+   theme 4). Webtrigger-fallback evidence and native audit proof are tracked in
+   separate rows (see `AUDIT_PLAN.md`).
+
+## Phase 6 — Agent invocation harnesses
+
+- **T-R-AGENT-01** [owner:forge-rovo-eng] [deps:T-R-P5-*]
+  `scripts/invoke/run-all.mjs` + one wrapper per Rovo agent under
+  `scripts/invoke/<agent>.mjs`. Each invokes the agent against its declared seed
+  issue and asserts safety predicates. Proof of native Automation→Rovo wiring is
+  the Jira Automation audit log, not a webtrigger ping.
+
+- **T-R-AGENT-02** [owner:safety-tester] [deps:T-R-AGENT-01]
+  `tests/safety/agent-outputs.test.ts` loads every `evidence/agent-runs/*.json`
+  and re-asserts safety predicates so CI catches regressions.
+
+## Phase 7 — Safety tests & hooks
+
+- **T-R-SAFE-01** [owner:safety-tester] [deps:T-B-03]
+  Write `tests/safety/*.test.ts` covering the VM-SAFETY bullets (no claims
+  approval, no campaign send, no audience/suppression mutation, no production
+  signup-flow mutation, no PHI). No test asserts `true`; none is skipped.
+
+- **T-R-SAFE-02** [owner:safety-tester] [deps:T-R-SAFE-01]
+  Wire CI to run `npm run test:safety` and fail the build on red.
+
+## Phase 8 — Docs regenerated from state
+
+- **T-R-DOC-01** [owner:docs-scribe] [deps:T-R-P5-*]
+  Implement `scripts/docs/generate.mjs` rebuilding `docs/INTEGRATION.md`,
+  `docs/PORTABILITY.md`, `docs/MVP_RUNBOOK.md`, `docs/TROUBLESHOOTING.md` from
+  the native-owner inventory and the verification matrix. Entity counts come
+  from the canonical data model (T-NIH-14), never hand-typed. Runs in CI; CI
+  fails if `docs/` diverges.
+
+- **T-R-DOC-02** [owner:docs-scribe] [deps:T-R-DOC-01]
+  Regenerate. Commit. Delete any hand-written runbook sections that contradict
+  scripted state or imply manual UI as a supported path.
+
+## Phase 9 — CI parity
+
+- **T-R-CI-01** [owner:script-eng] [deps:Phase 4 gate]
+  Extend `.github/workflows/ci.yml` to run `npm ci && npm run build && npm test
+  && npm run test:safety && npm run forge:lint && npm run infra:plan`.
+  `infra:plan` runs in `--dry-run` mode against a recorded staging snapshot
+  (`evidence/audit/jira.json`), not the live site, so CI is deterministic and
+  offline.
+
+- **T-R-CI-02** [owner:script-eng] [deps:T-R-CI-01]
+  Nightly job runs `npm run infra:verify` against live staging with a dedicated
+  CI credential (documented `ATLASSIAN_TOKEN`) or marks itself `skipped` on
+  missing auth. Never prompts.
+
+## Phase 10 — Final proof
+
+- **T-F-01** [owner:lead] [deps:everything above]
+  Run:
+  ```
+  rm -rf evidence/
+  npm run infra:plan
+  npm run infra:apply
+  npm run infra:apply            # idempotency proof
+  npm run infra:verify
+  ```
+  Every command exits 0 on the second attempt. `evidence/` rebuilds from
+  scripts. Commit regenerated state.
+
+- **T-F-02** [owner:safety-tester] [deps:T-F-01]
+  Full audit pass: run `scripts/audit/safety-snapshot.mjs` against final state;
+  attach to `evidence/safety/final.json`.
+
+- **T-F-03** [owner:native-architect] [deps:T-F-01, T-F-02]
+  `evidence/DONE.json` is produced by `npm run infra:verify` only when every VM
+  row is green or marked `unsupported-by-platform` with a matching blocker file
+  (`evidence/blockers.md`). Commit.
+
+- **T-F-04** [owner:lead] [deps:T-F-03]
+  Post handoff summary to the operator. Wait for explicit "clean up" before
+  tearing down the team.
+
+## Continuous
+
+- **T-CX-STATUS** [owner:lead] Never completes; update `STATUS.md` every ~20 minutes.
+- **T-CX-SAFETY** [owner:safety-tester] Never completes; review every diff on `main`.
+- **T-CX-EVIDENCE** [owner:script-eng] Never completes; ensure every new file
+  under `evidence/` has a `generated_by` header.

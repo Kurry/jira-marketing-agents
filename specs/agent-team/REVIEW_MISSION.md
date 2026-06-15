@@ -74,8 +74,8 @@ working on the rest of the mission.
 > **NIH note (audit proposal).** Per `specs/atlassian-native-tools.md`
 > finding #4, this definition of done describes a bespoke `infra/`
 > reconciler. Treat it as a **proposal pending the native-surface
-> evaluation** (T-NIH-03 ACLI inventory, T-NIH-04 golden-template clone,
-> T-NIH-06 Terraform spike). The repeatable bring-up should be satisfiable
+> evaluation** (T-NIH-03 ACLI inventory and T-NIH-04 golden-template clone).
+> Terraform is out of scope for the current MVP/NIH completion path. The repeatable bring-up should be satisfiable
 > by wrapping ACLI / golden-template cloning / Forge CLI where those cover
 > the resource — the from-scratch convergence engine is acceptable only for
 > documented gaps those native tools cannot fill.
