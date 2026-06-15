@@ -9,7 +9,7 @@ Supersedes: `specs/agent-team/AUDIT_PLAN.md` (v1 at `specs/agent-team/v1/AUDIT_P
 > Companion docs: [`TASK_BOARD.md`](TASK_BOARD.md) (the audit seeds Phase 1),
 > [`QUALITY_GATES.md`](QUALITY_GATES.md) (the gates the audit feeds),
 > [`SCRIPTABLE_VERIFICATION.md`](SCRIPTABLE_VERIFICATION.md) (the proof rule the
-> audit shares), [`AUDIT_PLAN.md`] outputs map to `T-A-*` on the board.
+> audit shares); this plan's outputs map to `T-A-*` on the board.
 
 The lead runs this plan at startup. Every step outputs a JSON artefact under
 `evidence/audit/` and concludes with `evidence/audit/summary.json`, which seeds

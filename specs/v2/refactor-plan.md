@@ -90,7 +90,7 @@ behind tests; **Low** = wording/wrapper/no behavior change.
 
 ## B. `src/*` — domain modules, platform glue, utils
 
-Per the second-pass review ([nih-review-2026-06-15.md](nih-review-2026-06-15.md)
+Per the second-pass review ([nih-review-2026-06-15.md](../nih-review-2026-06-15.md)
 theme 5), the Twin-specific claims/safety/experiment/audience/campaign/employer
 modules stay custom. The delegable seams are ADF build/traversal, duplicate
 detection, and prioritization — all **behavior-changing** and therefore gated

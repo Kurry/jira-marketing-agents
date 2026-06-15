@@ -40,6 +40,7 @@ explicitly and route the deviation to the architect.
 | Outcome alignment | Atlassian Goals/Projects if in tenant | Jira issue links/labels until Goals adopted |
 | Component catalog | Compass (if software ops grows) | Repo-local status files for MVP only |
 | Source/CI | GitHub unless team moves to Bitbucket | Bitbucket Pipelines only after source migration |
+| Async context | Loom for walkthroughs/readouts | Repo docs/evidence for machine-verifiable state |
 | Terraform | **Official `atlassian/atlassian-operations` provider, JSM/Compass Operations resources only** | Third-party provider spike only; never the Jira control plane critical path |
 
 ## 3. The five NIH themes and how v2 resolves each

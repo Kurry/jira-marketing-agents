@@ -59,10 +59,7 @@ style (§6), and the author ownership map (§7).
 | [agent-team/DECLARATIVE_STATE.md](agent-team/DECLARATIVE_STATE.md) | What the declarative state under `infra/` is (and is not) the source of truth for. |
 | [agent-team/SCRIPTABLE_VERIFICATION.md](agent-team/SCRIPTABLE_VERIFICATION.md) | How each invariant is proven by a script. |
 | [agent-team/VERIFICATION_MATRIX.md](agent-team/VERIFICATION_MATRIX.md) | Matrix mapping each invariant to its verifying command and evidence artifact. |
-
-> Three files assigned in [_CONVENTIONS.md](_CONVENTIONS.md) §7 are not yet
-> committed and are still in authoring under their scope: `agent-team/AUDIT_PLAN.md`
-> (read-only audit-harness plan, scope B8), `agent-team/SCRIPTS_CONTRACT.md`
-> (the contract every supported `scripts/*` entrypoint must satisfy, scope B6),
-> and `agent-team/LAUNCH_PROMPT.md` (team launch prompt, scope B7). This index
-> covers the files committed to `specs/v2/` at the date above.
+| [agent-team/SCRIPTS_CONTRACT.md](agent-team/SCRIPTS_CONTRACT.md) | The contract every supported `scripts/*` entrypoint must satisfy (interface, exit codes, T-NIH-07 label, no internal endpoints). |
+| [agent-team/AUDIT_PLAN.md](agent-team/AUDIT_PLAN.md) | The read-only, native-sources-only startup audit (Phase 1) and its JSON outputs. |
+| [agent-team/LAUNCH_PROMPT.md](agent-team/LAUNCH_PROMPT.md) | The paste-in launch prompt that briefs a fresh team on the v2 mission. |
+| [agent-team/README.md](agent-team/README.md) | Index and reading order for the agent-team bundle. |
