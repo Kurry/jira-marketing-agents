@@ -75,3 +75,34 @@ Both matrix jobs (Node 20.x and 22.x) passed green. Node.js 20 deprecation warni
 is informational only and does not affect test results.
 
 Latest Forge Lint run: 27521370692 — completed success (33s) on same commit.
+
+---
+
+## CI Addition — Rendered Rules Validation (2026-06-15, commit ac901bf)
+
+Added a fourth CI step: **Validate rendered automation rules (DISABLED + no placeholders)**.
+
+```yaml
+- name: Validate rendered automation rules (DISABLED + no placeholders)
+  run: |
+    node -e "
+    const fs = require('fs'); const path = require('path');
+    const dir = 'automation/rules/rendered';
+    const files = fs.readdirSync(dir).filter(f => f.endsWith('.json'));
+    ...
+    // Checks: valid JSON, state === 'DISABLED', no {{ALL_CAPS}} placeholders
+    "
+```
+
+Closes the CI gap where only source template files (`automation/rules/*.json`) were
+validated but rendered output files (`automation/rules/rendered/*.json`) — the actual
+files imported to Jira — were not checked. Local validation:
+
+```
+OK: creative-claims.json (state=DISABLED, no placeholders)
+OK: employer-launch.json (state=DISABLED, no placeholders)
+OK: experiment-spec.json (state=DISABLED, no placeholders)
+OK: intake-triage.json (state=DISABLED, no placeholders)
+OK: weekly-readout.json (state=DISABLED, no placeholders)
+All rendered rules valid
+```
