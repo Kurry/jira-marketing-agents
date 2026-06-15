@@ -1,14 +1,25 @@
 {
   "generated_by": "scripts/verify/run-all.mjs",
-  "generated_at": "2026-06-15T14:34:59.998Z",
-  "git_sha": "58d0077d8062ce24046aba0230e4033f542a591c",
+  "generated_at": "2026-06-15T14:39:36.536Z",
+  "git_sha": "6814755e43fc7503298eaddcf9191cd46fbaeee2",
   "instance": "myhealthcaresite.atlassian.net",
-  "exit_code": 0,
-  "summary": "1 verify rows: 1 green, 0 unsupported(blocked), 0 red",
+  "exit_code": 2,
+  "summary": "8 verify rows: 6 green, 1 unsupported(blocked), 1 red",
   "data": {
     "row": "VM-DONE",
-    "status": "green",
+    "status": "red",
     "rows": [
+      {
+        "row": "VM-AUTOMATION-AUDIT",
+        "script": "automation-audit.mjs",
+        "status": "unsupported",
+        "declared_status": "unsupported",
+        "exit_code": 5,
+        "blocker": "evidence/blockers/automation-api.json",
+        "blocker_present": true,
+        "summary": "VM-AUTOMATION-AUDIT: cb-automation API unavailable (401) — blocked, not failed",
+        "has_envelope": true
+      },
       {
         "row": "forge-install",
         "script": "forge-install.mjs",
@@ -18,6 +29,72 @@
         "blocker": null,
         "blocker_present": false,
         "summary": "Forge app Up-to-date on myhealthcaresite.atlassian.net",
+        "has_envelope": true
+      },
+      {
+        "row": "VM-JIRA-FIELDS",
+        "script": "jira-fields.mjs",
+        "status": "green",
+        "declared_status": "green",
+        "exit_code": 0,
+        "blocker": null,
+        "blocker_present": false,
+        "summary": "VM-JIRA-FIELDS: 8 declared, 8 live custom; 0 missing",
+        "has_envelope": true
+      },
+      {
+        "row": "VM-JIRA-FILTERS",
+        "script": "jira-filters.mjs",
+        "status": "green",
+        "declared_status": "green",
+        "exit_code": 0,
+        "blocker": null,
+        "blocker_present": false,
+        "summary": "VM-JIRA-FILTERS: 7 declared, 7 live AIGO filters; 0 missing, 0 jql-mismatch",
+        "has_envelope": true
+      },
+      {
+        "row": "VM-JIRA-ISSUE-TYPES",
+        "script": "jira-issue-types.mjs",
+        "status": "green",
+        "declared_status": "green",
+        "exit_code": 0,
+        "blocker": null,
+        "blocker_present": false,
+        "summary": "VM-JIRA-ISSUE-TYPES: 18 declared, 18 live; 0 missing, 0 extra(live-only)",
+        "has_envelope": true
+      },
+      {
+        "row": "VM-JIRA-SEEDS",
+        "script": "jira-seeds.mjs",
+        "status": "green",
+        "declared_status": "green",
+        "exit_code": 0,
+        "blocker": null,
+        "blocker_present": false,
+        "summary": "VM-JIRA-SEEDS: 15 live \"aigo-seed\" issues across 14 types; 14 declared seed types, 0 unrepresented",
+        "has_envelope": true
+      },
+      {
+        "row": "VM-JIRA-WORKFLOW",
+        "script": "jira-workflow.mjs",
+        "status": "red",
+        "declared_status": "red",
+        "exit_code": 2,
+        "blocker": null,
+        "blocker_present": false,
+        "summary": "VM-JIRA-WORKFLOW: 8 declared statuses, 3 live; 8 missing, 3 extra(live-only)",
+        "has_envelope": true
+      },
+      {
+        "row": "rovo-agents",
+        "script": "rovo-agents.mjs",
+        "status": "green",
+        "declared_status": "green",
+        "exit_code": 0,
+        "blocker": null,
+        "blocker_present": false,
+        "summary": "19 Rovo agents declared; webtrigger reachable (HTTP 400)",
         "has_envelope": true
       }
     ]

@@ -1,0 +1,47 @@
+{
+  "generated_by": "scripts/verify/jira-seeds.mjs",
+  "generated_at": "2026-06-15T14:39:35.791Z",
+  "git_sha": "6814755e43fc7503298eaddcf9191cd46fbaeee2",
+  "instance": "myhealthcaresite.atlassian.net",
+  "exit_code": 0,
+  "summary": "VM-JIRA-SEEDS: 15 live \"aigo-seed\" issues across 14 types; 14 declared seed types, 0 unrepresented",
+  "data": {
+    "row": "VM-JIRA-SEEDS",
+    "status": "green",
+    "seed_label": "aigo-seed",
+    "live_issue_count": 15,
+    "live_types": [
+      "Research Brief",
+      "Decision Memo",
+      "Claims Review",
+      "AI Growth Request",
+      "Personalization Journey",
+      "Positioning Update",
+      "Campaign",
+      "Segmentation Request",
+      "Bug",
+      "Signup Funnel Issue",
+      "Dashboard Request",
+      "Employer Launch",
+      "Creative Request",
+      "Experiment"
+    ],
+    "declared_types": [
+      "AI Growth Request",
+      "Experiment",
+      "Creative Request",
+      "Employer Launch",
+      "Dashboard Request",
+      "Signup Funnel Issue",
+      "Bug",
+      "Segmentation Request",
+      "Campaign",
+      "Positioning Update",
+      "Personalization Journey",
+      "Claims Review",
+      "Decision Memo",
+      "Research Brief"
+    ],
+    "missing_types": []
+  }
+}

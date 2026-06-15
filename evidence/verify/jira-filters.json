@@ -1,0 +1,33 @@
+{
+  "generated_by": "scripts/verify/jira-filters.mjs",
+  "generated_at": "2026-06-15T14:39:32.382Z",
+  "git_sha": "6814755e43fc7503298eaddcf9191cd46fbaeee2",
+  "instance": "myhealthcaresite.atlassian.net",
+  "exit_code": 0,
+  "summary": "VM-JIRA-FILTERS: 7 declared, 7 live AIGO filters; 0 missing, 0 jql-mismatch",
+  "data": {
+    "row": "VM-JIRA-FILTERS",
+    "status": "green",
+    "declared": [
+      "AIGO — Blocked",
+      "AIGO — Claims Review",
+      "AIGO — Decision Needed",
+      "AIGO — Experiment Running",
+      "AIGO — Intake",
+      "AIGO — Launch Readiness",
+      "AIGO — Readout Needed"
+    ],
+    "live": [
+      "AIGO — Blocked",
+      "AIGO — Claims Review",
+      "AIGO — Decision Needed",
+      "AIGO — Experiment Running",
+      "AIGO — Intake",
+      "AIGO — Launch Readiness",
+      "AIGO — Readout Needed"
+    ],
+    "missing": [],
+    "extra": [],
+    "jql_mismatches": []
+  }
+}

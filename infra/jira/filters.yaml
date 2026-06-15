@@ -1,32 +1,34 @@
+# generated_by: scripts/infra/jira-backfill.mjs (T-R-INFRA-05)
+# Saved filters with live JQL backfilled via scoped getFilter.
 schemaVersion: 1
-# Saved filters observed live. jql is null where the snapshot lacked read scope;
-# T-R-INFRA-05 backfills jql from a scoped fetch.
 filters:
   - id: "10005"
     name: AIGO — Blocked
-    jql: null
-    owner: null
+    jql: project = AIGO AND (labels = "blocked" OR (status in ("Triage", "Spec
+      Ready", "In Review") AND updated <= "-7d")) ORDER BY updated ASC
+    owner: 557058:297f331c-0582-4201-8db9-72c7ec72bf14
   - id: "10001"
     name: AIGO — Claims Review
-    jql: null
-    owner: null
+    jql: project = AIGO AND status = "Claims Review" ORDER BY priority DESC, created
+      DESC
+    owner: 557058:297f331c-0582-4201-8db9-72c7ec72bf14
   - id: "10004"
     name: AIGO — Decision Needed
-    jql: null
-    owner: null
+    jql: project = AIGO AND status = "Decision Needed" ORDER BY updated ASC
+    owner: 557058:297f331c-0582-4201-8db9-72c7ec72bf14
   - id: "10006"
     name: AIGO — Experiment Running
-    jql: null
-    owner: null
+    jql: project = AIGO AND status = "Experiment Running" ORDER BY created DESC
+    owner: 557058:297f331c-0582-4201-8db9-72c7ec72bf14
   - id: "10000"
     name: AIGO — Intake
-    jql: null
-    owner: null
+    jql: project = AIGO AND status = "Intake" ORDER BY created DESC
+    owner: 557058:297f331c-0582-4201-8db9-72c7ec72bf14
   - id: "10002"
     name: AIGO — Launch Readiness
-    jql: null
-    owner: null
+    jql: project = AIGO AND status = "Launch Prep" ORDER BY created DESC
+    owner: 557058:297f331c-0582-4201-8db9-72c7ec72bf14
   - id: "10003"
     name: AIGO — Readout Needed
-    jql: null
-    owner: null
+    jql: project = AIGO AND labels = "readout-needed" ORDER BY updated DESC
+    owner: 557058:297f331c-0582-4201-8db9-72c7ec72bf14

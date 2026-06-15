@@ -1,0 +1,9 @@
+{
+  "generated_by": "scripts/verify/automation-audit.mjs",
+  "generated_at": "2026-06-15T14:39:36.134Z",
+  "row": "VM-AUTOMATION-AUDIT",
+  "reason": "cb-automation REST API unavailable with current token",
+  "http_status": 401,
+  "message": "{\"code\":401,\"message\":\"Unauthorized; scope does not match\"}",
+  "candidate_resolution": "jira:read:automation scope / PAT, or capture via audit-log UI export script"
+}

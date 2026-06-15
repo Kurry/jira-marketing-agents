@@ -1,0 +1,33 @@
+{
+  "generated_by": "scripts/verify/jira-fields.mjs",
+  "generated_at": "2026-06-15T14:39:31.867Z",
+  "git_sha": "6814755e43fc7503298eaddcf9191cd46fbaeee2",
+  "instance": "myhealthcaresite.atlassian.net",
+  "exit_code": 0,
+  "summary": "VM-JIRA-FIELDS: 8 declared, 8 live custom; 0 missing",
+  "data": {
+    "row": "VM-JIRA-FIELDS",
+    "status": "green",
+    "declared": [
+      "Project",
+      "Design",
+      "Rank",
+      "Start date",
+      "Category",
+      "Budget",
+      "Development",
+      "Team"
+    ],
+    "live_custom": [
+      "Project",
+      "Design",
+      "Rank",
+      "Start date",
+      "Category",
+      "Budget",
+      "Development",
+      "Team"
+    ],
+    "missing": []
+  }
+}

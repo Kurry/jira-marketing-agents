@@ -1,3 +1,81 @@
+# generated_by: scripts/infra/jira-backfill.mjs (T-R-INFRA-05)
+# Seed coverage matrix — one seed per canonical AIGO issue type.
+# source: evidence/jira-config/seeds-output.json
 schemaVersion: 1
-# STUB. Seed-issue coverage matrix (issue type -> required seed count).
-seeds: []
+seedLabel: aigo-seed
+seeds:
+  - issueType: AI Growth Request
+    issueTypeName: AI Growth Request
+    summary: "[Growth Task] Q3 employer acquisition push"
+    label: aigo-seed
+    key: AIGO-1
+  - issueType: Experiment
+    issueTypeName: Experiment
+    summary: "[Experiment] Email subject line test to lift signup conversion rate"
+    label: aigo-seed
+    key: AIGO-2
+  - issueType: Creative Request
+    issueTypeName: Creative Request
+    summary: "[Creative Request] Email and SMS creative: guaranteed diabetes reversal"
+    label: aigo-seed
+    key: AIGO-3
+  - issueType: Employer Launch
+    issueTypeName: Employer Launch
+    summary: "[Employer Launch] Employer launch for Acme Corp on June 20"
+    label: aigo-seed
+    key: AIGO-4
+  - issueType: Dashboard Request
+    issueTypeName: Dashboard Request
+    summary: "[Dashboard Request] Channel performance dashboard for CAC and signups"
+    label: aigo-seed
+    key: AIGO-5
+  - issueType: Signup Funnel Issue
+    issueTypeName: Signup Funnel Issue
+    summary: "[Signup Funnel Issue] Signup page broken on mobile Safari"
+    label: aigo-seed
+    key: AIGO-6
+  - issueType: Bug
+    issueTypeName: Bug
+    summary: "[Bug / Tracking Issue] Signup page broken on mobile Safari for new users"
+    label: aigo-seed
+    key: AIGO-7
+  - issueType: Segmentation Request
+    issueTypeName: Segmentation Request
+    summary: "[Segmentation Request] Target lapsed eligible employer members"
+    label: aigo-seed
+    key: AIGO-8
+  - issueType: Campaign
+    issueTypeName: Campaign
+    summary: "[Automation Request] Re-engagement campaign to drive signup conversion"
+    label: aigo-seed
+    key: AIGO-9
+  - issueType: Positioning Update
+    issueTypeName: Positioning Update
+    summary: "[Growth Task] Co-branded eligibility landing page for employer members"
+    label: aigo-seed
+    key: AIGO-10
+  - issueType: Personalization Journey
+    issueTypeName: Personalization Journey
+    summary: "[Growth Task] Add post-activation member referral program"
+    label: aigo-seed
+    key: AIGO-11
+  - issueType: AI Growth Request
+    issueTypeName: AI Growth Request
+    summary: "[Growth Task] Improve early activation after registration"
+    label: aigo-seed
+    key: AIGO-12
+  - issueType: Claims Review
+    issueTypeName: Claims Review
+    summary: "[Claims Review] Claims review for SMS copy waiting on compliance"
+    label: aigo-seed
+    key: AIGO-13
+  - issueType: Decision Memo
+    issueTypeName: Decision Memo
+    summary: "[Decision Memo] Q3 budget decision for paid social test"
+    label: aigo-seed
+    key: AIGO-14
+  - issueType: Research Brief
+    issueTypeName: Research Brief
+    summary: "[Growth Task] Shipped new employer landing page"
+    label: aigo-seed
+    key: AIGO-15

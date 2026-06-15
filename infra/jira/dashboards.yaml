@@ -1,3 +1,16 @@
+# generated_by: scripts/infra/jira-backfill.mjs (T-R-INFRA-05)
+# AIGO dashboards observed live (id + name).
 schemaVersion: 1
-# STUB. Populate from Jira dashboards REST in T-R-INFRA-05 / verify/dashboards.mjs.
-dashboards: []
+dashboards:
+  - id: "10002"
+    name: AIGO — Claims Bottlenecks
+  - id: "10004"
+    name: AIGO — Employer Launches
+  - id: "10003"
+    name: AIGO — Experiments
+  - id: "10006"
+    name: AIGO — Research Insights
+  - id: "10005"
+    name: AIGO — Signup Funnel Issues
+  - id: "10001"
+    name: AIGO — Weekly Growth State
