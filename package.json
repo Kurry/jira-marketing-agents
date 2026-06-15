@@ -21,6 +21,8 @@
     "provision:automation": "node scripts/provision-automation.cjs",
     "provision:all": "node scripts/provision-all.cjs",
     "provision:filters": "node scripts/provision-filters.cjs",
+    "provision:dashboards": "node scripts/provision-dashboards.cjs",
+    "provision:automation:forge": "node scripts/forge-import-automation.cjs",
     "check:rovo": "node scripts/check-rovo-visibility.cjs",
     "lint": "tsc --noEmit"
   },

@@ -26,18 +26,21 @@ Verified by CLI:
 - `AIGO` exists as a team-managed business project.
 - Seed issues `AIGO-1` through `AIGO-15` exist with label `aigo-seed`.
 
-Known live gaps:
+Current live state (as of 2026-06-15):
 
-- The AIGO project currently exposes only `Workstream`, `Task`, and `Sub-task`
-  issue types.
-- Seed issues are imported as `Task` until the richer AIGO issue types exist.
-- Observed seed statuses are `To Do`, `In Progress`, and `Done`; the full MVP
-  workflow still needs Jira product configuration.
-- Rovo agent visibility must be confirmed in the Jira UI. `forge install list`
-  proves app installation, but it does not prove the user can see every agent in
-  Rovo.
-- Jira Automation rules need import or manual rebuild, placeholder replacement,
-  and audit-log validation.
+- All 14 canonical issue types are live (IDs 10048–10061). ✓
+- All 15 seed issues are live with canonical issue types. ✓
+- 6 custom fields are live (Segment, Primary Metric, Claims Risk, Experiment ID, Workflow Area, Priority Score). ✓
+- 8 MVP workflow statuses are live (Intake, Triage, Spec Ready, In Review, Claims Review, Experiment Running, Decision Needed, Launch Prep). ✓
+- 7 JQL saved filters are live (Intake, Claims Review, Launch Readiness, Readout Needed, Decision Needed, Blocked, Experiment Running). ✓
+- Forge app deployed and installed. ✓
+
+Open gates:
+
+- Rovo agent visibility (T-M1-04): confirm all 19 agents visible in Jira UI → Apps → Rovo → Agents.
+- Automation import (T-M3-02): run `forge deploy -e development && npm run provision:automation:forge`.
+- Automation validation (T-M3-03): enable each rule one at a time after import.
+- Manual agent runs (T-M4-01–06): validate each agent against seed issues.
 
 ## Deploy And Install
 
@@ -97,20 +100,23 @@ AIGO_INSTANCE_CONFIG=instances/aigo.example.json npm run provision:instance -- -
 
 ## Jira Project Setup
 
-Create or verify these issue types in AIGO:
+Create or verify these 14 canonical issue types in AIGO (all live as of 2026-06-15,
+IDs 10048–10061 — see `evidence/jira-config/issue-types.json`):
 
-- Growth Task
-- Experiment
+- AI Growth Request
 - Creative Request
-- Claims Review
-- Dashboard Request
-- Automation Request
-- Employer Launch
+- Experiment
 - Segmentation Request
+- Personalization Journey
+- Employer Launch
+- Campaign
+- Dashboard Request
 - Signup Funnel Issue
-- Insight / Research Brief
-- Bug / Tracking Issue
+- Research Brief
+- Claims Review
 - Decision Memo
+- Positioning Update
+- Bug
 
 Create or verify these workflow statuses:
 
@@ -178,29 +184,68 @@ forge logs -e development --since 1h --limit 50
 Classify failures as prompt issue, Jira config issue, permission issue, or code
 issue.
 
-## Jira Automation Validation
+## Jira Automation Import (T-M3-02)
 
-Import path:
+The preferred path is the Forge function — it runs inside Atlassian's
+infrastructure and doesn't require a session cookie or admin OAuth token:
 
-1. Jira project settings -> Automation -> Import rules.
-2. Upload `automation/rules/aigo-automation-ruleset.json`.
-3. Replace project, actor, and agent placeholders.
-4. Enable one rule at a time.
-5. Validate each rule's Automation audit log before enabling the next rule.
+```bash
+# Step 1: deploy (must include fn-import-automation + manage:jira-configuration scope)
+forge deploy -e development
 
-Manual fallback:
+# Step 2: accept new scope if prompted
+forge install --upgrade -e development -p jira \
+  --site myhealthcaresite.atlassian.net --confirm-scopes
 
-- Rebuild the five rules from `automation/jira-automation-rules.md`.
-- Use the "Use Rovo agent" action followed by explicit Jira Automation comment
-  or routing steps.
+# Step 3: invoke the import function
+npm run provision:automation:forge
+```
 
-Rules to validate:
+This reads all 5 files from `automation/rules/rendered/`, validates each has
+`state: "DISABLED"`, then calls `fn-import-automation` which POSTs each rule to
+the Jira Automation gateway. Evidence is written to
+`evidence/automation/forge-import-output.json`.
 
-- Intake Triage on a newly created AIGO issue.
-- Creative Claims on a Ready creative issue.
-- Experiment Spec on an experiment issue.
-- Employer Launch on an employer launch issue.
-- Weekly Readout by manual rule run before enabling a schedule.
+If the Forge function returns HTTP 403 (scope not yet accepted), re-run
+`forge install --upgrade` and approve `manage:jira-configuration` in the
+consent dialog.
+
+**Manual fallback** (if Forge function fails):
+
+1. Jira: AIGO → Project Settings → Automation → ⋮ → Import rules.
+2. Upload each file from `automation/rules/rendered/` one at a time.
+3. Confirm each rule appears **disabled** after import.
+4. See `docs/OPERATOR_PROMPTS.md` → "Import automation rules (T-M3-02)" for
+   the full step-by-step.
+
+## Jira Automation Validation (T-M3-03)
+
+After all 5 rules are imported (all disabled), enable and validate one at a
+time:
+
+1. Enable `AIGO – Intake Triage`.
+2. Create or update an AIGO issue (or use a seed issue in `Intake` status).
+3. Wait for the rule to fire; check Automation audit log for a green row.
+4. Confirm the Rovo agent ran and the comment body contains `[AI Analysis]`.
+5. If green, leave it enabled and move to the next rule. If red, disable,
+   open a child task, and fix before proceeding.
+
+Rules to validate in order:
+
+1. AIGO – Intake Triage → seed issue type: AI Growth Request, Bug, or Signup Funnel Issue
+2. AIGO – Creative Claims Review → seed issue type: Creative Request (use the "guaranteed diabetes reversal" seed)
+3. AIGO – Experiment Spec → seed issue type: Experiment (use the email subject-line experiment seed)
+4. AIGO – Employer Launch → seed issue type: Employer Launch (use the Acme Corp seed)
+5. AIGO – Weekly Readout → trigger manually via "Run now" in Automation UI before enabling the schedule
+
+After each rule fires:
+
+```bash
+forge logs -e development --since 30m --limit 100
+```
+
+Evidence per rule: `evidence/automation/<rule-key>-audit.md` containing the
+audit log row and the posted comment body.
 
 ## Release Checklist
 

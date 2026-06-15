@@ -26,7 +26,7 @@ npm run provision:all -- --dry-run --config instances/aigo.example.json
 npm run provision:all -- --config instances/your-site.json --site your-site.atlassian.net
 ```
 
-This single command runs all 10 steps in order:
+This single command runs all 11 steps in order:
 1. Config validation
 2. `forge lint`
 3. `forge deploy -e development`
@@ -35,16 +35,12 @@ This single command runs all 10 steps in order:
 6. Forge environment variables (`forge variables set` from evidence/jira-config/forge-vars.sh)
 7. `forge deploy` (re-deploy with new variables)
 8. Seed issues (`provision:seeds`)
-9. Automation rules (`provision:automation`)
+9. Automation rules (`provision:automation:forge` — Forge function approach, no OAuth scope issues)
 10. Smoke test (`test:smoke:jira`)
+11. Rovo agent visibility check (`check:rovo`)
 
 After `provision:all` completes, see the **UI steps (cannot be automated)** section
 near the end of this document for the remaining manual steps.
-
-> **Note:** The Jira Automation import REST API requires specific admin OAuth
-> scopes that may not be available with a personal API token. If `provision:automation`
-> exits with code 2, follow the manual import instructions it prints and then
-> re-enable rules from the Jira UI.
 
 ---
 
@@ -131,13 +127,18 @@ The app requests **classic** scopes (`manifest.yml` → `permissions.scopes`):
 | `read:jira-work` | Read issues, comments, JQL search (all read actions) |
 | `write:jira-work` | Add the analysis comment (`addAnalysisComment`) only |
 | `read:chat:rovo` | Rovo agent runtime |
+| `manage:jira-configuration` | Import Jira Automation rules via `fn-import-automation` only |
+
+`manage:jira-configuration` is used exclusively by the `fn-import-automation`
+Forge function (invoked by `npm run provision:automation:forge`). All 19 Rovo
+agents and all other handlers use only the first three scopes.
 
 When you `forge deploy` and `forge install`, the admin is prompted to consent to
 these scopes. If you later switch to **granular** scopes, replace them with the
 equivalents (e.g. `read:issue:jira`, `read:comment:jira`, `write:comment:jira`,
 `read:jql:jira`) and re-deploy. Start classic for the MVP.
 
-**Verify:** `forge deploy` prints the three scopes for consent.
+**Verify:** `forge deploy` prints all four scopes for consent.
 
 ---
 
@@ -351,51 +352,45 @@ returns a structured response on a real issue.
 
 ---
 
-## 10. Wire Jira Automation (automated + UI)
+## 10. Wire Jira Automation
 
-> **Automated:** `npm run provision:automation` renders and attempts to import all
-> five automation rules as **DISABLED**. Rules are idempotent (existing rule names
-> are skipped).
+> **Automated via Forge function:** `npm run provision:automation:forge` uses
+> the `fn-import-automation` Forge function to import all five automation rules
+> as **DISABLED** via `api.asApp().requestJira()`. This runs inside Atlassian's
+> infrastructure and does not require an external OAuth admin token.
+
+### 10a. Forge function import (preferred)
+
+After Step 4 (`forge deploy` + `forge install` with `manage:jira-configuration`
+scope accepted):
 
 ```bash
-# Dry-run: validate all rendered rules are DISABLED (no API calls)
-node scripts/provision-automation.cjs --dry-run --config instances/aigo.example.json
-
-# Full run (renders first, then imports)
-npm run provision:automation -- --config instances/aigo.example.json
+npm run provision:automation:forge
 ```
 
-Evidence output: `evidence/automation/import-output.json`
+Evidence output: `evidence/automation/forge-import-output.json`
 
-> **API limitation:** The Jira Automation import REST API requires specific OAuth
-> 2.0 admin scopes that are often not available with a personal API token. If the
-> script exits with code 2, follow the manual import steps below.
+The script reads all 5 rendered files from `automation/rules/rendered/`,
+validates each has `state: "DISABLED"`, and calls
+`forge invoke function fn-import-automation --payload '{...}'`.
 
-### 10a. Automated import (preferred)
+If the function returns HTTP 403, the new scope needs admin consent — re-run
+`forge install --upgrade --confirm-scopes` and retry.
 
-`provision:automation` tries two REST endpoints in order:
-1. `POST /rest/api/3/automation/service/1.0/rules/imports`
-2. `POST /gateway/api/automation/internal-api/jira/{cloudId}/pro/rest/GLOBAL/rules/import`
-
-If either succeeds, rules are imported as DISABLED and the evidence file is written.
-
-### 10b. Manual import (if API returns 401/403) — UI steps (cannot be automated)
-
-> **UI steps (cannot be automated):** Rule enabling and placeholder substitution
-> require the Jira admin UI.
+### 10b. Manual import (if Forge function fails) — UI steps
 
 1. **Project settings → Automation → ⋯ → Import rules** and upload each JSON
-   from `automation/rules/rendered/`.
-2. The rendered files have `__MISSING_PROJECT_ID__` and `__MISSING_ACTOR_ACCOUNT_ID__`
-   sentinels where the example config has no real values. Edit these in the Jira UI.
-3. Rules are imported **DISABLED** — review each rule's audit log before enabling.
+   from `automation/rules/rendered/` one at a time.
+2. Confirm each rule appears **DISABLED** after import. Do not enable yet.
+3. Record the numeric rule ID from each rule's URL
+   (`…/automation/rules/edit/12345`) in `evidence/automation/rule-ids.md`.
 
-See [`../automation/rules/README.md`](../automation/rules/README.md) for the
-placeholder reference and the Rovo-action type caveat.
+See `docs/OPERATOR_PROMPTS.md` → "Import automation rules (T-M3-02)" for the
+full step-by-step prompt.
 
-### 10c. Build the rules by hand (fallback)
+### 10c. Build the rules by hand (last resort)
 
-Follow the step-by-step in
+Follow
 [`../automation/jira-automation-rules.md`](../automation/jira-automation-rules.md).
 Each rule: a trigger, a JQL/issue-type condition, a **Use Rovo agent** action,
 then an **Add comment** action with `{{agentResponse}}`.
@@ -403,6 +398,22 @@ then an **Add comment** action with `{{agentResponse}}`.
 The five rules: Intake Triage (created) · Creative Claims (→ Ready) · Experiment
 Spec (created / AI Triage) · Employer Launch (created) · Weekly Readout
 (scheduled Mon 8 AM → Decision Memo).
+
+### 10d. Validate each rule (T-M3-03)
+
+After import, enable and validate **one rule at a time**:
+
+1. Enable the rule in Project settings → Automation.
+2. Trigger it on a matching seed issue (or create a test issue).
+3. Check the rule's audit log for a green row.
+4. Confirm `🤖 AI Growth Ops (analysis only)` comment posted to the issue.
+5. If green, leave it enabled and move to the next. If red, disable and fix.
+
+Evidence per rule: `evidence/automation/<rule-key>-audit.md`.
+
+```bash
+forge logs -e development --since 30m --limit 100
+```
 
 **Verify:** create a test `AIGO` issue → the Intake Triage rule runs → an
 `🤖 AI Growth Ops` comment appears within a minute (check the rule's audit log).
@@ -575,14 +586,15 @@ known limitations.
 | Symptom | Likely cause | Fix |
 | --- | --- | --- |
 | Agents don't appear in Rovo | App not deployed/installed to the Jira site, missing `read:chat:rovo` consent, or Rovo disabled | Run `forge deploy -e development`, `forge install -e development -p jira --site "$JIRA_SITE" --confirm-scopes`, then `AIGO_REQUIRE_FORGE_INSTALL=1 npm run test:smoke:jira`; confirm Rovo/Atlassian Intelligence is enabled |
-| Action returns `Jira API failed: 401/403` | Missing scope consent or wrong site | Re-`forge install`; ensure admin consented to all three scopes |
+| Action returns `Jira API failed: 401/403` | Missing scope consent or wrong site | Re-`forge install`; ensure admin consented to all four scopes (including `manage:jira-configuration`) |
 | `Jira API failed: 404` on `getIssueContext` | Bad issue key or app lacks project access | Confirm the key; ensure the app is installed where the project lives |
 | No comment after a rule runs | Rule disabled, condition didn't match, or actor lacks comment permission | Check the rule **audit log**; verify the actor account can comment |
 | Weekly readout empty | JQL matched nothing / wrong project key | Test the JQL in search; set `AIGO_PROJECT_KEY` if your key isn't `AIGO` |
 | Imported rule errors on the Rovo action | Site uses a different internal action type | Import the rule, then re-select the agent in the builder (see rules README) |
 | Triage misclassifies area | Sparse summary/description | Add detail; the classifier is most-matches-wins over the text/labels |
 | Field write expected but didn't happen | By design — MVP writes comments only | Configure `FIELD_IDS` + allowlist (future work) if you need field writes |
-| `test:readiness:jira` fails on missing issue types | AIGO project still has only default team-managed types | Add the 12 AIGO issue types in Jira project settings, then rerun; use `AIGO_READINESS_WARN_ONLY=1` for a setup report |
+| `test:readiness:jira` fails on missing issue types | AIGO project missing canonical types | All 14 types are live on the dev site (IDs 10048–10061). For a fresh site, run `npm run provision:jira` then add types in Project Settings → Issue Types; use `AIGO_READINESS_WARN_ONLY=1` during setup |
+| `provision:automation:forge` fails with 403 | `manage:jira-configuration` scope not yet consented | Run `forge install --upgrade --confirm-scopes` and approve the scope |
 | `test:readiness:jira` warns about unobserved statuses | Seed issues do not currently occupy every expected workflow state | Verify the workflow statuses in Jira project settings; ACLI cannot prove team-managed statuses that are not visible on issues |
 
 ---

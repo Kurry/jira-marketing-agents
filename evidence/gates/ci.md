@@ -41,3 +41,37 @@ Runs `node scripts/render-seed.cjs` with `AIGO_INSTANCE_CONFIG` pointing at the 
 ## CI Trigger
 
 The extended CI will run on the next push to `main` or any `claude/**` branch, and on pull requests targeting `main`.
+
+---
+
+## VM-CI-GREEN — Real CI Run Evidence (2026-06-15)
+
+**Run ID:** 27521370688
+**Workflow:** CI
+**Branch:** main
+**Trigger:** push ("Document AI Growth Ops outcome roadmap")
+**Status:** success
+**Run URL:** https://github.com/Kurry/jira-marketing-agents/actions/runs/27521370688
+
+### `gh run view 27521370688` output
+
+```
+✓ main CI · 27521370688
+Triggered via push about 5 hours ago
+
+JOBS
+✓ Build & Test (20.x) in 16s (ID 81339813212)
+✓ Build & Test (22.x) in 14s (ID 81339813222)
+
+ANNOTATIONS
+! Node.js 20 actions are deprecated. The following actions are running on Node.js 20
+  and may not work as expected: actions/checkout@v4, actions/setup-node@v4.
+  Actions will be forced to run with Node.js 24 by default starting June 16th, 2026.
+
+View this run on GitHub: https://github.com/Kurry/jira-marketing-agents/actions/runs/27521370688
+```
+
+Both matrix jobs (Node 20.x and 22.x) passed green. Node.js 20 deprecation warning
+is informational only and does not affect test results.
+
+Latest Forge Lint run: 27521370692 — completed success (33s) on same commit.

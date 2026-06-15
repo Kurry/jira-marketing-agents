@@ -116,4 +116,20 @@ describe("Forge/Rovo manifest integration contract", () => {
       );
     }
   });
+
+  it("standalone Forge functions map to exported handlers in src/index.ts", () => {
+    // Actions' backing functions are already checked above. This test covers
+    // functions that are NOT backing a Rovo action (e.g. fn-import-automation).
+    const actionFnKeys = new Set(actions.map((action) => action.function));
+    const standaloneFns = functions.filter((fn) => !actionFnKeys.has(fn.key));
+
+    for (const fn of standaloneFns) {
+      expect(fn.handler.startsWith("index."), `${fn.key} handler must be index.<name>`).toBe(true);
+      const exportName = fn.handler.replace("index.", "");
+      expect(
+        typeof (handlerExports as Record<string, unknown>)[exportName],
+        `${fn.key} handler '${exportName}' not exported from src/index.ts`,
+      ).toBe("function");
+    }
+  });
 });

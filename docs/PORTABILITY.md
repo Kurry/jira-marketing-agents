@@ -51,10 +51,29 @@ making any provider part of the supported setup path.
 - [`alc0der/terraform-provider-jira-automation`](https://github.com/alc0der/terraform-provider-jira-automation):
   Jira Automation rule provider candidate with raw JSON fallback.
 
+## Verified Staging State (2026-06-15)
+
+The development site `myhealthcaresite.atlassian.net` is the reference instance.
+Everything listed here has been verified live:
+
+| Resource | Count | How to re-provision |
+|---|---|---|
+| Canonical issue types | 14 (IDs 10048–10061) | `npm run provision:jira` |
+| Custom fields | 6 (IDs 10043–10048) | `npm run provision:jira` |
+| Workflow statuses | 8 | `npm run provision:jira` |
+| Field options | 24 across 4 fields | `npm run provision:jira` |
+| JQL saved filters | 7 (IDs 10000–10006) | `npm run provision:filters` |
+| Dashboards | 6 | `npm run provision:dashboards` |
+| Seed issues | 15 (all canonical types) | `npm run provision:seeds` |
+| Automation rules | 5 rendered (import pending) | `npm run provision:automation:forge` |
+| Rovo agents | 19 in manifest | `forge deploy -e development` |
+
+Evidence files: `evidence/jira-config/` (issue-types.json, custom-fields.json,
+queues.md, dashboards.md, seeds-output.json, forge-vars.sh)
+
 ## Instance Config
 
-Create a JSON file per Jira target. Start from
-[`../instances/aigo.example.json`](../instances/aigo.example.json):
+Create a JSON file per Jira target. Required fields for the full IaC suite:
 
 ```json
 {
@@ -65,6 +84,9 @@ Create a JSON file per Jira target. Start from
   "projectDescription": "Customer Growth Ops workspace.",
   "seedLabel": "aigo-seed",
   "minSeedCount": 15,
+  "cloudId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "projectId": "10000",
+  "actorAccountId": "557058:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
   "templateProjectKey": "AIGOTPL",
   "seedTemplate": "automation/seed/aigo-seed-issues.csv",
   "renderedSeedFile": "automation/seed/generated/CUST-seed-issues.csv",
@@ -72,10 +94,28 @@ Create a JSON file per Jira target. Start from
 }
 ```
 
+- `cloudId` — from `GET https://api.atlassian.com/oauth/token/accessible-resources`
+- `projectId` — from `GET /rest/api/3/project/CUST` → `.id`
+- `actorAccountId` — the Atlassian account ID of the automation rule actor (the user who appears as the rule's actor in Jira Automation)
+
 Do not commit customer-specific secrets. Instance files should contain site and
-project identifiers only.
+project identifiers only — no tokens.
 
 ## Commands
+
+Full provision in one shot (preferred):
+
+```bash
+# 1. Validate (no mutations)
+npm run provision:all -- --dry-run --config instances/customer.json
+
+# 2. Full provision (edit instances/customer.json first)
+npm run provision:all -- --config instances/customer.json --site customer.atlassian.net
+```
+
+This runs all steps: forge lint → forge deploy → forge install → provision:jira →
+forge variables set → forge redeploy → provision:seeds → provision:automation:forge →
+test:smoke:jira → check:rovo.
 
 Render seed data for an instance:
 
@@ -83,30 +123,23 @@ Render seed data for an instance:
 AIGO_INSTANCE_CONFIG=instances/customer.json npm run seed:render
 ```
 
-Dry-run the full flow:
-
-```bash
-AIGO_INSTANCE_CONFIG=instances/customer.json npm run provision:instance -- --all --dry-run
-```
-
 Run individual steps:
 
 ```bash
-AIGO_INSTANCE_CONFIG=instances/customer.json npm run provision:instance -- --install-forge
-AIGO_INSTANCE_CONFIG=instances/customer.json npm run provision:instance -- --project
-AIGO_INSTANCE_CONFIG=instances/customer.json npm run provision:instance -- --seed
-AIGO_INSTANCE_CONFIG=instances/customer.json npm run provision:instance -- --smoke
-AIGO_INSTANCE_CONFIG=instances/customer.json npm run provision:instance -- --readiness
+node scripts/provision-jira.cjs --config instances/customer.json
+node scripts/provision-seeds.cjs --config instances/customer.json
+node scripts/provision-filters.cjs   # uses AIGO_CLOUD_ID + AIGO_PROJECT_KEY env vars
+node scripts/provision-dashboards.cjs  # uses AIGO_CLOUD_ID + filter IDs env vars
+npm run provision:automation:forge   # uses instances/aigo.example.json by default
 ```
 
-The same scripts also accept environment variables:
+Dry-run individual scripts:
 
 ```bash
-JIRA_SITE=customer.atlassian.net \
-AIGO_PROJECT_KEY=CUST \
-AIGO_PROJECT_NAME="Customer Growth Ops" \
-AIGO_TEMPLATE_PROJECT_KEY=AIGOTPL \
-npm run provision:instance -- --project --seed
+node scripts/provision-jira.cjs --dry-run
+node scripts/provision-seeds.cjs --dry-run
+node scripts/provision-dashboards.cjs --dry-run
+node scripts/forge-import-automation.cjs --dry-run
 ```
 
 ## Golden Template Project
@@ -130,30 +163,49 @@ readiness check passes.
 Automated checks can verify:
 
 - Forge app deploy/install commands ran for a specific site.
-- The target Jira project exists.
-- Seed issues exist with the configured label.
-- Expected issue types are present on the project.
-- Seeded issues occupy some observed statuses.
+- The target Jira project exists and has the expected issue types (all 14).
+- Seed issues exist with the configured label and correct canonical types.
+- Custom fields exist with correct IDs and are mapped to Forge variables.
+- Workflow statuses exist (by ID scan).
+- Field options are present on select fields.
+- JQL saved filters exist by name (IDs stable for dashboard references).
+- Automation rule JSON is rendered with no unfilled `{{ALL_CAPS}}` placeholders.
+- Automation rules are imported as DISABLED via Forge function (when deployed).
 
 Manual Jira validation is still required for:
 
-- Rovo agent visibility in the Jira UI.
-- Team-managed workflow statuses that are not visible on issues.
-- Workflow transition paths.
-- Jira Automation import, actor, Rovo agent selection, enablement, and audit
-  logs.
+- Rovo agent visibility in the Jira UI (`Apps → Rovo → Agents`).
+- Board column → status wiring (Project settings → Board).
+- Workflow transition paths (company-managed projects only; verified via test issues).
+- Jira Automation: enabling each rule, triggering on a seed issue, capturing audit log.
+- Dashboard gadget configuration if gadget API calls return 404 (add manually).
 
 ## Per-Instance MVP Checklist
 
 For every new Jira site/project:
 
-1. Create `instances/<name>.json`.
-2. `AIGO_INSTANCE_CONFIG=instances/<name>.json npm run provision:instance -- --all --dry-run`.
-3. `AIGO_INSTANCE_CONFIG=instances/<name>.json npm run provision:instance -- --install-forge`.
-4. `AIGO_INSTANCE_CONFIG=instances/<name>.json npm run provision:instance -- --project`.
-5. Configure or clone issue types/workflows if readiness reports gaps.
-6. `AIGO_INSTANCE_CONFIG=instances/<name>.json npm run provision:instance -- --seed`.
-7. `AIGO_INSTANCE_CONFIG=instances/<name>.json npm run provision:instance -- --smoke --readiness`.
-8. Confirm all 19 Rovo agents in Jira/Rovo.
-9. Import/rebuild Automation rules and validate each audit log.
-10. Run the six manual Rovo agent checks from [`../specs/tasks.md`](../specs/tasks.md).
+1. **Create instance config**: copy `instances/aigo.example.json` → `instances/<name>.json`. Fill in `site`, `cloudId`, `projectId`, `actorAccountId`, `projectKey`.
+2. **Dry-run**: `npm run provision:all -- --dry-run --config instances/<name>.json`
+3. **Deploy**: `forge deploy -e development`
+4. **Install** (accept all 4 scopes including `manage:jira-configuration`):
+   `forge install -e development -p jira --site <site> --confirm-scopes`
+5. **Provision Jira**: `node scripts/provision-jira.cjs --config instances/<name>.json`
+   - Creates issue types, custom fields, workflow statuses, field options.
+   - Generates `evidence/jira-config/forge-vars.sh`.
+6. **Apply Forge variables**: `bash evidence/jira-config/forge-vars.sh`
+7. **Redeploy**: `forge deploy -e development` (picks up new variable bindings)
+8. **Seed issues**: `node scripts/provision-seeds.cjs --config instances/<name>.json`
+9. **JQL filters**: `AIGO_CLOUD_ID=<cloudId> node scripts/provision-filters.cjs`
+10. **Dashboards**: `AIGO_CLOUD_ID=<cloudId> node scripts/provision-dashboards.cjs`
+11. **Import automation rules** (Forge function): `npm run provision:automation:forge`
+12. **Smoke + readiness**: `npm run test:smoke:jira && npm run test:readiness:jira`
+13. **UI steps** (manual):
+    - Board → add 8 statuses to columns.
+    - `Apps → Rovo → Agents` → confirm all 19 visible.
+    - Automation → enable each rule, verify audit log, capture to `evidence/automation/<rule>-audit.md`.
+14. **Manual agent checks**: T-M4-01 through T-M4-06 (6 seed issue runs).
+
+Or use the single-shot orchestrator for steps 2–12:
+```bash
+npm run provision:all -- --config instances/<name>.json --site <site>
+```

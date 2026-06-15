@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-06-15T06:07:01.288Z",
+  "cloudId": "76683cc1-6501-400f-8b59-01eaad4418d2",
+  "importMethod": "manual-required",
+  "imported": [],
+  "skipped": [],
+  "errors": [
+    "HTTP 401 on all import endpoints — manual import required"
+  ]
+}

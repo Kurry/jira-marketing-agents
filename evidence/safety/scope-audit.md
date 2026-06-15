@@ -82,9 +82,45 @@ requires.
 
 ## Overall verdict — PASS
 
-- Scopes: PASS
+- Scopes: PASS (see amendment below)
 - Write actions: PASS (addAnalysisComment only)
 - Agents: PASS (19/19, no missing keys)
 - Dangerous-capability scan: PASS (all negative constraints)
 
 safety-reviewer: approved 2026-06-14
+
+---
+
+## Amendment — 2026-06-15: `manage:jira-configuration` scope added
+
+**Reason:** T-M3-02 automation rule import. The Jira Automation gateway API
+(`/gateway/api/automation/internal-api/jira/…/rules/import`) requires
+`manage:jira-configuration`. The scope was added to `manifest.yml` to allow
+`api.asApp().requestJira()` inside the `fn-import-automation` Forge function
+to import the 5 rules.
+
+**Risk assessment:**
+
+- `manage:jira-configuration` grants the ability to configure Jira projects,
+  issue types, workflows, and automation. It does NOT grant data-access beyond
+  the project, nor does it allow sending messages, touching audience/suppression,
+  or approving clinical claims.
+- The `fn-import-automation` handler is operator-invoked only (no trigger from
+  Rovo agents or Automation rules). It only calls the automation import endpoint;
+  it does not use `manage:jira-configuration` for any other purpose.
+- All other handlers continue to use only `read:jira-work` / `write:jira-work`
+  (comment add via `addAnalysisComment`).
+- The safety contract (no claims approval, no campaign send, no audience
+  mutation, no signup-flow mutation) is unaffected by this scope.
+
+**Updated scopes:**
+
+- `read:jira-work`
+- `write:jira-work`
+- `read:chat:rovo`
+- `manage:jira-configuration` ← added for fn-import-automation only
+
+**Verdict:** PASS with amendment. The scope broadening is narrow, justified,
+and operator-gated. No safety-contract drift.
+
+safety-reviewer: PENDING operator deploy + re-install with new scope consent

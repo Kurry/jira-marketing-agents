@@ -7,7 +7,7 @@ Review creative copy for health/marketing claims risk and suggest safer rewrites
 Inspect summary, description, and comments for marketing/creative copy and the intended channel. Call `getIssueContext`, then `reviewCreativeClaimsRisk`.
 
 ## Required output
-- Overall claims risk (Safe / Needs substantiation / Risky / Prohibited / Requires human review)
+- Overall claims risk (No high-risk claims detected — human review still required before use / Needs substantiation / Risky / Prohibited / Requires human review)
 - Flagged phrases with the issue and a safer rewrite
 - Channel warnings
 - Human review required (true/false)

@@ -8,7 +8,7 @@
       "ruleScope": {
         "resources": ["ari:cloud:jira:10000:project/10000"]
       },
-      "actor": { "type": "ACCOUNT_ID", "value": "__MISSING_ACTOR_ACCOUNT_ID__" },
+      "actor": { "type": "ACCOUNT_ID", "value": "557058:297f331c-0582-4201-8db9-72c7ec72bf14" },
       "trigger": {
         "component": "TRIGGER",
         "type": "jira.scheduled.trigger",

@@ -200,6 +200,16 @@ Import rules**, then replace the documented placeholders. In short:
 `scripts/provision-filters.cjs` (idempotent). Filter details and IDs are in
 [`evidence/jira-config/queues.md`](evidence/jira-config/queues.md).
 
+**Dashboards** for the six operational views are provisioned by
+`scripts/provision-dashboards.cjs` (idempotent — skips existing by name). Uses
+filter IDs from `provision-filters.cjs` as gadget data sources.
+
+**Automation rule import (IaC):** Rendered rule JSON in `automation/rules/rendered/`
+is imported via the Forge function `fn-import-automation` using
+`npm run provision:automation:forge`. All rules are imported **DISABLED**; an
+operator enables them one at a time after reviewing the audit log (see T-M3-03).
+This requires the `manage:jira-configuration` scope to be accepted at `forge install`.
+
 ## 8. Custom fields guidance
 
 Custom field IDs are **instance-specific** and are not hard-coded. For the MVP,
@@ -246,6 +256,29 @@ npm run test:watch
 npm run seed:render
 npm run provision:instance -- --help
 ```
+
+## 11. IaC provision commands
+
+All provisioning scripts are idempotent (safe to re-run):
+
+```bash
+npm run provision:all               # full single-shot: deploy → jira → seeds → filters → dashboards → automation:forge
+npm run provision:jira              # issue types, custom fields, workflow statuses, field options
+npm run provision:seeds             # seed issues (15 issues, one per canonical type)
+npm run provision:filters           # 7 JQL saved filters
+npm run provision:dashboards        # 6 operational dashboards
+npm run provision:automation:forge  # import 5 automation rules (DISABLED) via Forge function
+```
+
+Dry-run any script before executing:
+
+```bash
+node scripts/provision-jira.cjs --dry-run
+node scripts/provision-dashboards.cjs --dry-run
+node scripts/forge-import-automation.cjs --dry-run
+```
+
+Full per-instance guide: [`docs/PORTABILITY.md`](docs/PORTABILITY.md).
 
 The project is developed **test-first (TDD)**: each domain module has a matching
 test under `tests/` (triage, requirements, experiments, creative claims,

@@ -399,20 +399,53 @@ async function main() {
   }
 
   // -------------------------------------------------------------------------
-  // Step 9: npm run provision:automation
+  // Step 8b: npm run provision:filters (JQL saved filters)
+  // -------------------------------------------------------------------------
+  const step8b = runNpmScript(
+    "Step 8b: npm run provision:filters (create 7 JQL saved filters)",
+    "provision:filters",
+    repoRoot,
+    { allowExitCode2: true }
+  );
+  if (!step8b.ok) {
+    console.error("\nFAIL at Step 8b: provision:filters.");
+    process.exit(1);
+  }
+
+  // -------------------------------------------------------------------------
+  // Step 8c: npm run provision:dashboards (6 dashboards)
+  // -------------------------------------------------------------------------
+  const step8c = runNpmScript(
+    "Step 8c: npm run provision:dashboards (create 6 Jira dashboards)",
+    "provision:dashboards",
+    repoRoot,
+    { allowExitCode2: true }
+  );
+  if (!step8c.ok) {
+    console.error("\nFAIL at Step 8c: provision:dashboards.");
+    process.exit(1);
+  }
+
+  // -------------------------------------------------------------------------
+  // Step 9: npm run provision:automation:forge
+  // Uses the Forge function (fn-import-automation) deployed in Step 3/7 to
+  // import automation rules via api.asApp().requestJira() — no OAuth scope
+  // issue because the request runs inside Atlassian's infrastructure.
   // -------------------------------------------------------------------------
   const step9 = runNpmScript(
-    "Step 9: npm run provision:automation",
-    "provision:automation",
+    "Step 9: npm run provision:automation:forge (import rules via Forge function)",
+    "provision:automation:forge",
     repoRoot,
     { allowExitCode2: true }
   );
   if (!step9.ok) {
-    console.error("\nFAIL at Step 9: provision:automation.");
+    console.error("\nFAIL at Step 9: provision:automation:forge.");
+    console.error("Fallback: run 'npm run provision:automation' or import rules manually via Jira UI.");
+    console.error("See docs/OPERATOR_PROMPTS.md → 'Import automation rules (T-M3-02)'.");
     process.exit(1);
   }
   if (step9.code === 2) {
-    console.log("  NOTE: Automation import requires manual UI steps — see output above.");
+    console.log("  NOTE: Automation import requires manual UI steps — see docs/OPERATOR_PROMPTS.md.");
   }
 
   // -------------------------------------------------------------------------

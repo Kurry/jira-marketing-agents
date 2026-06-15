@@ -68,18 +68,34 @@ function countManifestAgents(manifestPath) {
   }
 
   const text = fs.readFileSync(manifestPath, "utf8");
+  const lines = text.split("\n");
 
-  // Find the rovo:agent section (indented under modules:)
-  // Pattern: lines indented under "  rovo:agent:" until the next top-level key
-  const rovoSectionMatch = text.match(/^\s{2}rovo:agent:\n([\s\S]*?)(?=\n\s{2}\w|\n\w|\s*$)/m);
-  if (!rovoSectionMatch) {
-    return { count: 0, keys: [] };
+  let inRovoSection = false;
+  const keys = [];
+
+  for (const line of lines) {
+    // Detect start of the rovo:agent section (exactly 2-space indent in modules:)
+    if (line === "  rovo:agent:") {
+      inRovoSection = true;
+      continue;
+    }
+    if (!inRovoSection) continue;
+
+    // Exit the section when we hit a peer-level module key (2-space indent + non-space)
+    // or a top-level key (no indent). Blank lines are fine — stay in section.
+    if (line.length > 0 && !/^\s/.test(line)) {
+      break; // top-level key (e.g., "permissions:")
+    }
+    if (/^\s{2}\S/.test(line)) {
+      break; // sibling module under modules: (e.g., "  action:")
+    }
+
+    // Each agent entry: "    - key: <keyname>"
+    const keyMatch = line.match(/^\s{4}-\s+key:\s+(\S+)/);
+    if (keyMatch) {
+      keys.push(keyMatch[1]);
+    }
   }
-
-  const section = rovoSectionMatch[1];
-  // Each agent entry starts with "    - key: <keyname>"
-  const keyMatches = section.match(/^\s{4}-\s+key:\s+(\S+)/gm) || [];
-  const keys = keyMatches.map((m) => m.replace(/^\s+- key:\s+/, "").trim());
 
   return { count: keys.length, keys };
 }

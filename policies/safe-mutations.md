@@ -53,6 +53,14 @@ This policy is the source of truth for what the app may and may not do.
 - Any action requiring `write:jira-work` must be clearly documented (the comment
   action is the only such action today).
 
+## Scope latent risk note
+
+The `write:jira-work` Forge scope (required for `addAnalysisComment`) is broader than strictly necessary: Jira provides no narrower "comment-only" scope. This scope would also permit field updates, issue transitions, and other mutations if future handlers were added without a policy review.
+
+**Defense:** the code-level allowlist in `src/index.ts` is the only write surface, and it currently exposes only `addAnalysisComment`. Any new handler touching Jira writes **must** be reviewed by `safety-reviewer` and added to this policy before merging. See `policies/safe-mutations.md` gate in `TEAM_CHARTER.md` and `docs/RELEASE_CHECKLIST.md`.
+
+This risk is latent (not a present violation) and documented here per the 2026-06-15 adversarial safety audit (`evidence/safety/final-audit.md`).
+
 ## Automation note
 
 Rovo actions invoked by Jira Automation are treated as **read-style** actions.

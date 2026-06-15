@@ -5,6 +5,7 @@
 // addAnalysisComment. Handlers never mutate issues, approve claims, launch
 // campaigns, change audiences, alter suppression, or edit production systems.
 
+import api, { route } from "@forge/api";
 import { getIssueContext as fetchIssueContext, searchIssues } from "./jira";
 import {
   IssueKeyPayload,
@@ -189,4 +190,49 @@ export async function proposeActivationPlan(req: any) {
 export async function addAnalysisComment(req: any) {
   const payload = resolvePayload<AddCommentPayload>(req);
   return doAddComment(payload);
+}
+
+// --- Automation import (operator-invoked only, all rules imported DISABLED) ---
+
+interface ImportAutomationPayload {
+  cloudId: string;
+  rules: object[];
+  dryRun?: boolean;
+}
+
+export async function importAutomationRules(req: any) {
+  const { cloudId, rules, dryRun } = resolvePayload<ImportAutomationPayload>(req);
+
+  if (!cloudId) throw new Error("cloudId is required");
+  if (!Array.isArray(rules) || rules.length === 0) throw new Error("rules array is required and must not be empty");
+
+  if (dryRun) {
+    return { dryRun: true, ruleCount: rules.length, message: "Dry run — no rules imported" };
+  }
+
+  const results: Array<{ name: string; status: number; body: unknown }> = [];
+
+  for (const rule of rules as any[]) {
+    const resp = await api.asApp().requestJira(
+      route`/gateway/api/automation/internal-api/jira/${cloudId}/pro/rest/GLOBAL/rules/import`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...rule, state: "DISABLED" }),
+      }
+    );
+
+    let body: unknown;
+    try { body = await resp.json(); } catch { body = null; }
+
+    results.push({ name: rule.name ?? "(unnamed)", status: resp.status, body });
+  }
+
+  const failed = results.filter((r) => r.status >= 400);
+  return {
+    imported: results.filter((r) => r.status < 400).length,
+    failed: failed.length,
+    results,
+    ...(failed.length > 0 && { errors: failed }),
+  };
 }

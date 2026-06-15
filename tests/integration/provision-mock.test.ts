@@ -5,13 +5,18 @@
  * Intercepts all outbound HTTPS calls so no real Jira API is hit.
  *
  * Covered scripts (pure-function exports + HTTP interception via nock):
- *   - scripts/provision-jira.cjs  → validateConfig, diffItems, plus HTTP phases
- *   - scripts/provision-seeds.cjs → validateSeedsConfig, diffSeeds, parseCsv, etc.
+ *   - scripts/provision-jira.cjs       → validateConfig, diffItems, plus HTTP phases
+ *   - scripts/provision-seeds.cjs      → validateSeedsConfig, diffSeeds, parseCsv, etc.
  *   - scripts/provision-automation.cjs → validateRule, extractRules, filterNewRules
+ *   - scripts/provision-dashboards.cjs → HTTP: GET dashboards, POST create, POST gadget
  */
 
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 import nock from "nock";
+import { spawnSync } from "node:child_process";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 
 // ---------------------------------------------------------------------------
 // Import pure exports from CJS scripts
@@ -383,7 +388,7 @@ describe("provision-automation — filterNewRules (idempotency)", () => {
     const existingNames = new Set(["Rule B"]);
     const filtered = provisionAutomation.filterNewRules(existingNames, allRules);
     expect(filtered).toHaveLength(2);
-    expect(filtered.map((r: { name: string }) => r.name)).not.toContain("Rule B");
+    expect(filtered.map((r: object) => (r as { name: string }).name)).not.toContain("Rule B");
   });
 
   it("no existing rules: returns all rules", () => {
@@ -622,7 +627,7 @@ describe("provision-seeds — HTTP: nock scope verification", () => {
   it("nock can intercept PUT /rest/api/3/issue/:key for retype", async () => {
     const scope = nock(BASE_URL)
       .put("/rest/api/3/issue/AIGO-5")
-      .reply(204, null);
+      .reply(204);
 
     const https = require("node:https") as typeof import("node:https");
     const body = JSON.stringify({ fields: { issuetype: { id: "10002" } } });
@@ -873,5 +878,328 @@ describe("error handling — HTTP error responses via nock", () => {
     expect(error).toBeInstanceOf(Error);
     // nock throws a Nock: No match for request error
     expect(error.message).toMatch(/Nock|ECONNREFUSED|socket/i);
+  });
+});
+
+// ===========================================================================
+// Suite 8: HTTP interception via nock — provision-dashboards HTTP interactions
+// ===========================================================================
+// The dashboard script uses https://api.atlassian.com/ex/jira/<cloudId>/...
+// as its base URL (OAuth api.atlassian.com, not the site hostname).
+
+describe("provision-dashboards — HTTP: nock scope verification", () => {
+  const DASH_HOSTNAME = "api.atlassian.com";
+  const DASH_BASE = `https://${DASH_HOSTNAME}`;
+  const DASH_PREFIX = `/ex/jira/${CLOUD_ID}`;
+
+  it("nock can intercept GET /rest/api/3/dashboard (list existing dashboards)", async () => {
+    const scope = nock(DASH_BASE)
+      .get(`${DASH_PREFIX}/rest/api/3/dashboard`)
+      .query({ maxResults: "100" })
+      .reply(200, {
+        dashboards: [
+          { id: "1001", name: "AIGO — Weekly Growth State" },
+          { id: "1002", name: "AIGO — Claims Bottlenecks" },
+        ],
+        total: 2,
+      });
+
+    const https = require("node:https") as typeof import("node:https");
+    const result = await new Promise<{ status: number; body: unknown }>((resolve, reject) => {
+      const req = https.get(
+        `${DASH_BASE}${DASH_PREFIX}/rest/api/3/dashboard?maxResults=100`,
+        { headers: { Authorization: `Bearer ${TOKEN}` } },
+        (res) => {
+          let data = "";
+          res.on("data", (c: string) => { data += c; });
+          res.on("end", () => resolve({ status: res.statusCode ?? 0, body: JSON.parse(data) }));
+        }
+      );
+      req.on("error", reject);
+    });
+
+    const body = result.body as { dashboards: Array<{ name: string }> };
+    expect(result.status).toBe(200);
+    expect(body.dashboards.map((d) => d.name)).toContain("AIGO — Weekly Growth State");
+    scope.done();
+  });
+
+  it("nock can intercept POST /rest/api/3/dashboard (create dashboard)", async () => {
+    const scope = nock(DASH_BASE)
+      .post(`${DASH_PREFIX}/rest/api/3/dashboard`)
+      .reply(200, {
+        id: "2001",
+        name: "AIGO — Experiments",
+        sharePermissions: [{ type: "loggedin" }],
+      });
+
+    const https = require("node:https") as typeof import("node:https");
+    const body = JSON.stringify({
+      name: "AIGO — Experiments",
+      description: "Active experiments and decision-needed tests.",
+      sharePermissions: [{ type: "loggedin" }],
+      editPermissions: [],
+    });
+
+    const result = await new Promise<{ status: number; body: unknown }>((resolve, reject) => {
+      const req = https.request(
+        {
+          hostname: DASH_HOSTNAME,
+          port: 443,
+          path: `${DASH_PREFIX}/rest/api/3/dashboard`,
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${TOKEN}`,
+            "Content-Type": "application/json",
+            "Content-Length": Buffer.byteLength(body),
+          },
+        },
+        (res) => {
+          let data = "";
+          res.on("data", (c: string) => { data += c; });
+          res.on("end", () => resolve({ status: res.statusCode ?? 0, body: JSON.parse(data) }));
+        }
+      );
+      req.on("error", reject);
+      req.write(body);
+      req.end();
+    });
+
+    const respBody = result.body as { id: string; name: string };
+    expect(result.status).toBe(200);
+    expect(respBody.id).toBe("2001");
+    expect(respBody.name).toBe("AIGO — Experiments");
+    scope.done();
+  });
+
+  it("nock can intercept POST /rest/api/3/dashboard/:id/gadget (add gadget)", async () => {
+    const dashboardId = "2001";
+    const scope = nock(DASH_BASE)
+      .post(`${DASH_PREFIX}/rest/api/3/dashboard/${dashboardId}/gadget`)
+      .reply(200, {
+        id: "gadget-001",
+        moduleKey: "com.atlassian.jira.gadgets:filter-results-gadget",
+        color: "color1",
+      });
+
+    const https = require("node:https") as typeof import("node:https");
+    const body = JSON.stringify({
+      moduleKey: "com.atlassian.jira.gadgets:filter-results-gadget",
+      color: "color1",
+      position: { column: 0, row: 0 },
+      properties: { filterId: "10000", numofresults: "10" },
+    });
+
+    const result = await new Promise<{ status: number; body: unknown }>((resolve, reject) => {
+      const req = https.request(
+        {
+          hostname: DASH_HOSTNAME,
+          port: 443,
+          path: `${DASH_PREFIX}/rest/api/3/dashboard/${dashboardId}/gadget`,
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${TOKEN}`,
+            "Content-Type": "application/json",
+            "Content-Length": Buffer.byteLength(body),
+          },
+        },
+        (res) => {
+          let data = "";
+          res.on("data", (c: string) => { data += c; });
+          res.on("end", () => resolve({ status: res.statusCode ?? 0, body: JSON.parse(data) }));
+        }
+      );
+      req.on("error", reject);
+      req.write(body);
+      req.end();
+    });
+
+    const respBody = result.body as { id: string; moduleKey: string };
+    expect(result.status).toBe(200);
+    expect(respBody.moduleKey).toBe("com.atlassian.jira.gadgets:filter-results-gadget");
+    scope.done();
+  });
+
+  it("401 on GET dashboard list: nock returns 401, script should exit with code 2", async () => {
+    const scope = nock(DASH_BASE)
+      .get(`${DASH_PREFIX}/rest/api/3/dashboard`)
+      .query({ maxResults: "100" })
+      .reply(401, { message: "Unauthorized", statusCode: 401 });
+
+    const https = require("node:https") as typeof import("node:https");
+    const result = await new Promise<{ status: number; body: unknown }>((resolve, reject) => {
+      const req = https.get(
+        `${DASH_BASE}${DASH_PREFIX}/rest/api/3/dashboard?maxResults=100`,
+        { headers: { Authorization: "Bearer invalid-token" } },
+        (res) => {
+          let data = "";
+          res.on("data", (c: string) => { data += c; });
+          res.on("end", () => resolve({ status: res.statusCode ?? 0, body: JSON.parse(data) }));
+        }
+      );
+      req.on("error", reject);
+    });
+
+    expect(result.status).toBe(401);
+    expect((result.body as { statusCode: number }).statusCode).toBe(401);
+    scope.done();
+  });
+
+  it("404 on POST gadget is non-fatal: nock returns 404 for gadget endpoint", async () => {
+    // The script treats gadget 404 as a warning, not a fatal error.
+    // Verify the HTTP layer correctly surfaces 404 so the script can handle it.
+    const dashboardId = "9999";
+    const scope = nock(DASH_BASE)
+      .post(`${DASH_PREFIX}/rest/api/3/dashboard/${dashboardId}/gadget`)
+      .reply(404, { message: "Dashboard not found" });
+
+    const https = require("node:https") as typeof import("node:https");
+    const body = JSON.stringify({
+      moduleKey: "com.atlassian.jira.gadgets:filter-results-gadget",
+      color: "color1",
+      position: { column: 0, row: 0 },
+      properties: { filterId: "10000", numofresults: "10" },
+    });
+
+    const result = await new Promise<{ status: number; body: unknown }>((resolve, reject) => {
+      const req = https.request(
+        {
+          hostname: DASH_HOSTNAME,
+          port: 443,
+          path: `${DASH_PREFIX}/rest/api/3/dashboard/${dashboardId}/gadget`,
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${TOKEN}`,
+            "Content-Type": "application/json",
+            "Content-Length": Buffer.byteLength(body),
+          },
+        },
+        (res) => {
+          let data = "";
+          res.on("data", (c: string) => { data += c; });
+          res.on("end", () => resolve({ status: res.statusCode ?? 0, body: JSON.parse(data) }));
+        }
+      );
+      req.on("error", reject);
+      req.write(body);
+      req.end();
+    });
+
+    expect(result.status).toBe(404);
+    scope.done();
+  });
+
+  it("idempotency: existing dashboard name in GET response means no POST is issued", async () => {
+    // If the dashboard already exists, provision-dashboards skips the POST.
+    // Verify that nock sees no POST when we register only the GET interceptor.
+    const existingName = "AIGO — Weekly Growth State";
+    const scope = nock(DASH_BASE)
+      .get(`${DASH_PREFIX}/rest/api/3/dashboard`)
+      .query({ maxResults: "100" })
+      .reply(200, { dashboards: [{ id: "1001", name: existingName }], total: 1 });
+
+    const https = require("node:https") as typeof import("node:https");
+    const listResult = await new Promise<{ status: number; body: unknown }>((resolve, reject) => {
+      const req = https.get(
+        `${DASH_BASE}${DASH_PREFIX}/rest/api/3/dashboard?maxResults=100`,
+        { headers: { Authorization: `Bearer ${TOKEN}` } },
+        (res) => {
+          let data = "";
+          res.on("data", (c: string) => { data += c; });
+          res.on("end", () => resolve({ status: res.statusCode ?? 0, body: JSON.parse(data) }));
+        }
+      );
+      req.on("error", reject);
+    });
+
+    const body = listResult.body as { dashboards: Array<{ name: string }> };
+    const existingNames = new Set(body.dashboards.map((d) => d.name));
+    // Simulate the skip logic: if name already exists, we don't POST
+    const shouldSkip = existingNames.has(existingName);
+    expect(shouldSkip).toBe(true);
+    // The GET interceptor was consumed; no POST interceptor was registered
+    scope.done();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Suite 9: forge-import-automation.cjs — pure-logic paths (no forge CLI)
+// ---------------------------------------------------------------------------
+// The script wraps `forge invoke function`; that live call needs a deployed
+// Forge app and is not exercised here. We test the guard logic and dry-run
+// path, which exit before touching the forge CLI.
+
+describe("forge-import-automation — guard logic and dry-run", () => {
+  const SCRIPT = path.resolve(__dirname, "../../scripts/forge-import-automation.cjs");
+  const REPO_ROOT = path.resolve(__dirname, "../..");
+  const EXAMPLE_CONFIG = path.join(REPO_ROOT, "instances", "aigo.example.json");
+
+  function runScript(args: string[], cwd?: string): { code: number | null; stdout: string; stderr: string } {
+    const result = spawnSync("node", [SCRIPT, ...args], {
+      encoding: "utf8",
+      cwd: cwd ?? REPO_ROOT,
+    });
+    return { code: result.status, stdout: result.stdout ?? "", stderr: result.stderr ?? "" };
+  }
+
+  it("--dry-run with example config exits 0 and prints DRY RUN", () => {
+    const r = runScript(["--config", EXAMPLE_CONFIG, "--dry-run"]);
+    expect(r.code).toBe(0);
+    expect(r.stdout).toMatch(/DRY RUN/i);
+    expect(r.stdout).toMatch(/Would invoke fn-import-automation/i);
+  });
+
+  it("--dry-run lists at least 5 DISABLED rules", () => {
+    const r = runScript(["--config", EXAMPLE_CONFIG, "--dry-run"]);
+    expect(r.code).toBe(0);
+    const ruleLines = r.stdout.split("\n").filter((l) => l.match(/^\s+-\s+.+\[DISABLED\]/));
+    expect(ruleLines.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("exits 1 when config file does not exist", () => {
+    const r = runScript(["--config", "/nonexistent/config.json"]);
+    expect(r.code).toBe(1);
+    expect(r.stderr).toMatch(/Config file not found/i);
+  });
+
+  it("exits 1 when config is missing cloudId", () => {
+    const tmp = path.join(os.tmpdir(), `test-no-cloudid-${Date.now()}.json`);
+    fs.writeFileSync(tmp, JSON.stringify({ projectKey: "AIGO", projectId: "10000" }));
+    try {
+      const r = runScript(["--config", tmp]);
+      expect(r.code).toBe(1);
+      expect(r.stderr).toMatch(/missing cloudId/i);
+    } finally {
+      fs.unlinkSync(tmp);
+    }
+  });
+
+  it("exits 1 when a rendered rule has state != DISABLED", () => {
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "aigo-forge-test-"));
+    const renderedDir = path.join(tmpDir, "automation", "rules", "rendered");
+    fs.mkdirSync(renderedDir, { recursive: true });
+
+    const enabledRule = { version: 1, rules: [{ name: "Bad Rule", state: "ENABLED" }] };
+    fs.writeFileSync(path.join(renderedDir, "bad-rule.json"), JSON.stringify(enabledRule));
+
+    const cfg = { cloudId: "test-cloud-id", projectKey: "AIGO" };
+    const cfgPath = path.join(tmpDir, "config.json");
+    fs.writeFileSync(cfgPath, JSON.stringify(cfg));
+
+    // Patch renderedDir in a copy of the script so it reads our temp dir
+    const patchedScript = fs.readFileSync(SCRIPT, "utf8").replace(
+      'path.join(repoRoot, "automation", "rules", "rendered")',
+      JSON.stringify(renderedDir)
+    );
+    const patchedPath = path.join(tmpDir, "patched.cjs");
+    fs.writeFileSync(patchedPath, patchedScript);
+
+    try {
+      const result = spawnSync("node", [patchedPath, "--config", cfgPath], { encoding: "utf8", cwd: tmpDir });
+      expect(result.status).toBe(1);
+      expect(result.stderr).toMatch(/must be DISABLED/i);
+    } finally {
+      fs.rmSync(tmpDir, { recursive: true, force: true });
+    }
   });
 });

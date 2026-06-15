@@ -403,14 +403,13 @@ describe("example config — structure check", () => {
     expect(String(exampleConfig.projectKey).length).toBeGreaterThan(0);
   });
 
-  it("has projectId for provisioning and is missing actorAccountId (expected for example config)", () => {
-    // projectId is now present in the example config as part of the IaC
-    // provisioning story (scripts/provision-jira.cjs reads it to scope
-    // issue types, statuses, and field options to the correct project).
-    // actorAccountId is still intentionally absent — real deployments must
-    // supply this separately via environment or instance override.
+  it("has projectId and actorAccountId for provisioning", () => {
+    // Both fields are now populated in the example config so that
+    // automation rule rendering and Forge function invocation work
+    // against the development site without extra env overrides.
     expect(typeof exampleConfig.projectId).toBe("string");
     expect(String(exampleConfig.projectId).length).toBeGreaterThan(0);
-    expect(exampleConfig.actorAccountId).toBeUndefined();
+    expect(typeof exampleConfig.actorAccountId).toBe("string");
+    expect(String(exampleConfig.actorAccountId).length).toBeGreaterThan(0);
   });
 });
