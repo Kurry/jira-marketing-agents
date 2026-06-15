@@ -2,16 +2,56 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## This repo is Infrastructure as Code
+
+Full principles: `specs/agent-team/IAC_PRINCIPLES.md` (read first). The
+`TaskCompleted` hook (`specs/agent-team/QUALITY_GATES.md`) rejects anything that
+violates them.
+
+**The one rule — one command reconciles.** If a change to Jira, Forge, Rovo, or
+the repo cannot be reproduced end-to-end by a checked-in script on a clean
+clone, the change did not happen. From a clean clone with authenticated CLIs:
+
+```bash
+npm ci
+npm run infra:plan     # no drift, nothing left to do, exit 0
+npm run infra:apply    # idempotent; re-running is a no-op
+npm run infra:verify   # every invariant green, exit 0
+```
+
+Creating any of those steps that does not yet exist is a task. If any step
+requires a human to click, paste, or screenshot, it is broken and must be fixed.
+
+**Evidence** is valid only if a repo script produced it, it is deterministic on
+re-run, machine-readable (JSON) where possible, and checked into `evidence/`
+with the producing command recorded at the top. Markdown summaries are generated
+*from* JSON, never hand-written.
+
+**Banned patterns (automatic reject):**
+
+- "Ask the operator to paste …", "Open Jira and navigate to …", "Manual UI check".
+- "Take a screenshot" / any `.png`/`.jpg` under `evidence/`.
+- Acceptance bullets that hinge on human verification.
+- A "Run" field that is not a command, or needs interactive input (`read`,
+  prompt, TTY login).
+- "Decide manually" without a code artefact encoding the decision.
+- Tests that assert `true` or are skipped with `xit`/`describe.skip`.
+
+If a Jira/Forge/Rovo capability has no REST/CLI surface, document it as blocked
+in `evidence/blockers.md` with the missing endpoint and commit a declarative
+stub. No task routes through a human.
+
 ## Always read before acting
 
 This repo is driven by a multi-agent team. Before making any change, read the
 governing docs under `specs/agent-team/`:
 
+- `specs/agent-team/IAC_PRINCIPLES.md` — the IaC contract above, in full.
 - `specs/agent-team/MISSION.md` — goal, safety contract (hard rules), definition of done.
 - `specs/agent-team/TEAM_CHARTER.md` — roles, file ownership, plan-approval gates.
 - `specs/agent-team/OPERATING_LOOP.md` — how each teammate claims and runs work.
 - `specs/agent-team/TASK_BOARD.md` — the live task list and dependencies.
-- `specs/agent-team/VERIFICATION_MATRIX.md` — the only source of truth for "what proves a task is done".
+- `specs/agent-team/SCRIPTABLE_VERIFICATION.md` — how each invariant is proven by a script.
 
 Also consult `specs/outcome-roadmap.md` (field/issue-type/outcome catalog),
 `specs/requirements.md`, and `specs/design.md` for the target control plane.
@@ -72,19 +112,39 @@ Destructive CLI calls (project/workflow-scheme/rule delete, bulk issue delete,
 
 ## Commands
 
+### Reconcile loop (the one rule)
+
+```bash
+npm run infra:plan     # compute drift between infra/ declaration and live Jira; exit 0 if none
+npm run infra:apply    # converge Jira to the declaration; idempotent (re-run is a no-op)
+npm run infra:verify   # run every scripted invariant; exit non-zero if any predicate is red
+```
+
+These read the declarative state under `infra/` and write JSON reports under
+`evidence/`. Any step not yet implemented is tracked as a task.
+
+### Build and unit tests (no network)
+
 ```bash
 npm run build          # tsc --noEmit (type check only — no compilation output)
 npm test               # vitest run (all unit tests)
 npm run test:watch     # vitest in watch mode
 npm run lint           # alias for tsc --noEmit
-
 npm run test:integration       # integration tests (manifest/prompt/action/handler contracts)
-npm run test:readiness:jira    # live AIGO project readiness check (requires Jira + ACLI)
-npm run test:smoke:jira        # live smoke test after forge deploy+install
-
-npm run seed:render            # render seed CSV from instances/aigo.example.json
-npm run provision:instance -- --help   # multi-site provisioning helper
 ```
+
+### Provisioning helpers (staging only)
+
+```bash
+npm run seed:render            # render seed CSV from instances/aigo.example.json
+npm run provision:all          # run jira + seeds + automation provisioning end-to-end
+npm run check:rovo             # diff manifest Rovo agents against Forge/Rovo REST
+```
+
+Provisioning scripts refuse to run unless `AIGO_TARGET=staging` and the Jira
+site matches the allowlist (`myhealthcaresite.atlassian.net`), Forge env
+`development`. They never prompt for credentials — a missing credential exits
+non-zero with the env var or CLI login required.
 
 To run a single test file:
 ```bash
@@ -159,6 +219,8 @@ Custom Jira field IDs are **instance-specific** and injected via environment var
 ### Tests
 
 `tests/helpers.ts` exports `makeIssue(overrides)` — the standard factory for `IssueContext` in all tests. Use it instead of constructing the type manually. Tests are co-located by domain: `triage.test.ts`, `experiments.test.ts`, etc.
+
+Unit tests make **no network calls**. Tests that hit Jira/Forge live under `tests/integration/` and must be tagged `staging-only`. A check that cannot be automated is not a test — it is a manual procedure this repo does not accept.
 
 ### Safety invariant
 
