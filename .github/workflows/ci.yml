@@ -57,3 +57,8 @@ jobs:
         env:
           AIGO_INSTANCE_CONFIG: instances/aigo.example.json
         run: npm run seed:render
+
+      - name: Validate Jira provision config (dry run)
+        run: npm run provision:jira:dry
+        env:
+          AIGO_INSTANCE_CONFIG: instances/aigo.example.json

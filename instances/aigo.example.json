@@ -9,5 +9,49 @@
   "templateProjectKey": "",
   "seedTemplate": "automation/seed/aigo-seed-issues.csv",
   "renderedSeedFile": "automation/seed/generated/AIGO-seed-issues.csv",
-  "automationRulesFile": "automation/rules/aigo-automation-ruleset.json"
+  "automationRulesFile": "automation/rules/aigo-automation-ruleset.json",
+  "cloudId": "76683cc1-6501-400f-8b59-01eaad4418d2",
+  "projectId": "10000",
+  "jiraConfig": {
+    "issueTypes": [
+      {"name": "AI Growth Request", "description": "General intake for a growth idea or ask that needs AI triage before it becomes executable work.", "type": "standard"},
+      {"name": "Creative Request", "description": "Request to draft creative variants (copy/assets) for a channel. AI drafts only; claims-scanned and routed to review.", "type": "standard"},
+      {"name": "Experiment", "description": "A single test with a hypothesis, metric, guardrails, and a decision rule.", "type": "standard"},
+      {"name": "Segmentation Request", "description": "Request to define a target audience/segment as a structured targeting spec.", "type": "standard"},
+      {"name": "Personalization Journey", "description": "A full lifecycle/journey artifact for a segment: stages, channels, behavior triggers, sequence, fallbacks, tracking, and approvals.", "type": "standard"},
+      {"name": "Employer Launch", "description": "Workback plan for launching to an employer/partner with readiness scoring, blockers, phases, QA checklist.", "type": "standard"},
+      {"name": "Campaign", "description": "A multi-touch outreach plan (draft only — no send). Includes channels, cadence, suppression checks, tracking, and approval gates.", "type": "standard"},
+      {"name": "Dashboard Request", "description": "Request for an analytics dashboard or reporting view spec.", "type": "standard"},
+      {"name": "Signup Funnel Issue", "description": "A funnel-friction or signup defect to analyze and convert into a product-ready remediation ticket.", "type": "standard"},
+      {"name": "Research Brief", "description": "A qualitative research / objection-mining synthesis: themes, frequency, segments, de-identified quotes, conversion impact.", "type": "standard"},
+      {"name": "Claims Review", "description": "A health/clinical claims review item. Human Compliance reviewer required; AI may flag but never approves.", "type": "standard"},
+      {"name": "Decision Memo", "description": "A decision-support artifact tying a recommendation to evidence and a required decision.", "type": "standard"},
+      {"name": "Positioning Update", "description": "A product positioning/messaging update: value propositions, proof requirements, differentiators, objection matrix.", "type": "standard"},
+      {"name": "Bug / Tracking Issue", "description": "An engineering/tracking defect — including analytics/tracking instrumentation gaps.", "type": "standard"}
+    ],
+    "customFields": [
+      {"name": "Segment", "type": "com.atlassian.jira.plugin.system.customfieldtypes:select", "searcherKey": "com.atlassian.jira.plugin.system.customfieldtypes:multiselectsearcher", "description": "AIGO: Target audience segment for this issue.", "forgeVar": "SEGMENT_FIELD_ID"},
+      {"name": "Primary Metric", "type": "com.atlassian.jira.plugin.system.customfieldtypes:select", "searcherKey": "com.atlassian.jira.plugin.system.customfieldtypes:multiselectsearcher", "description": "AIGO: Primary success metric (signups, CAC, activation rate, etc.).", "forgeVar": "PRIMARY_METRIC_FIELD_ID"},
+      {"name": "Claims Risk", "type": "com.atlassian.jira.plugin.system.customfieldtypes:select", "searcherKey": "com.atlassian.jira.plugin.system.customfieldtypes:multiselectsearcher", "description": "AIGO: Health/clinical claims risk level: Low, Medium, High, Prohibited.", "forgeVar": "CLAIMS_RISK_FIELD_ID"},
+      {"name": "Experiment ID", "type": "com.atlassian.jira.plugin.system.customfieldtypes:textfield", "searcherKey": "com.atlassian.jira.plugin.system.customfieldtypes:textsearcher", "description": "AIGO: Unique identifier for this experiment (e.g., EXP-2026-001).", "forgeVar": "EXPERIMENT_ID_FIELD_ID"},
+      {"name": "Workflow Area", "type": "com.atlassian.jira.plugin.system.customfieldtypes:select", "searcherKey": "com.atlassian.jira.plugin.system.customfieldtypes:multiselectsearcher", "description": "AIGO: Triage routing area (Targeting, Creative, Experiment, Employer, Funnel, Content, Research, Platform).", "forgeVar": "WORKFLOW_AREA_FIELD_ID"},
+      {"name": "Priority Score", "type": "com.atlassian.jira.plugin.system.customfieldtypes:float", "searcherKey": "com.atlassian.jira.plugin.system.customfieldtypes:exactnumber", "description": "AIGO: Numeric triage priority score (0–100) from the Growth Triage Agent.", "forgeVar": "PRIORITY_SCORE_FIELD_ID"}
+    ],
+    "workflowStatuses": [
+      {"name": "Intake", "statusCategory": "TODO"},
+      {"name": "Triage", "statusCategory": "IN_PROGRESS"},
+      {"name": "Spec Ready", "statusCategory": "IN_PROGRESS"},
+      {"name": "In Review", "statusCategory": "IN_PROGRESS"},
+      {"name": "Claims Review", "statusCategory": "IN_PROGRESS"},
+      {"name": "Experiment Running", "statusCategory": "IN_PROGRESS"},
+      {"name": "Decision Needed", "statusCategory": "IN_PROGRESS"},
+      {"name": "Launch Prep", "statusCategory": "IN_PROGRESS"}
+    ],
+    "fieldOptions": {
+      "Segment": ["Employer Members", "Lapsed Members", "Activation Cohort", "High-intent Visitors", "General Audience"],
+      "Primary Metric": ["Signups", "CAC", "Activation Rate", "Retention", "MoM Revenue", "Feature Adoption", "NPS"],
+      "Claims Risk": ["Low", "Medium", "High", "Prohibited"],
+      "Workflow Area": ["Targeting", "Creative", "Experiment", "Employer", "Funnel", "Content", "Research", "Platform"]
+    }
+  }
 }
