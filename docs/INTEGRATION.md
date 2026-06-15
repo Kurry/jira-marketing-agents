@@ -401,7 +401,12 @@ Spec (created / AI Triage) · Employer Launch (created) · Weekly Readout
 
 ### 10d. Validate each rule (T-M3-03)
 
-After import, enable and validate **one rule at a time**:
+> **Plan requirement:** "Use agent" (Rovo AI) in Automation requires **Atlassian Intelligence**,
+> available on Jira Premium/Enterprise only. On Free/Standard the step shows "your org admin needs
+> to activate AI." Upgrade at atlassian.com/purchase, then follow
+> `skills/jira-automation-rovo-setup/SKILL.md`. See `docs/TROUBLESHOOTING.md` → "Use agent blocked".
+
+After upgrading and connecting Rovo (Settings → Automation → Rovo), enable and validate **one rule at a time**:
 
 1. Enable the rule in Project settings → Automation.
 2. Trigger it on a matching seed issue (or create a test issue).

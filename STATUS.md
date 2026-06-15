@@ -1,7 +1,7 @@
 # AIGO Agent-Team Status
 
-_Last updated: 2026-06-15T16:30Z_
-_Current tick: 28_
+_Last updated: 2026-06-15T17:00Z_
+_Current tick: 29_
 
 ## Milestone
 - Active: **M0-M3 ✓ · M6 ✓ · IaC ✓ · docs ✓ · safety ✓ · evidence ✓ — awaiting operator: T-M3-03 only (connect Rovo, enable rules, capture audit logs)**
@@ -35,10 +35,11 @@ _Current tick: 28_
   - Outcomes 1–6: pre-existing complete traces confirmed
   - Outcomes 7–10: new traces created (employer launch, funnel, analytics/readout, positioning)
 
-## Completed this tick (tick 28)
-- **skill: jira-automation-rovo-setup** ✓ — written to `skills/jira-automation-rovo-setup/SKILL.md`
-- **R-07 documented** — BLK-02 added to `evidence/blockers.md`; AI activation exhaustively investigated
+## Completed this tick (ticks 28–29)
+- **skill: jira-automation-rovo-setup** ✓ — `skills/jira-automation-rovo-setup/SKILL.md`
+- **R-07 / BLK-02 documented** — `evidence/blockers.md`; AI activation exhaustively investigated (5 admin locations checked)
 - **outcome-roadmap.md audited** ✓ — 20+ stale items converted to [x]/[~] (commit b65835d)
+- **BLK-02 propagated to all docs** ✓ — TROUBLESHOOTING, MVP_RUNBOOK, INTEGRATION, PORTABILITY all updated with plan-requirement notes and skill reference
 
 ## Blocked / awaiting operator action (in order)
 1. **T-M3-03 — BLOCKED by BLK-02 (plan limitation)** — "Use agent" in Jira Automation requires Atlassian Intelligence (Premium/Enterprise). Site is on Free/Standard. Resolution: upgrade plan at atlassian.com/purchase → return to `skills/jira-automation-rovo-setup/SKILL.md` to complete wiring.

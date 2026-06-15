@@ -202,7 +202,7 @@ For every new Jira site/project:
 13. **UI steps** (manual):
     - Board → add 8 statuses to columns.
     - `Apps → Rovo → Agents` → confirm all 19 visible.
-    - Automation → enable each rule, verify audit log, capture to `evidence/automation/<rule>-audit.md`.
+    - Automation → enable each rule, verify audit log, capture to `evidence/automation/<rule>-audit.md`. **Requires Jira Premium/Enterprise** — "Use agent" (Rovo AI) in Automation needs Atlassian Intelligence. See `skills/jira-automation-rovo-setup/SKILL.md` and `docs/TROUBLESHOOTING.md` → "Use agent blocked".
 14. **Manual agent checks**: T-M4-01 through T-M4-06 (6 seed issue runs).
 
 Or use the single-shot orchestrator for steps 2–12:
