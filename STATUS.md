@@ -39,25 +39,25 @@ _Current tick: 37_
 - **skill: jira-automation-rovo-setup** ✓ — `skills/jira-automation-rovo-setup/SKILL.md`
 - **R-07 / BLK-02 documented** — `evidence/blockers.md`; AI activation exhaustively investigated (5 admin locations checked)
 - **outcome-roadmap.md audited** ✓ — 20+ stale items converted to [x]/[~] (commit b65835d)
-- **BLK-02 propagated to all docs** ✓ — TROUBLESHOOTING, MVP_RUNBOOK, INTEGRATION, PORTABILITY all updated with plan-requirement notes and skill reference
-- **Automation rules JQL scope verified** ✓ — all 5 rules inspected in flow builder; rules 1-3 confirmed clean (trigger → JQL condition → placeholder comment); rules 4-5 unrenderable on Free plan but JSON confirms correct triggers (transitioned/CRON) and JQL. No duplicates found.
+- **BLK-02 propagated to all docs** ✓ — TROUBLESHOOTING, MVP_RUNBOOK, INTEGRATION, PORTABILITY all updated with Rovo/AI activation eligibility notes and skill reference
+- **Automation rules JQL scope verified** ✓ — all 5 rules inspected in flow builder; rules 1-3 confirmed clean (trigger → JQL condition → placeholder comment); rules 4-5 unrenderable while BLK-02 is unresolved but JSON confirms correct triggers (transitioned/CRON) and JQL. No duplicates found.
 - **evidence/DONE.md updated** ✓ — stale operator action items (T-M3-02, T-M6-02, T-M1-04, T-M4, T-M5) marked complete; single remaining operator action (T-M3-03/BLK-02) clearly documented.
 - **skills/README.md updated** ✓ — jira-automation-rovo-setup and jira-automation-browser-edit skills documented.
 - **Local gates green** ✓ — build 0 TS errors · 1046/1046 tests pass (tick 31)
 - **docs/MVP_READINESS.md rewritten** ✓ (tick 32) — stale "not ready" doc replaced with accurate state: items 1-4 of exit criteria met; items 5-6 pending T-M3-03/BLK-02
-- **README.md updated** ✓ (tick 33) — BLK-02 Premium callout added to automation section; jira-automation-rovo-setup and jira-automation-browser-edit skill links added
+- **README.md updated** ✓ (tick 33) — BLK-02 Rovo/AI activation callout added to automation section; jira-automation-rovo-setup and jira-automation-browser-edit skill links added
 - **CI: rendered rules validation added** ✓ (tick 34, commit ac901bf) — validates all automation/rules/rendered/*.json are valid JSON, DISABLED, and have no unfilled placeholders
 - **scripts/check-rovo-visibility.cjs committed** ✓ (tick 35) — verifies 19 rovo:agent manifest entries + forge install Up-to-date; wired as `npm run check:rovo`
 - **CI Node.js version updated** ✓ (tick 36, commit 78fb887) — dropped Node 20 (EOL Apr 2026), added Node 24; engines >=22 added to package.json; pre-empts GitHub Actions forced Node 24 migration (2026-06-16)
 - **specs/ synced to live state** ✓ (tick 37, commit 6ee6c16) — workflows.md, issue-types.md, custom-fields.md, design.md, tasks.md, TASK_BOARD.md all updated to reflect what is actually deployed; stale target-state language replaced with verified live state
 
 ## Blocked / awaiting operator action (in order)
-1. **T-M3-03 — BLOCKED by BLK-02 (plan limitation)** — "Use agent" in Jira Automation requires Atlassian Intelligence (Premium/Enterprise). Site is on Free/Standard. Resolution: upgrade plan at atlassian.com/purchase → return to `skills/jira-automation-rovo-setup/SKILL.md` to complete wiring.
+1. **T-M3-03 — BLOCKED by BLK-02 (Rovo/AI activation eligibility)** — "Use agent" / "Use Rovo agent" in Jira Automation requires Rovo/AI to be active for the org/site. Current Atlassian docs say Rovo is included with paid Standard, Premium, and Enterprise subscriptions; Free subscriptions cannot use Rovo, and orgs need a verified business domain. Resolution: confirm billing/domain eligibility, enable Rovo/AI, then return to `skills/jira-automation-rovo-setup/SKILL.md` to complete wiring.
 2. **T-M4-live** — Re-run agents live in Jira (currently evidenced via domain function output; live Rovo comment pending T-M3-03)
 3. **T-M5-live** — Capture live audit-log evidence once automation rules are enabled
 
 ## Top 3 risks
-1. **R-07 (Plan limitation — NEW):** "Use agent" in Jira Automation requires Atlassian Intelligence (Premium/Enterprise feature). Site `myhealthcaresite.atlassian.net` is on Free/Standard. Blocks T-M3-03, T-M4-live, T-M5-live. Resolution: upgrade plan. Evidence: `/jira/settings/system/labs` has no AI toggle; only "Jira formula fields" beta feature present.
+1. **R-07 (Rovo/AI activation eligibility):** "Use agent" in Jira Automation requires Rovo/AI to be active for the org/site. `myhealthcaresite.atlassian.net` currently shows "your org admin needs to activate AI"; `/jira/settings/system/labs` has no AI toggle; only "Jira formula fields" beta feature present. Blocks T-M3-03, T-M4-live, T-M5-live. Resolution: confirm exact billing tier, verify/claim a business domain if needed, enable Rovo/AI, then wire the automation rules.
 2. **R-01 (Node v26):** forge CLI warns unsupported. 1046 tests pass. Low active risk.
 3. **R-06 (Trigger gaps):** Rule 4 fires on all transitions (toStatus filter UI-only). Rule 5 CRON trigger is UI-only. Both need operator edits before enabling (once R-07 resolved).
 

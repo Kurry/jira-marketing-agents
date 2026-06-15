@@ -5,7 +5,7 @@ description: >
   rules in the flow builder using browser automation (Claude in Chrome). Covers
   navigating the rule list, reading trigger/condition/action structure, adding or
   verifying JQL scope conditions, diagnosing "Error loading step" errors, and
-  understanding which steps require Jira Premium. Trigger this skill when the
+  understanding which steps require Rovo/AI activation. Trigger this skill when the
   user asks to check automation rules, add JQL filters to flows, see why a rule
   fails to render, or audit rule configurations across multiple rules.
 ---
@@ -82,15 +82,15 @@ Please reload and try again."**:
 1. **Check the rule description** in the right panel — if it says "TRIGGER
    PLACEHOLDER" or "connect Rovo first", the rule has a component type
    (`jira.rovo.agent.action` or `jira.issue.event.trigger:transitioned`) that
-   Jira cannot render on Free/Standard plans.
+   Jira cannot render until the org/site can use the target action/trigger.
 2. Hard reload (Cmd+Shift+R) — if the error persists after reload, it's a
-   plan limitation, not a transient error.
+   configuration or eligibility limitation, not a transient error.
 3. Check the rendered JSON in `automation/rules/rendered/<rule>.json` to confirm
    the correct trigger and JQL are present even though the UI can't display them.
-4. Document as Premium-gated and move on — no UI edit is possible until the site
-   is upgraded to Jira Premium/Enterprise.
+4. Document as BLK-02-gated and move on — no UI edit is possible until Rovo/AI
+   activation eligibility is resolved.
 
-**Which steps cause this error on Free/Standard:**
+**Which steps can cause this error when Rovo/AI is not active:**
 - `jira.rovo.agent.action` — "Use agent (Rovo AI)" action
 - `jira.issue.event.trigger:transitioned` — "Work item transitioned" trigger
 - `jira.scheduled.trigger` — Scheduled/CRON trigger (may also fail to render)
@@ -113,7 +113,7 @@ cat automation/rules/rendered/<rule>.json | python3 -m json.tool
 Look for:
 - `trigger.type` — should match intended trigger event
 - components with `"type": "jira.jql.condition"` — confirms JQL is present
-- components with `"type": "jira.rovo.agent.action"` — Premium-required
+- components with `"type": "jira.rovo.agent.action"` — requires Rovo/AI active
 
 ## Full Audit Workflow (all 5 AIGO rules)
 
@@ -122,7 +122,7 @@ For each rule in [Intake Triage, Employer Launch Plan, Experiment Spec,
                   Creative Claims Review, Weekly Growth Readout]:
   1. Navigate via rule list (not URL hash)
   2. Screenshot the flow canvas
-  3. If "Error loading step": check JSON, document as Premium-gated
+  3. If "Error loading step": check JSON, document as BLK-02-gated
   4. Otherwise: count steps, verify JQL, check for duplicates
   5. Add JQL condition if missing (see table above)
   6. Save and confirm "Flow updated" toast
@@ -133,6 +133,6 @@ For each rule in [Intake Triage, Employer Launch Plan, Experiment Spec,
 
 - `skills/jira-automation-rovo-setup/SKILL.md` — full runbook for connecting
   Rovo, swapping placeholder actions for Rovo agent calls, and enabling rules
-  (requires Jira Premium)
-- `evidence/blockers.md#BLK-02` — plan limitation investigation notes
+  (requires Rovo/AI active)
+- `evidence/blockers.md#BLK-02` — Rovo/AI activation eligibility investigation notes
 - `automation/rules/rendered/` — source of truth for intended rule configuration

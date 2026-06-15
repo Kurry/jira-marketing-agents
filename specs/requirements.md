@@ -26,7 +26,7 @@ instance config plus a golden template project when available.
   a Jira-native AI Growth Ops control plane.
 - The remaining operator-gated MVP work is enabling Rovo "Use agent" steps in
   Jira Automation and capturing audit-log proof; this is blocked until the site
-  has Atlassian Intelligence/Premium support.
+  has Rovo/AI active for the org/site.
 
 ## MVP Success Criteria
 
@@ -68,7 +68,7 @@ instance config plus a golden template project when available.
    - Automation comments include the AI analysis marker or equivalent text that
      makes the output clearly machine-generated and review-only.
    - Rules remain disabled until an operator can add Rovo "Use agent" actions
-     on a Jira Premium/Enterprise site with Atlassian Intelligence enabled.
+     on a site with Rovo/AI enabled for the org and Jira app.
 
 5. Verification and operations
    - `forge install list` shows the Jira development installation as
@@ -230,7 +230,9 @@ Acceptance:
   and Automation setup even though the development AIGO project is configured.
 - Jira Automation import format can drift; manual rule rebuild must remain
   documented as a fallback.
-- Jira Automation "Use agent" requires Atlassian Intelligence/Premium support;
-  Free/Standard sites cannot complete the final live Automation proof.
+- Jira Automation "Use agent" requires Rovo/AI to be active for the org/site.
+  Current Atlassian docs say Rovo is included with paid Standard, Premium, and
+  Enterprise subscriptions; Free subscriptions cannot use Rovo, and orgs need a
+  verified business domain.
 - Current local Node is newer than Forge's supported range. Use Node 22 or 24
   for deploy/install work if Forge behavior becomes unstable.

@@ -20,7 +20,7 @@ Automation rules, creating seed issues, or running live Rovo smoke tests.
 Two skills cover the automation rule lifecycle:
 
 - [`jira-automation-rovo-setup/`](jira-automation-rovo-setup/) — full operator
-  runbook for connecting Rovo to Automation (requires Jira Premium), replacing
+  runbook for connecting Rovo to Automation (requires Rovo/AI active), replacing
   placeholder comment actions with Rovo agent calls in all 5 rules, fixing
   triggers for rules 4 and 5, enabling rules one at a time, and capturing
   audit-log evidence. **This is the T-M3-03 operator guide.**
@@ -28,7 +28,7 @@ Two skills cover the automation rule lifecycle:
 - [`jira-automation-browser-edit/`](jira-automation-browser-edit/) — browser
   automation skill (Claude in Chrome) for inspecting and editing Jira
   Automation flow builder rules: adding JQL scope conditions, diagnosing
-  "Error loading step" (Premium limitation), verifying rule structure, and
+  "Error loading step" (BLK-02 / eligibility limitation), verifying rule structure, and
   navigating the SPA correctly.
 
 ## Portable TWG skill bundle

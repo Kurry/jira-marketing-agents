@@ -247,7 +247,7 @@ Integration tests protect deployability by checking:
 ## Remaining Design Gaps Before MVP
 
 1. Jira Automation rules are imported disabled, but live Rovo "Use agent" steps
-   require Atlassian Intelligence/Premium support before they can be enabled and
+   require Rovo/AI activation for the org/site before they can be enabled and
    audit-log validated.
 2. Live Rovo comments from Automation are pending the same Automation/Rovo plan
    blocker.

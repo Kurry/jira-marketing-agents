@@ -210,11 +210,12 @@ is imported via the Forge function `fn-import-automation` using
 operator enables them one at a time after reviewing the audit log (see T-M3-03).
 This requires the `manage:jira-configuration` scope to be accepted at `forge install`.
 
-> **Jira Premium required for activation (BLK-02):** The "Use agent" (Rovo AI)
-> step in Automation requires Atlassian Intelligence, which is a
-> Premium/Enterprise feature. On Free/Standard plans the rules import and hold
-> their JQL scope conditions, but the Rovo agent action cannot fire. Upgrade at
-> atlassian.com/purchase, then follow
+> **Rovo/AI activation required (BLK-02):** The "Use agent" / "Use Rovo agent"
+> step in Automation requires Rovo/AI to be active for the organization. Current
+> Atlassian docs say Rovo is included with paid Standard, Premium, and
+> Enterprise subscriptions; Free subscriptions cannot use Rovo, and orgs need a
+> verified business domain. Confirm billing/domain eligibility, enable Rovo/AI,
+> then follow
 > [`skills/jira-automation-rovo-setup/SKILL.md`](skills/jira-automation-rovo-setup/SKILL.md)
 > to wire Rovo into all five rules and enable them.
 > Use [`skills/jira-automation-browser-edit/SKILL.md`](skills/jira-automation-browser-edit/SKILL.md)

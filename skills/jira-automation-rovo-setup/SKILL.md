@@ -11,23 +11,47 @@ Use this skill to complete T-M3-03: connect Rovo to Jira Automation and wire the
 
 - Site admin rights on the target Atlassian Cloud site
 - Rovo enabled at the org level (admin.atlassian.com)
-- **Jira Premium or Enterprise plan** — "Use agent" (Rovo AI) in Automation requires Atlassian Intelligence, which is not available on Free/Standard plans. Verify plan tier before attempting; if on Free/Standard the "Use agent" step will show "To use a Rovo agent, your org admin needs to activate AI" with no toggle available anywhere in admin settings.
+- **Rovo-supported Jira plan and org eligibility** — current Atlassian docs say
+  Rovo is included with paid Standard, Premium, and Enterprise subscriptions;
+  Free subscriptions cannot use Rovo. The org must also have at least one
+  verified business domain. Verify the billing tier and domain before
+  attempting; if Rovo/AI is not active, the "Use agent" step will show "To use a
+  Rovo agent, your org admin needs to activate AI."
 
-## Plan Check (before starting)
+## Eligibility Check (before starting)
 
-1. Navigate to `https://<site>.atlassian.net/jira/settings/system/labs` — if only "Jira formula fields" appears and there is NO "Atlassian Intelligence" toggle, the site is on Free/Standard. Stop here and document R-07 (see below).
-2. Check admin.atlassian.com → Rovo → Beta features: "Rovo beta features" toggle must be ON.
-3. Check Rovo access blocklist is empty (no orgs/users blocked).
+1. Confirm the exact Jira billing plan in Atlassian Admin / billing. If the site
+   is Free, stop and document R-07/BLK-02 until it is upgraded to a paid
+   Rovo-supported plan.
+2. Confirm the organization has a verified business domain. If the org only uses
+   a generic domain such as gmail.com, stop and document R-07/BLK-02 until a
+   business domain is verified.
+3. Navigate to `https://<site>.atlassian.net/jira/settings/system/labs` and Jira
+   admin settings. If there is no AI/Rovo activation path and the flow builder
+   says "your org admin needs to activate AI", document R-07/BLK-02.
+4. Check admin.atlassian.com → Rovo → Beta features: "Rovo beta features" toggle
+   must be ON.
+5. Check admin.atlassian.com → Rovo → Access: the target Jira app/user must not
+   be blocked.
 
-## R-07: Plan Limitation Blocker
+Official docs checked 2026-06-15:
+- <https://support.atlassian.com/rovo/docs/rovo-usage-limits/>
+- <https://support.atlassian.com/studio/docs/use-rovo-in-an-automation-rule/>
+- <https://support.atlassian.com/rovo/docs/administer-atlassian-rovo-for-your-organization/>
+
+## R-07: Rovo/AI Activation Eligibility Blocker
 
 If "Use agent" in Automation is blocked by "your org admin needs to activate AI":
-- Root cause: Atlassian Intelligence for Automation is a Premium/Enterprise feature
-- Workaround: Operators can trigger Rovo agents manually via the Rovo chat sidebar while viewing a Jira issue
-- Resolution path: Upgrade to Jira Premium → activate Atlassian Intelligence → return to this skill
+- Root cause: Rovo/AI is not active or eligible for this org/site. Confirm
+  billing tier, verified business domain, and Rovo access before assuming a
+  Premium upgrade is required.
+- Workaround: Operators can trigger Rovo agents manually via the Rovo chat
+  sidebar while viewing a Jira issue, if chat is available.
+- Resolution path: resolve billing/domain/org activation → activate Rovo/AI →
+  return to this skill.
 - Document in `evidence/blockers.md` and update STATUS.md risks
 
-## Connect Rovo to Automation (one-time, requires Premium+)
+## Connect Rovo to Automation (one-time, requires Rovo/AI active)
 
 1. Go to `https://<site>.atlassian.net/jira/settings/automation`
 2. Top right: click the integration/connection icon (Rovo icon) or look for a "Connect Rovo" prompt

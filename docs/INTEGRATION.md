@@ -401,12 +401,15 @@ Spec (created / AI Triage) · Employer Launch (created) · Weekly Readout
 
 ### 10d. Validate each rule (T-M3-03)
 
-> **Plan requirement:** "Use agent" (Rovo AI) in Automation requires **Atlassian Intelligence**,
-> available on Jira Premium/Enterprise only. On Free/Standard the step shows "your org admin needs
-> to activate AI." Upgrade at atlassian.com/purchase, then follow
+> **Rovo/AI activation requirement:** "Use agent" / "Use Rovo agent" in
+> Automation requires Rovo/AI to be active for the organization. Current
+> Atlassian docs say Rovo is included with paid Standard, Premium, and Enterprise
+> subscriptions; Free subscriptions cannot use Rovo, and orgs need a verified
+> business domain. If the step shows "your org admin needs to activate AI",
+> confirm billing/domain eligibility and enable Rovo/AI, then follow
 > `skills/jira-automation-rovo-setup/SKILL.md`. See `docs/TROUBLESHOOTING.md` → "Use agent blocked".
 
-After upgrading and connecting Rovo (Settings → Automation → Rovo), enable and validate **one rule at a time**:
+After resolving BLK-02 and connecting Rovo (Settings → Automation → Rovo), enable and validate **one rule at a time**:
 
 1. Enable the rule in Project settings → Automation.
 2. Trigger it on a matching seed issue (or create a test issue).

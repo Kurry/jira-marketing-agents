@@ -70,13 +70,23 @@ rules list. Automation rules do not appear in the Rovo agents tab.
 ### "Use agent" blocked by "your org admin needs to activate AI" (R-07 / BLK-02)
 
 If the "Use agent" (Rovo AI) step in the Automation flow builder shows this
-message, the site is on a **Free or Standard plan**. Atlassian Intelligence —
-required for calling Rovo agents from Automation — is a **Premium/Enterprise**
-feature.
+message, the org does not currently have Rovo/AI activated for this Jira site.
+Current Atlassian docs say Rovo is included with paid Standard, Premium, and
+Enterprise subscriptions, while Free subscriptions cannot use Rovo. The docs
+also state that the organization must have at least one verified business
+domain; orgs using only generic domains such as gmail.com cannot enable Rovo.
 
-**Exhaustive check list (all confirmed on `myhealthcaresite.atlassian.net` 2026-06-15):**
+Do not assume Premium is the only fix until billing tier and domain eligibility
+are confirmed in Atlassian Admin.
 
-| Location | What to look for | Result if on Free/Standard |
+Official docs checked 2026-06-15:
+- <https://support.atlassian.com/rovo/docs/rovo-usage-limits/>
+- <https://support.atlassian.com/studio/docs/use-rovo-in-an-automation-rule/>
+- <https://support.atlassian.com/rovo/docs/administer-atlassian-rovo-for-your-organization/>
+
+**Observed check list (all confirmed on `myhealthcaresite.atlassian.net` 2026-06-15):**
+
+| Location | What to look for | Observed result |
 |---|---|---|
 | admin.atlassian.com → Rovo → Beta features | "Rovo beta features" toggle | Already ON — not the blocker |
 | admin.atlassian.com → Rovo → Access | Org/user blocklist | Empty — not the blocker |
@@ -84,14 +94,20 @@ feature.
 | Jira admin → System settings sidebar | "Atlassian Intelligence" section | Not present |
 | Jira admin search "atlassian intelligence" | Any result | No results |
 
-**Resolution:** Upgrade to Jira Premium at atlassian.com/purchase. After upgrade,
-an "Atlassian Intelligence" section appears in Jira admin settings and the
-"Use agent" step becomes functional. Then follow
-`skills/jira-automation-rovo-setup/SKILL.md` to complete T-M3-03.
+**Resolution checklist:**
+1. Confirm the exact Jira plan in Atlassian Admin / billing. If Free, upgrade to
+   a paid Rovo-supported plan. If already paid Standard, continue with the
+   remaining checks before assuming Premium is required.
+2. Verify or claim a business domain for the organization if it currently relies
+   on a generic email domain.
+3. Enable Rovo / Atlassian Intelligence for the org and confirm the target Jira
+   app has Rovo access.
+4. Return to `skills/jira-automation-rovo-setup/SKILL.md` to complete T-M3-03.
 
-**Workaround (no upgrade):** Operators can invoke Rovo agents manually via the
-Rovo chat sidebar while viewing any AIGO issue. Automation integration is
-deferred but agents themselves are fully functional.
+**Workaround (no org activation):** Operators can invoke Rovo agents manually
+via the Rovo chat sidebar while viewing any AIGO issue, if Rovo chat is
+available. Automation integration remains deferred until the "Use Rovo agent"
+Automation action can run.
 
 ---
 

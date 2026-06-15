@@ -52,13 +52,17 @@ resolved without operator action:
 
 ## Remaining Operator Action — ONE ITEM BLOCKED
 
-**T-M3-03 — BLOCKED by BLK-02 (plan limitation)**
+**T-M3-03 — BLOCKED by BLK-02 (Rovo/AI activation eligibility)**
 
-"Use agent" (Rovo AI) in Jira Automation requires Atlassian Intelligence
-(Jira Premium/Enterprise). Site is on Free/Standard. Resolution:
+"Use agent" / "Use Rovo agent" in Jira Automation requires Rovo/AI to be active
+for the org/site. Current Atlassian docs say Rovo is included with paid
+Standard, Premium, and Enterprise subscriptions; Free subscriptions cannot use
+Rovo, and orgs need a verified business domain. Resolution:
 
-1. Upgrade to Jira Premium at atlassian.com/purchase
-2. Follow `skills/jira-automation-rovo-setup/SKILL.md` to:
+1. Confirm the exact billing tier and upgrade if the site is Free.
+2. Verify or claim a business domain if the org uses a generic domain.
+3. Enable Rovo/AI for the org and target Jira app.
+4. Follow `skills/jira-automation-rovo-setup/SKILL.md` to:
    - Connect Rovo to Automation (Settings → Automation → Rovo)
    - Replace placeholder comment actions with Rovo agent calls in all 5 rules
    - Fix triggers for rules 4 and 5 (see SKILL.md for exact steps)

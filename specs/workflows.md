@@ -135,7 +135,7 @@ itself.
 | Decision Needed | Human decision owner | AI may draft the memo and recommendation; the decision owner records the decision. |
 | Launch Prep -> execution | Human launch owner | AI may produce readiness and blockers; it cannot launch campaigns or alter audiences. |
 | High-risk -> Done | Human reviewer | High-risk tickets cannot be closed or approved without human review. |
-| Enabling Automation rules | Lead + safety reviewer + operator | Rules are imported disabled; Rovo "Use agent" in Automation is blocked until the site has Atlassian Intelligence/Premium support. |
+| Enabling Automation rules | Lead + safety reviewer + operator | Rules are imported disabled; Rovo "Use agent" in Automation is blocked until the org/site has Rovo/AI active and eligible. |
 
 All AI contributions remain comment-only through the safe mutation path. Field
 writes, transitions, approvals, audience changes, and campaign sends require a

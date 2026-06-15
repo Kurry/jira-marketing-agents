@@ -83,11 +83,11 @@ Full safety audit signed off 2026-06-15. See `evidence/safety/final-audit.md`.
 
 `forge 12.22.0` authenticated on operator machine. Resolved.
 
-### BLK-02 — plan limitation (ACTIVE — single remaining blocker)
+### BLK-02 — Rovo/AI activation eligibility (ACTIVE — single remaining blocker)
 
-**"Use agent" (Rovo AI) in Jira Automation requires Atlassian Intelligence
-(Jira Premium/Enterprise). Site `myhealthcaresite.atlassian.net` is on
-Free/Standard.**
+**"Use agent" / "Use Rovo agent" in Jira Automation requires Rovo/AI to be
+active for the organization. The target site currently shows "To use a Rovo
+agent, your org admin needs to activate AI."**
 
 All 5 automation rule flows are correctly configured with:
 - ✓ Correct triggers (Work item created / transitioned to Ready / CRON schedule)
@@ -95,9 +95,15 @@ All 5 automation rule flows are correctly configured with:
 - ✓ Placeholder comment actions in place
 
 The only step remaining is replacing the placeholder comment actions with
-`jira.rovo.agent.action` steps — which requires Atlassian Intelligence.
+`jira.rovo.agent.action` steps and enabling the rules after org Rovo/AI
+eligibility is resolved.
 
-**Investigation trail (5 locations checked, all confirmed Free/Standard):**
+**Current Atlassian docs checked 2026-06-15:** Rovo is documented for paid
+Standard, Premium, and Enterprise subscriptions, Free subscriptions cannot use
+Rovo, and orgs must have a verified business domain. Do not assume Premium is
+the only fix until billing and domain eligibility are confirmed.
+
+**Investigation trail (5 locations checked):**
 
 | Location | Result |
 |---|---|
@@ -107,8 +113,10 @@ The only step remaining is replacing the placeholder comment actions with
 | Jira admin → System settings sidebar | No "Atlassian Intelligence" section |
 | Jira admin search "atlassian intelligence" | No results |
 
-**Resolution:** Upgrade to Jira Premium at atlassian.com/purchase. Then follow
-`skills/jira-automation-rovo-setup/SKILL.md` to complete T-M3-03.
+**Resolution:** Confirm exact billing plan, upgrade if the site is Free, verify
+or claim an org business domain if needed, enable Rovo/AI for the org and Jira
+app, then follow `skills/jira-automation-rovo-setup/SKILL.md` to complete
+T-M3-03.
 
 Evidence: `evidence/blockers.md#BLK-02`, `docs/TROUBLESHOOTING.md`
 
@@ -149,7 +157,7 @@ The MVP is ready when:
 3. ✓ All 19 Rovo agents declared in manifest; app Up-to-date on staging
 4. ✓ Primary agents return structured output on seed issues
 5. **PENDING** — Jira Automation rules fire without audit-log errors and post
-   `🤖 AI Growth Ops` comments (requires Premium upgrade → T-M3-03)
+   `🤖 AI Growth Ops` comments (requires BLK-02 resolution → T-M3-03)
 6. **PENDING** — `evidence/automation/<rule>-audit.md` files populated with
    real audit-log rows (requires T-M3-03)
 

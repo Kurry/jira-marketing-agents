@@ -220,14 +220,16 @@ consent dialog.
 
 ## Jira Automation Validation (T-M3-03)
 
-> **BLOCKED (BLK-02 — plan limitation):** "Use agent" in Jira Automation
-> requires Atlassian Intelligence (Jira Premium/Enterprise). Site is on
-> Free/Standard. Upgrade at atlassian.com/purchase, then follow
+> **BLOCKED (BLK-02 — Rovo/AI activation eligibility):** "Use agent" in Jira Automation
+> requires Rovo/AI to be active for the organization. Current Atlassian docs say
+> Rovo is included with paid Standard, Premium, and Enterprise subscriptions;
+> Free subscriptions cannot use Rovo, and orgs need a verified business domain.
+> Confirm billing/domain eligibility, enable Rovo/AI, then follow
 > `skills/jira-automation-rovo-setup/SKILL.md` to complete this step.
 > See `evidence/blockers.md#BLK-02` and `docs/TROUBLESHOOTING.md` → "Use agent
 > blocked by activate AI" for full investigation notes.
 
-After upgrading to Premium and connecting Rovo (Settings → Automation → Rovo),
+After resolving BLK-02 and connecting Rovo (Settings → Automation → Rovo),
 enable and validate one rule at a time:
 
 1. Enable `AIGO – Intake Triage`.
