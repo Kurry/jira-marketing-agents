@@ -11,7 +11,7 @@
 //   "unsupported" — platform can't support it; requires a blocker file path
 //                   in envelope.data.blocker, else treated as red.
 
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, rmSync } from 'node:fs';
 import { join, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { dirname } from 'node:path';
@@ -107,6 +107,8 @@ function main() {
     );
     console.log(`verify run-all: ${summary} — wrote evidence/DONE.json`);
   } else {
+    // Remove any stale DONE.json so it never falsely signals convergence.
+    if (existsSync(DONE)) rmSync(DONE);
     const names = red.map((r) => r.row).join(', ');
     console.log(`verify run-all: ${summary} — red rows: ${names}`);
   }

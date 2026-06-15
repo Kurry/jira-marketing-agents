@@ -1,0 +1,29 @@
+{
+  "generated_by": "scripts/infra/plan.mjs",
+  "generated_at": "2026-06-15T14:39:06.950Z",
+  "git_sha": "6814755e43fc7503298eaddcf9191cd46fbaeee2",
+  "instance": "myhealthcaresite.atlassian.net",
+  "exit_code": 0,
+  "summary": "infra plan: converged — 0 changes",
+  "data": {
+    "ready": true,
+    "changes": [],
+    "by_resource": {
+      "issue-types": {
+        "declared": 13,
+        "live": 20,
+        "changes": []
+      },
+      "fields": {
+        "declared": 8,
+        "live": 52,
+        "changes": []
+      },
+      "filters": {
+        "declared": 7,
+        "live": 7,
+        "changes": []
+      }
+    }
+  }
+}

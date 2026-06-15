@@ -1,0 +1,15 @@
+{
+  "generated_by": "scripts/infra/apply.mjs",
+  "generated_at": "2026-06-15T14:39:07.689Z",
+  "git_sha": "6814755e43fc7503298eaddcf9191cd46fbaeee2",
+  "instance": "myhealthcaresite.atlassian.net",
+  "exit_code": 0,
+  "summary": "infra apply: already converged — 0 changes applied (idempotent)",
+  "data": {
+    "row": "VM-IDEMPOTENCY",
+    "ready": true,
+    "applied": [],
+    "remaining": [],
+    "idempotent": true
+  }
+}
