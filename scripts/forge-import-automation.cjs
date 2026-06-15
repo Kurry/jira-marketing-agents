@@ -121,106 +121,34 @@ async function main() {
 
   console.log(`\nTotal rules to import: ${allRules.length}`);
 
-  const payload = JSON.stringify({
-    cloudId: config.cloudId,
-    rules: allRules,
-    dryRun: args.dryRun,
-  });
-
   if (args.dryRun) {
-    console.log("\nDRY RUN: payload built. Would invoke fn-import-automation with:");
+    console.log("\nDRY RUN: payload built. Would import via Jira REST:");
     for (const r of allRules) {
       console.log(`  - ${r.name} [${r.state}]`);
     }
-    console.log("\nRe-run without --dry-run to invoke the Forge function.");
+    console.log("\nRe-run without --dry-run to invoke the Jira REST import.");
     process.exit(0);
   }
 
-  console.log("\nInvoking fn-import-automation via `forge invoke function`...");
-  console.log("(Requires: forge deploy -e development already run)");
+  // `forge invoke function` was removed from Forge CLI — delegate to provision-automation.cjs
+  // which uses the Jira REST API directly (requires ATLASSIAN_TOKEN or acli credentials).
+  console.log("\nDelegating to provision-automation.cjs (Jira REST import)...");
 
-  let output;
   try {
-    output = execFileSync(
-      "forge",
-      ["invoke", "function", "fn-import-automation", "--payload", payload],
+    execFileSync(
+      process.execPath,
+      [path.join(repoRoot, "scripts", "provision-automation.cjs")],
       {
         encoding: "utf8",
         cwd: repoRoot,
-        maxBuffer: 20 * 1024 * 1024,
-        stdio: ["ignore", "pipe", "pipe"],
+        stdio: "inherit",
+        env: { ...process.env },
       }
     );
   } catch (err) {
-    console.error("\nERROR: forge invoke function failed.");
-    console.error(err.stdout || "");
-    console.error(err.stderr || "");
-    console.error(
-      "\nTroubleshooting:\n" +
-        "  1. forge deploy -e development\n" +
-        "  2. forge install list  (confirm app is installed)\n" +
-        "  3. Check that manifest.yml includes fn-import-automation\n" +
-        "  4. If scope error: forge deploy after adding manage:jira-configuration to manifest.yml"
-    );
-    process.exit(1);
+    // provision-automation.cjs already printed detailed error + manual steps
+    process.exit(err.status ?? 1);
   }
-
-  console.log("\n=== Forge function response ===");
-  console.log(output);
-
-  let result;
-  try {
-    // forge invoke output may include log lines before the JSON — grab last JSON block
-    const jsonMatch = output.match(/(\{[\s\S]*\})\s*$/);
-    if (jsonMatch) result = JSON.parse(jsonMatch[1]);
-  } catch {
-    // Non-JSON response is fine; already printed above
-  }
-
-  if (result) {
-    if (result.dryRun) {
-      console.log("\nDRY RUN confirmed by function — no rules imported.");
-    } else {
-      console.log(`\nImported: ${result.imported ?? "?"} | Failed: ${result.failed ?? "?"}`);
-
-      if (result.failed > 0) {
-        console.error("\nSome rules failed to import:");
-        for (const e of result.errors || []) {
-          console.error(`  - ${e.name} (HTTP ${e.status})`);
-        }
-
-        // Evidence
-        const evidenceDir = path.join(repoRoot, "evidence", "automation");
-        fs.mkdirSync(evidenceDir, { recursive: true });
-        const outPath = path.join(evidenceDir, "forge-import-output.json");
-        fs.writeFileSync(outPath, JSON.stringify({ ...result, timestamp: new Date().toISOString() }, null, 2));
-        console.log(`\nWrote evidence: ${path.relative(repoRoot, outPath)}`);
-        process.exit(1);
-      }
-    }
-  }
-
-  // Write success evidence
-  const evidenceDir = path.join(repoRoot, "evidence", "automation");
-  fs.mkdirSync(evidenceDir, { recursive: true });
-  const outPath = path.join(evidenceDir, "forge-import-output.json");
-  fs.writeFileSync(
-    outPath,
-    JSON.stringify(
-      {
-        timestamp: new Date().toISOString(),
-        cloudId: config.cloudId,
-        ruleCount: allRules.length,
-        ruleNames: allRules.map((r) => r.name),
-        importMethod: "forge-function",
-        result: result ?? output,
-      },
-      null,
-      2
-    )
-  );
-  console.log(`\nEvidence written: ${path.relative(repoRoot, outPath)}`);
-  console.log("\nDone. All rules imported as DISABLED — enable via T-M3-03 after audit log review.");
 }
 
 main().catch((err) => {

@@ -1146,7 +1146,7 @@ describe("forge-import-automation — guard logic and dry-run", () => {
     const r = runScript(["--config", EXAMPLE_CONFIG, "--dry-run"]);
     expect(r.code).toBe(0);
     expect(r.stdout).toMatch(/DRY RUN/i);
-    expect(r.stdout).toMatch(/Would invoke fn-import-automation/i);
+    expect(r.stdout).toMatch(/Would import via Jira REST/i);
   });
 
   it("--dry-run lists at least 5 DISABLED rules", () => {

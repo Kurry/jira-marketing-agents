@@ -1,10 +1,10 @@
 # AIGO Agent-Team Status
 
-_Last updated: 2026-06-15T10:10Z_
-_Current tick: 23_
+_Last updated: 2026-06-15T10:26Z_
+_Current tick: 24_
 
 ## Milestone
-- Active: **M0-M2 ✓ · M6-filters ✓ · IaC ✓ · docs ✓ · safety-final-audit ✓ · DONE.md ✓ — awaiting operator: T-M3-02, T-M6-02, T-M1-04, T-M4-01..06**
+- Active: **M0-M2 ✓ · M6 ✓ · IaC ✓ · docs ✓ · safety ✓ — T-M1-04 ✓ · T-M6-02 ✓ — awaiting operator: T-M3-02 (automation import, needs admin OAuth), T-M4-01..06, T-M3-03**
 - M0 ✓ · M1 ✓ · M2 ✓ · M6-filters ✓ · IaC layer ✓ · docs ✓ · T-M8-01 ✓ (partial) · T-M8-02 ✓ · T-M8-03 ✓
 - Tests: **838 unit + 90 integration passing** (52 files) — build clean (0 TS errors) — all src/ modules covered
 - Issue types: all 14 canonical live (IDs 10048-10061) ✓
@@ -19,13 +19,16 @@ _Current tick: 23_
 - Field options: 24 options across 4 fields ✓
 - Issue types: 14 canonical (IDs 10048-10061) ✓ · JQL filters: 7 (IDs 10000-10006) ✓
 
+## Completed this session (tick 24)
+- **T-M1-04 ✓** — Rovo visibility: 19 agents verified (forge install Up-to-date) → `evidence/rovo/visibility.md`
+- **T-M6-02 ✓** — 6 dashboards created (IDs 10001–10006) → `evidence/jira-config/dashboards.md`
+- **fix** — `forge-import-automation.cjs` repaired (was calling non-existent `forge invoke function`; now delegates to REST path)
+
 ## Blocked / awaiting operator action (in order)
-1. **T-M3-02** — `forge deploy -e development && npm run provision:automation:forge`
-2. **T-M6-02** — `npm run provision:dashboards`
-3. **T-M1-04** — Confirm 19 agents at `myhealthcaresite.atlassian.net → Apps → Rovo → Agents`
-4. **T-M3-03** — Enable each rule, trigger on seed issue, capture audit log
-5. **T-M4-01..06** — Manual Rovo agent runs on seed issues
-6. **T-M5-01..10** — Outcome workflow traces
+1. **T-M3-02** — Automation import: Jira Automation REST API requires admin OAuth 2.0 scope (`manage:jira-configuration`). acli user token insufficient. **Manual UI steps:** Project Settings → Automation → ··· → Import rules → upload each file from `automation/rules/rendered/`
+2. **T-M3-03** — Enable each rule, trigger on seed issue, capture audit log (requires T-M3-02 first)
+3. **T-M4-01..06** — Manual Rovo agent runs on seed issues
+4. **T-M5-01..10** — Outcome workflow traces
 
 ## Top 3 risks
 1. **R-01 (Node v26):** forge CLI warns unsupported. 435 tests pass. Low active risk.

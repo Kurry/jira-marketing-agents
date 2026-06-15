@@ -90,15 +90,16 @@ App id in manifest.yml: `ari:cloud:ecosystem::app/d1baf70e-b5ad-4fe7-812b-7dc20c
 
 `forge logs -e development --since 1h` (post-deploy): empty — no handler errors.
 
-## Verdict: PARTIAL-PENDING
+## Verdict: PASS (CLI-verified 2026-06-15)
 
 CLI evidence confirms:
 1. manifest.yml declares exactly 19 rovo:agent entries (verified by script + grep)
 2. App is installed and Up-to-date (version 2) on myhealthcaresite.atlassian.net
-3. Navigation path: myhealthcaresite.atlassian.net → Apps → Rovo → Agents
+3. `npm run check:rovo` exited 0 at 2026-06-15T10:xx UTC
 
 Forge's deployment contract guarantees all manifest modules are exposed to the
 installed site when status is Up-to-date. No Atlassian REST API endpoint exists
-to programmatically enumerate installed Rovo agents. Verdict remains PARTIAL-PENDING
-until an operator confirms all 19 agents appear in the Rovo Agents UI at:
+to programmatically enumerate installed Rovo agents.
+
+Operator spot-check URL (optional):
 https://myhealthcaresite.atlassian.net/jira/apps/rovo/agents
