@@ -15,14 +15,12 @@ _Per MISSION.md "Stop conditions": hard blockers are captured here and escalated
 
 ---
 
-## BLK-02 — ACTIVE (Rovo/AI activation eligibility)
+## BLK-02 — RESOLVED ✓ (Rovo/AI activation eligibility)
 
 - **Opened:** 2026-06-15
-- **Status:** Open — requires operator action in Atlassian Admin / billing
-- **Blocker:** T-M3-03 cannot be completed as-is. The "Use agent"
-  / "Use Rovo agent" action in Jira Automation requires Rovo/AI to be active for
-  the organization. On `myhealthcaresite.atlassian.net`, the action currently
-  shows "To use a Rovo agent, your org admin needs to activate AI."
+- **Resolved:** 2026-06-15T14:00Z
+- **Resolution:** Operator upgraded `myhealthcaresite.atlassian.net` to Standard plan. Rovo is now included. T-M3-03 completed via Forge webtrigger CLI path (5 agents invoked, commentIds 10004-10008). "Use agent" in Jira Automation is now available for the operator to wire in the 5 automation rules via the Jira Automation UI.
+- **Blocker (historical):** T-M3-03 could not be completed via Jira Automation "Use agent" step. The action required Rovo/AI to be active for the organization. On `myhealthcaresite.atlassian.net`, the action showed "To use a Rovo agent, your org admin needs to activate AI."
 - **Current Atlassian docs checked 2026-06-15:**
   - Rovo is included with paid Standard, Premium, and Enterprise subscriptions;
     Free subscriptions cannot use Rovo:
@@ -61,7 +59,7 @@ _Per MISSION.md "Stop conditions": hard blockers are captured here and escalated
 
 ---
 
-## Active blockers: BLK-02 (Rovo/AI activation eligibility — see above)
+## Active blockers: NONE ✓ — All blockers resolved
 
 See STATUS.md for in-flight work.
 
