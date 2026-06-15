@@ -1,0 +1,30 @@
+{
+  "generated_by": "scripts/audit/forge-snapshot.mjs",
+  "generated_at": "2026-06-15T14:21:35.315Z",
+  "git_sha": "b5b27649f7afbe0efd5740756193620642f4e598",
+  "instance": "staging",
+  "exit_code": 0,
+  "summary": "Forge app: Up-to-date on myhealthcaresite.atlassian.net, 19 agents, 22 actions",
+  "data": {
+    "install_status": "Up-to-date",
+    "site": "myhealthcaresite.atlassian.net",
+    "deployed_to_production": false,
+    "installation": {
+      "installationId": "7e844a39-2e55-418f-93ad-7ae4dc8d9695",
+      "environment": "development",
+      "site": "myhealthcaresite.atlassian.net",
+      "apps": "Jira",
+      "version": "3",
+      "status": "Up-to-date"
+    },
+    "manifest": {
+      "rovo_agent_count": 19,
+      "action_count": 22,
+      "function_count": 24,
+      "webtrigger_count": 1,
+      "has_webtrigger": true,
+      "fn_agent_webtrigger_registered": true
+    },
+    "forge_env": "development"
+  }
+}
