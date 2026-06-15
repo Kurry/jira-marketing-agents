@@ -90,9 +90,9 @@ if (existsSync(promptsDir)) {
 }
 
 // (e) src write surface — find every function whose body issues a non-GET Jira
-// request, plus the canonical write helper addComment. The only handlers that
-// reach a write are addAnalysisComment (the lone MVP mutation) and the
-// operator-invoked importAutomationRules (which forces state: "DISABLED").
+// request, plus the canonical write helper addComment. The only handler that
+// reaches a write is addAnalysisComment, which wraps the low-level addComment
+// helper and posts labeled AI analysis comments.
 function listSrcFiles(dir) {
   const out = [];
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
