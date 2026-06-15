@@ -1,7 +1,7 @@
 # AIGO Agent-Team Status
 
-_Last updated: 2026-06-15T20:30Z_
-_Current tick: 36_
+_Last updated: 2026-06-15T20:50Z_
+_Current tick: 37_
 
 ## Milestone
 - Active: **M0-M3 ✓ · M6 ✓ · IaC ✓ · docs ✓ · safety ✓ · evidence ✓ — awaiting operator: T-M3-03 only (connect Rovo, enable rules, capture audit logs)**
@@ -49,6 +49,7 @@ _Current tick: 36_
 - **CI: rendered rules validation added** ✓ (tick 34, commit ac901bf) — validates all automation/rules/rendered/*.json are valid JSON, DISABLED, and have no unfilled placeholders
 - **scripts/check-rovo-visibility.cjs committed** ✓ (tick 35) — verifies 19 rovo:agent manifest entries + forge install Up-to-date; wired as `npm run check:rovo`
 - **CI Node.js version updated** ✓ (tick 36, commit 78fb887) — dropped Node 20 (EOL Apr 2026), added Node 24; engines >=22 added to package.json; pre-empts GitHub Actions forced Node 24 migration (2026-06-16)
+- **specs/ synced to live state** ✓ (tick 37, commit 6ee6c16) — workflows.md, issue-types.md, custom-fields.md, design.md, tasks.md, TASK_BOARD.md all updated to reflect what is actually deployed; stale target-state language replaced with verified live state
 
 ## Blocked / awaiting operator action (in order)
 1. **T-M3-03 — BLOCKED by BLK-02 (plan limitation)** — "Use agent" in Jira Automation requires Atlassian Intelligence (Premium/Enterprise). Site is on Free/Standard. Resolution: upgrade plan at atlassian.com/purchase → return to `skills/jira-automation-rovo-setup/SKILL.md` to complete wiring.
