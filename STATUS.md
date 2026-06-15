@@ -1,7 +1,7 @@
 # AIGO Agent-Team Status
 
-_Last updated: 2026-06-15T19:45Z_
-_Current tick: 34_
+_Last updated: 2026-06-15T20:10Z_
+_Current tick: 35_
 
 ## Milestone
 - Active: **M0-M3 ✓ · M6 ✓ · IaC ✓ · docs ✓ · safety ✓ · evidence ✓ — awaiting operator: T-M3-03 only (connect Rovo, enable rules, capture audit logs)**
@@ -46,6 +46,8 @@ _Current tick: 34_
 - **Local gates green** ✓ — build 0 TS errors · 1046/1046 tests pass (tick 31)
 - **docs/MVP_READINESS.md rewritten** ✓ (tick 32) — stale "not ready" doc replaced with accurate state: items 1-4 of exit criteria met; items 5-6 pending T-M3-03/BLK-02
 - **README.md updated** ✓ (tick 33) — BLK-02 Premium callout added to automation section; jira-automation-rovo-setup and jira-automation-browser-edit skill links added
+- **CI: rendered rules validation added** ✓ (tick 34, commit ac901bf) — validates all automation/rules/rendered/*.json are valid JSON, DISABLED, and have no unfilled placeholders
+- **scripts/check-rovo-visibility.cjs committed** ✓ (tick 35) — verifies 19 rovo:agent manifest entries + forge install Up-to-date; wired as `npm run check:rovo`
 
 ## Blocked / awaiting operator action (in order)
 1. **T-M3-03 — BLOCKED by BLK-02 (plan limitation)** — "Use agent" in Jira Automation requires Atlassian Intelligence (Premium/Enterprise). Site is on Free/Standard. Resolution: upgrade plan at atlassian.com/purchase → return to `skills/jira-automation-rovo-setup/SKILL.md` to complete wiring.
