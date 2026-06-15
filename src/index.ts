@@ -236,3 +236,5 @@ export async function importAutomationRules(req: any) {
     ...(failed.length > 0 && { errors: failed }),
   };
 }
+
+export { agentWebtrigger } from "./webtrigger";

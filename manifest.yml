@@ -575,3 +575,9 @@ modules:
       handler: index.addAnalysisComment
     - key: fn-import-automation
       handler: index.importAutomationRules
+    - key: fn-agent-webtrigger
+      handler: index.agentWebtrigger
+
+  webtrigger:
+    - key: agent-webtrigger
+      function: fn-agent-webtrigger
