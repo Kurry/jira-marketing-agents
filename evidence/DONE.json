@@ -1,0 +1,13 @@
+{
+  "generated_by": "scripts/verify/run-all.mjs",
+  "generated_at": "2026-06-15T14:35:00.011Z",
+  "git_sha": "58d0077d8062ce24046aba0230e4033f542a591c",
+  "instance": "myhealthcaresite.atlassian.net",
+  "exit_code": 0,
+  "summary": "all 1 verify rows green or blocked — IaC converged",
+  "data": {
+    "row": "VM-DONE",
+    "status": "green",
+    "row_count": 1
+  }
+}

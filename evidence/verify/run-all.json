@@ -1,0 +1,25 @@
+{
+  "generated_by": "scripts/verify/run-all.mjs",
+  "generated_at": "2026-06-15T14:34:59.998Z",
+  "git_sha": "58d0077d8062ce24046aba0230e4033f542a591c",
+  "instance": "myhealthcaresite.atlassian.net",
+  "exit_code": 0,
+  "summary": "1 verify rows: 1 green, 0 unsupported(blocked), 0 red",
+  "data": {
+    "row": "VM-DONE",
+    "status": "green",
+    "rows": [
+      {
+        "row": "forge-install",
+        "script": "forge-install.mjs",
+        "status": "green",
+        "declared_status": "green",
+        "exit_code": 0,
+        "blocker": null,
+        "blocker_present": false,
+        "summary": "Forge app Up-to-date on myhealthcaresite.atlassian.net",
+        "has_envelope": true
+      }
+    ]
+  }
+}
