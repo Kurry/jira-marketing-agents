@@ -26,6 +26,9 @@
     "check:rovo": "node scripts/check-rovo-visibility.cjs",
     "lint": "tsc --noEmit"
   },
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "dependencies": {
     "@forge/api": "latest"
   },
