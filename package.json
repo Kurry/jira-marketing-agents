@@ -8,6 +8,7 @@
     "build": "tsc --noEmit",
     "test": "vitest run",
     "test:integration": "vitest run tests/integration",
+    "test:integration:mock": "vitest run tests/integration/provision-mock.test.ts",
     "test:readiness:jira": "node scripts/aigo-project-readiness.cjs",
     "test:smoke:jira": "bash scripts/live-jira-smoke.sh",
     "test:watch": "vitest",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@types/node": "latest",
+    "nock": "^14.0.15",
     "typescript": "latest",
     "vitest": "latest",
     "yaml": "^2.9.0"

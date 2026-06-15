@@ -43,6 +43,9 @@ jobs:
       - name: Run unit tests
         run: npm test
 
+      - name: Integration tests (mock Jira API)
+        run: npm run test:integration:mock
+
       - name: Run integration tests
         run: npm run test:integration
 
