@@ -287,8 +287,10 @@ async function main() {
     process.exit(1);
   }
 
-  const baseUrl = `https://${config.site}`;
   const { cloudId } = config;
+  const baseUrl = cloudId
+    ? `https://api.atlassian.com/ex/jira/${cloudId}`
+    : `https://${config.site}`;
 
   // Step 4: GET existing rules for idempotency
   console.log("\nFetching existing automation rules (idempotency check)...");

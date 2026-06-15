@@ -82,23 +82,30 @@ confirm all agents appear in the Rovo UI.
 
 ## Import automation rules (T-M3-02)
 
-**When to use:** After issue types and seeds are in place, to import the 5
-Jira Automation rules (all disabled by default).
+**When to use:** After issue types and seeds are in place (T-M2-03b + T-M2-07
+done), to import the 5 Jira Automation rules **all disabled by default**.
+
+**Pre-requisite:** Run `AIGO_INSTANCE_CONFIG=instances/aigo.example.json node scripts/provision-automation.cjs` first to render the rules with the correct actor account ID. The rendered files land in `automation/rules/rendered/`.
 
 **Prompt:**
 
 > Go to `https://myhealthcaresite.atlassian.net/jira/software/projects/AIGO/settings/automation`
-> → Import rules → upload `automation/rules/aigo-automation-ruleset.json`.
-> After import, confirm all 5 rules appear in the list and are **disabled**.
-> Do not enable any rule yet. Report back the rule names and their IDs from the
-> URL when you click into each rule.
+> → click the three-dot (⋮) menu → **Import rules** → upload each of the
+> following rendered rule files one at a time from `automation/rules/rendered/`:
 >
-> Expected rules:
-> 1. AIGO Intake Triage
-> 2. AIGO Creative Claims Review
-> 3. AIGO Experiment Spec
-> 4. AIGO Employer Launch
-> 5. AIGO Weekly Readout
+> 1. `intake-triage.json` — AIGO – Intake Triage
+> 2. `creative-claims.json` — AIGO – Creative Claims Review
+> 3. `experiment-spec.json` — AIGO – Experiment Spec
+> 4. `employer-launch.json` — AIGO – Employer Launch
+> 5. `weekly-readout.json` — AIGO – Weekly Readout
+>
+> After each import, confirm the rule appears **disabled** in the list.
+> Do not enable any rule yet.
+>
+> Once all 5 are imported, click into each rule and copy the numeric rule ID
+> from the URL (e.g., `…/automation/rules/edit/12345`). Report back all
+> 5 rule IDs.
 
-**After completion:** Record rule IDs in `evidence/automation/` and proceed to
-T-M3-03 (enable one rule at a time, trigger on a seed issue, capture audit log).
+**After completion:** Record rule IDs in `evidence/automation/rule-ids.md`,
+then proceed to T-M3-03 (enable one rule at a time, trigger on a seed issue,
+capture audit log output before enabling the next).

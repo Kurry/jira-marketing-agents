@@ -12,6 +12,7 @@
   "automationRulesFile": "automation/rules/aigo-automation-ruleset.json",
   "cloudId": "76683cc1-6501-400f-8b59-01eaad4418d2",
   "projectId": "10000",
+  "actorAccountId": "557058:297f331c-0582-4201-8db9-72c7ec72bf14",
   "jiraConfig": {
     "issueTypes": [
       {"name": "AI Growth Request", "description": "General intake for a growth idea or ask that needs AI triage before it becomes executable work.", "type": "standard"},

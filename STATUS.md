@@ -1,15 +1,17 @@
 # AIGO Agent-Team Status
 
-_Last updated: 2026-06-15T07:00Z_
-_Current tick: 6_
+_Last updated: 2026-06-15T08:00Z_
+_Current tick: 7_
 
 ## Milestone
-- Active: **M6 in progress** — JQL filters live; awaiting operator UI steps to unblock M3/M4
+- Active: **M2 complete → awaiting T-M3-02 (automation import) to unlock M3/M4**
 - M0 ✓ · M1 ✓ · M2 ✓ · M6 (filters) ✓ · IaC layer ✓
 - Tests: **421 passing** (39 files) — unit + integration-mock (nock)
-- Forge vars: 6 custom field IDs set (customfield_10043-10048) ✓
-- Field options: 24 options provisioned (Segment, Primary Metric, Claims Risk, Workflow Area) ✓
-- JQL filters: 7 created (IDs 10000-10006) — Intake, Claims Review, Launch Readiness, Readout Needed, Decision Needed, Blocked, Experiment Running ✓
+- Issue types: all 14 canonical live (IDs 10048-10061) ✓
+- Seeds: all 15 retyped to canonical types; all 14 types covered ✓
+- Readiness: all 6 automated checks pass ✓
+- Safety: T-CX-02 sign-off in evidence/safety/safety-audit-2026-06-15.md ✓
+- Automation rules: rendered with real actorAccountId; ready for operator import ✓
 
 ## IaC provision-jira.cjs — now idempotent and correct
 Fixed bugs discovered this tick:
@@ -25,8 +27,10 @@ Fixed bugs discovered this tick:
 - Issue types: 3 built-in (Workstream, Task, Sub-task) — 14 canonical types MANUAL REQUIRED
 
 ## Blocked / awaiting human ← OPERATOR ACTION NEEDED
-1. **T-M2-03b** — Go to `myhealthcaresite.atlassian.net` → AIGO → **Project Settings → Issue Types** → Add all 14 canonical types. *Reason: team-managed projects do not support issue type creation via REST API — proven by exhaustive testing this tick.*
+1. **T-M3-02** — Import 5 automation rules (disabled). Prompt in `docs/OPERATOR_PROMPTS.md`. Pre-rendered files in `automation/rules/rendered/`. *Jira Automation REST import requires admin scope — UI-only.*
 2. **T-M1-04** — Go to `myhealthcaresite.atlassian.net` → **Apps → Rovo → Agents** → confirm all 19 agents are visible. Paste names here.
+
+~~T-M2-03b~~ ✓ — 14 canonical issue types added and confirmed.
 
 Once T-M2-03b done: T-M2-07 (seed import) → T-M3-02 (automation) → T-M4-01–06 (agent runs) unblock.
 
