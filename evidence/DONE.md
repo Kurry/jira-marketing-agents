@@ -1,11 +1,11 @@
 # AIGO MVP — Completion Record (T-M8-03)
 
 **Date:** 2026-06-15
-**Status:** ALL TASKS COMPLETE ✓ — T-M3-03 resolved 2026-06-15T13:51-52Z via Forge webtrigger CLI path. Site upgraded to Standard (Rovo now included).
+**Status:** CLI fallback validated; Jira Automation "Use Rovo agent" wiring still pending Rovo/AI org activation and UI/API access. Jira REST license check now reports `jira-software: PAID`.
 
 ## Summary
 
-The AIGO Forge/Rovo app is deployed to `myhealthcaresite.atlassian.net` (development environment). The codebase defines 19 Rovo agents, 22 read-only actions, and 1 mutating Forge action (`addAnalysisComment`), plus a Forge webtrigger (`fn-agent-webtrigger`) providing CLI-callable agent invocation. **1046 tests pass across 73 files** with 0 TypeScript errors. All IaC provisioning scripts are idempotent and backed by nock-based integration tests. All 6 agent-run evidence files are populated with real domain-function output. All 10 outcome traces are written. Documentation is complete. Safety audit is signed off (PASS). T-M3-03 is complete — all 5 agents invoked via CLI, AI-labeled comments posted to Jira seed issues (commentIds 10004–10008).
+The AIGO Forge/Rovo app is deployed to `myhealthcaresite.atlassian.net` (development environment). The codebase defines 19 Rovo agents, 22 read-only actions, and 1 mutating Forge action (`addAnalysisComment`), plus a Forge webtrigger (`fn-agent-webtrigger`) providing CLI-callable agent invocation. **1046 tests pass across 73 files** with 0 TypeScript errors. All IaC provisioning scripts are idempotent and backed by nock-based integration tests. All 6 agent-run evidence files are populated with real domain-function output. All 10 outcome traces are written. Documentation is complete. Safety audit is signed off (PASS). The CLI webtrigger fallback has invoked all 5 MVP agents and posted AI-labeled comments to Jira seed issues (commentIds 10004–10008). The live Jira Automation "Use Rovo agent" path is still pending org Rovo/AI activation and rule-editor wiring.
 
 ## Proven by Automation
 
@@ -25,9 +25,9 @@ The AIGO Forge/Rovo app is deployed to `myhealthcaresite.atlassian.net` (develop
 | VM-SEED-COVERAGE | evidence/jira-config/ | GREEN — 15 seeds, all 14 types covered |
 | VM-READINESS | evidence/readiness/ | GREEN (last run 2026-06-15) |
 | VM-AUTOMATION-IMPORT | evidence/automation/rule-import.md | GREEN — 5 rules DISABLED (IDs 10022485-10022499) |
-| VM-AUTOMATION-VALIDATE | evidence/automation/*-audit.md | GREEN — all 5 rules validated via webtrigger CLI (commentIds 10004-10008) |
-| VM-AGENT-RUN | evidence/agent-runs/ | GREEN — domain function traces + live Jira comments posted |
-| VM-OUTCOME-E2E | evidence/outcomes/ | GREEN — all 10 traces written + live webtrigger audit captured |
+| VM-AUTOMATION-VALIDATE | evidence/automation/*-audit.md | PARTIAL — all 5 agents validated via webtrigger CLI (commentIds 10004-10008); Jira Automation audit-log proof still pending |
+| VM-AGENT-RUN | evidence/agent-runs/ | PARTIAL — domain function traces + live Jira comments posted via webtrigger; live Rovo Automation invocation pending |
+| VM-OUTCOME-E2E | evidence/outcomes/ | PARTIAL — all 10 traces written + live webtrigger audit captured; Automation audit-log proof pending |
 | VM-CI-GREEN | evidence/gates/ci.md | SEE-CI |
 | VM-FINAL | evidence/final-verification.log | PARTIAL — local rows green |
 
@@ -50,17 +50,18 @@ resolved without operator action:
   correct JQL conditions confirmed present (rules 1–3 verified in UI; rules
   4–5 confirmed in rendered JSON). No duplicates. Verified 2026-06-15.
 
-## Remaining Operator Actions (Optional)
+## Remaining Operator Actions
 
-All blocking tasks are complete. The following are optional enhancements:
+**T-M3-03 — CLI fallback complete; Jira Automation wiring pending**
 
-**T-M3-03 ✓ COMPLETE via Forge webtrigger** — All 5 agents invoked CLI, AI-labeled comments posted.
-
-**Optional — wire Jira Automation "Use agent" steps (site now on Standard, Rovo included):**
-1. Go to Jira Automation → each of the 5 rules (IDs 10022485-10022499)
-2. Replace the placeholder comment action with "Use Rovo agent" → select the matching agent
-3. Enable each rule after wiring
-4. Follow `skills/jira-automation-rovo-setup/SKILL.md` for exact steps
+1. Paid Jira plan is confirmed by REST (`jira-software: PAID`).
+2. Resolve remaining Rovo/AI org activation requirements in Atlassian Admin
+   (verified business domain and Rovo/AI access).
+3. Go to Jira Automation → each of the 5 rules (IDs 10022485-10022499).
+4. Replace the placeholder comment action with "Use Rovo agent" → select the
+   matching agent.
+5. Enable each rule after wiring and capture real Automation audit-log rows.
+6. Follow `skills/jira-automation-rovo-setup/SKILL.md` for exact steps.
 
 The webtrigger (`fn-agent-webtrigger`) remains available as a CLI-callable alternative:
 ```bash
@@ -79,7 +80,7 @@ curl -X POST "$WEBTRIGGER_URL" -d '{"issueKey":"AIGO-1","agentType":"triage"}'
 | evidence/gates/forge-install.log | App installed on staging site |
 | evidence/gates/smoke-jira.log | Live Jira smoke test passed |
 | evidence/automation/render.log | 24 automation template tests pass |
-| evidence/automation/*-audit.md | T-M3-03 audit templates (await operator) |
+| evidence/automation/*-audit.md | CLI webtrigger validation evidence; Jira Automation audit-log proof still pending |
 | evidence/safety/final-audit.md | Full safety sign-off (T-M8-02) — PASS |
 | evidence/safety/scope-audit.md | manage:jira-configuration scope amendment |
 | evidence/rovo/visibility.md | 19-agent manifest check (UI confirmation pending) |
@@ -103,7 +104,7 @@ All 19 prompts read and verified. Zero critical violations. Healthcare claims gu
 | Project | AIGO |
 | Rovo agents | 19 |
 | Actions | 22 (all read-only except addAnalysisComment) |
-| Forge functions | 1 (fn-import-automation, operator-gated) |
+| Forge functions | 2 (`fn-import-automation`, `fn-agent-webtrigger`) |
 | Tests | 1046 passing, 73 files |
 | Full provision | `npm run provision:all` |
 | Docs | docs/INTEGRATION.md, MVP_RUNBOOK.md, PORTABILITY.md, TROUBLESHOOTING.md |
