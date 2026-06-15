@@ -9,10 +9,9 @@ const REPO_ROOT = join(__dirname, "..", "..");
 // the safety contract forbids.
 const BANNED_PHRASES: RegExp[] = [/approved:/i, /launchNow/i, /mutatesAudience/i, /mutates.*audience/i];
 
-// The only handlers in src/ allowed to reach a Jira write. addAnalysisComment is
-// the MVP's single mutation; importAutomationRules is operator-invoked and forces
-// state: "DISABLED". Any other write surface is a safety-contract violation.
-const ALLOWLISTED_MUTATIONS = new Set(["addAnalysisComment", "importAutomationRules"]);
+// addAnalysisComment is the ONLY handler in src/ allowed to reach a Jira write.
+// Any other write surface is a safety-contract violation.
+const ALLOWLISTED_MUTATIONS = new Set(["addAnalysisComment"]);
 
 function listTsFiles(dir: string): string[] {
   const out: string[] = [];
@@ -60,9 +59,9 @@ describe("safety contract", () => {
     expect(unlisted, `unlisted write surface:\n${unlisted.join("\n")}`).toEqual([]);
   });
 
-  it("automation import forces state: DISABLED", () => {
-    const indexSrc = readFileSync(join(REPO_ROOT, "src", "index.ts"), "utf8");
-    expect(indexSrc).toMatch(/state:\s*["']DISABLED["']/);
+  it("automation provisioner rejects rules not in state DISABLED", () => {
+    const scriptSrc = readFileSync(join(REPO_ROOT, "scripts", "provision-automation.cjs"), "utf8");
+    expect(scriptSrc).toMatch(/state\s*!==\s*["']DISABLED["']/);
   });
 
   it("required policy docs exist", () => {

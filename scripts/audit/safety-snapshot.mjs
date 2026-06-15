@@ -45,7 +45,7 @@ const BANNED_PHRASES = [/approved:/i, /launchNow/i, /mutatesAudience/i, /mutates
 // Mutations that are explicitly allowlisted by policies/safe-mutations.md.
 // addComment is the low-level write helper that addAnalysisComment wraps — it is
 // the single sanctioned comment write path, not an independent mutation.
-const ALLOWLISTED_MUTATIONS = new Set(["addAnalysisComment", "importAutomationRules", "addComment"]);
+const ALLOWLISTED_MUTATIONS = new Set(["addAnalysisComment", "addComment"]);
 
 function rel(p) {
   return p.replace(REPO_ROOT + "/", "");
@@ -126,11 +126,11 @@ for (const file of listSrcFiles(join(REPO_ROOT, "src"))) {
 const realMutations = mutatingExports.filter((m) => m.export !== "searchIssues");
 const unlistedMutations = realMutations.filter((m) => !m.allowlisted);
 
-// Verify the automation import forces DISABLED state.
-const indexSrc = existsSync(join(REPO_ROOT, "src", "index.ts"))
-  ? readFileSync(join(REPO_ROOT, "src", "index.ts"), "utf8")
-  : "";
-const automationForcesDisabled = /state:\s*["']DISABLED["']/.test(indexSrc);
+// Verify the automation provisioner rejects rules that are not DISABLED.
+const provisionerPath = join(REPO_ROOT, "scripts", "provision-automation.cjs");
+const automationForcesDisabled = existsSync(provisionerPath)
+  ? /state\s*!==\s*["']DISABLED["']/.test(readFileSync(provisionerPath, "utf8"))
+  : false;
 
 // --- verdict ---
 const failures = [];

@@ -1,10 +1,10 @@
 {
   "generated_by": "scripts/audit/safety-snapshot.mjs",
-  "generated_at": "2026-06-15T14:23:48.509Z",
-  "git_sha": "80ff5461a0b14c2adaf226426d96f8d6649c5a3c",
+  "generated_at": "2026-06-15T14:37:35.633Z",
+  "git_sha": "f1466048ef9e300da40d8bc6810f58e998f2fce0",
   "instance": "staging",
   "exit_code": 0,
-  "summary": "Safety snapshot OK: 3/3 hooks, 3/3 policies, 0 banned phrases, 2 allowlisted mutation(s)",
+  "summary": "Safety snapshot OK: 3/3 hooks, 3/3 policies, 0 banned phrases, 1 allowlisted mutation(s)",
   "data": {
     "hooks_present": [
       "task-completed.sh",
@@ -21,12 +21,6 @@
     "tests_safety_exists": true,
     "banned_phrases_found": [],
     "mutating_exports": [
-      {
-        "file": "src/index.ts",
-        "export": "importAutomationRules",
-        "method": "POST",
-        "allowlisted": true
-      },
       {
         "file": "src/jira.ts",
         "export": "addComment",
