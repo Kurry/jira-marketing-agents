@@ -122,12 +122,12 @@ Legend:
   Verify: `VM-JIRA-FIELDS`.
 
 - **T-M2-05** [owner:jira-admin] [deps:T-M2-03]
-  Build the MVP workflow (12 statuses) and attach as the default scheme.
-  Statuses: To Do, AI Triage, Needs Info, Needs Human Review, Ready,
-  Claims Review, In Progress, Blocked, Experiment Running, Readout Needed,
-  Decision Needed, Done. Build transitions per `specs/workflows.md`
-  (produced in T-M2-06). Evidence:
-  `evidence/jira-config/workflow.json`.
+  Build the MVP team-managed workflow/status set and attach it to the AIGO
+  board. Statuses: To Do, Intake, Triage, Spec Ready, In Review, In Progress,
+  Claims Review, Experiment Running, Decision Needed, Launch Prep, Done.
+  Blocked and readout-needed work is represented by labels/filters. Build
+  transition expectations per `specs/workflows.md` (produced in T-M2-06).
+  Evidence: `evidence/jira-config/statuses.json`.
   Verify: `VM-JIRA-WORKFLOW`.
 
 - **T-M2-06** [owner:architect] [deps:T-M2-01]

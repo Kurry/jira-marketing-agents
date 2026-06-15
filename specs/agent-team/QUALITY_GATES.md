@@ -106,9 +106,24 @@ Add to `~/.claude/settings.json` (or the project's `.claude/settings.json`):
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
   },
   "hooks": {
-    "TaskCompleted": ".claude/hooks/task-completed.sh",
-    "TeammateIdle": ".claude/hooks/teammate-idle.sh",
-    "TaskCreated": ".claude/hooks/task-created.sh"
+    "TaskCompleted": [
+      {
+        "matcher": "",
+        "hooks": [{ "type": "command", "command": "bash .claude/hooks/task-completed.sh" }]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "matcher": "",
+        "hooks": [{ "type": "command", "command": "bash .claude/hooks/teammate-idle.sh" }]
+      }
+    ],
+    "TaskCreated": [
+      {
+        "matcher": "",
+        "hooks": [{ "type": "command", "command": "bash .claude/hooks/task-created.sh" }]
+      }
+    ]
   }
 }
 ```

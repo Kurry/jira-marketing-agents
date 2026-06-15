@@ -67,10 +67,12 @@ and have captured evidence checked into the repo under `evidence/`:
 4. **Jira project configuration (staging):**
    - AIGO project exposes all canonical issue types from
      `specs/requirements.md` REQ-002 and the outcome roadmap catalog.
-   - All MVP workflow statuses are present and wired into transitions
-     (`To Do → AI Triage → Needs Info / Needs Human Review → Ready →
-     In Progress → Blocked / Decision Needed / Claims Review /
-     Experiment Running → Readout Needed → Done`).
+   - The MVP status set is present and wired into the team-managed workflow
+     (`To Do → Intake → Triage → Spec Ready → In Progress → Done`, with
+     branches through `In Review`, `Claims Review`, `Experiment Running`,
+     `Decision Needed`, and `Launch Prep`).
+   - Blocked and readout-needed work is represented by labels/filters rather
+     than dedicated statuses.
    - Screens expose required fields per issue type.
    - Queues and filters exist for: Intake, Claims Review, Launch Readiness,
      Readout Needed, Decision Needed, Blocked, Experiment Running.

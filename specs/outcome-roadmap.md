@@ -69,8 +69,8 @@ or production signup systems.
   AI Growth Request, Creative Request, Experiment, Segmentation Request,
   Personalization Journey, Employer Launch, Campaign, Dashboard Request,
   Signup Funnel Issue, Research Brief, Claims Review, Decision Memo,
-  Positioning Update, Automation Request, Growth Task, Bug / Tracking Issue,
-  and Insight / Research Brief if retained as a legacy alias.
+  Positioning Update, Automation Request, Growth Task, Bug, and
+  Insight / Research Brief if retained as a legacy alias.
   (Resolved: 14 canonical types in `specs/issue-types.md`; live in Jira IDs 10048-10061)
 - `[x]` Decide whether current `Insight / Research Brief` becomes `Research
   Brief`, stays as-is, or remains a compatibility alias.
@@ -79,7 +79,8 @@ or production signup systems.
   (Resolved: `specs/custom-fields.md` — 6 MVP fields live in Jira as customfield_10043-10048)
 - `[x]` Define one workflow spec per outcome area, including statuses,
   transitions, required human approval gates, and allowed Automation comments.
-  (Resolved: `specs/workflows.md` — 12 statuses, transition matrix, human gates documented)
+  (Resolved: `specs/workflows.md` — live MVP status set, label-backed queues,
+  transition matrix, and human gates documented)
 - `[x]` Define screens per issue type so required fields are visible during
   create, edit, and transition flows.
   (Resolved: T-M2-04 — fields wired to screens in Jira)
@@ -165,9 +166,9 @@ or production signup systems.
   information, owner group, next status, acceptance criteria, and subtasks.
 - `[x]` Keep triage output comment-only and reviewable.
 - `[x]` Add or verify canonical intake issue types and statuses in Jira:
-  New Intake, AI Triage, Needs Human Review, Ready, In Progress,
-  Decision Needed, and Done.
-  (Resolved: T-M2-03/T-M2-05 — 14 types live, 12-status workflow attached)
+  Intake, Triage, In Review, Spec Ready, In Progress, Decision Needed, and
+  Done.
+  (Resolved: T-M2-03/T-M2-05 — 14 types live, MVP statuses configured)
 - `[~]` Manually run the four intake agents on seed issues and capture expected
   vs actual output.
   (Partial: domain function output captured in `evidence/agent-runs/growth-triage-agent.md`;

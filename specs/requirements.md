@@ -14,16 +14,19 @@ instance config plus a golden template project when available.
 - Forge/Rovo is the only supported integration path. MCP/Cowork is out of scope.
 - The Forge app is registered, deployed to the `development` environment, and
   installed on `myhealthcaresite.atlassian.net`.
-- The `AIGO` Jira project exists and has 15 seeded `aigo-seed` issues.
+- The `AIGO` Jira project exists with 14 canonical issue types, 15 seeded
+  `aigo-seed` issues retyped across those types, 6 MVP custom fields, the MVP
+  status set, 7 filters, 6 dashboards, and 5 imported Automation rules.
 - Local checks pass: `npm run build`, `npm test`, `npm run test:integration`,
-  and `AIGO_REQUIRE_FORGE_INSTALL=1 npm run test:smoke:jira`.
+  `forge lint`, `AIGO_REQUIRE_FORGE_INSTALL=1 npm run test:smoke:jira`, and
+  `npm run provision:all -- --dry-run`.
 - The repo now includes instance-config scripts for rendering seeds and running
   provision/check commands against any target site/project.
 - The repo now includes an initial 10-outcome roadmap for expanding the MVP into
   a Jira-native AI Growth Ops control plane.
-- The remaining MVP work is mostly product configuration and validation inside
-  Jira: issue types, statuses, workflow, Automation rule import, Rovo manual
-  checks, and runbook polish.
+- The remaining operator-gated MVP work is enabling Rovo "Use agent" steps in
+  Jira Automation and capturing audit-log proof; this is blocked until the site
+  has Atlassian Intelligence/Premium support.
 
 ## MVP Success Criteria
 
@@ -37,15 +40,16 @@ instance config plus a golden template project when available.
 
 2. Jira project readiness
    - Project `AIGO` is the default MVP project.
-   - The project has the intended AIGO issue types:
-     Growth Task, Experiment, Creative Request, Claims Review, Dashboard
-     Request, Automation Request, Employer Launch, Segmentation Request,
-     Signup Funnel Issue, Insight / Research Brief, Bug / Tracking Issue, and
-     Decision Memo.
-   - The project workflow supports the MVP statuses:
-     To Do, AI Triage, Needs Info, Needs Human Review, Ready, Claims Review,
-     In Progress, Blocked, Experiment Running, Readout Needed, Decision Needed,
-     and Done.
+   - The project has the 14 canonical AIGO issue types:
+     AI Growth Request, Creative Request, Experiment, Segmentation Request,
+     Personalization Journey, Employer Launch, Campaign, Dashboard Request,
+     Signup Funnel Issue, Research Brief, Claims Review, Decision Memo,
+     Positioning Update, and Bug.
+   - The project supports the MVP status set:
+     To Do, Intake, Triage, Spec Ready, In Review, In Progress, Claims Review,
+     Experiment Running, Decision Needed, Launch Prep, and Done.
+   - Blocked and readout-needed work is represented by labels/filters rather
+     than dedicated MVP statuses.
 
 3. Agent behavior
    - Agents read Jira issue context through Forge and return structured,
@@ -63,6 +67,8 @@ instance config plus a golden template project when available.
      actions, not hidden autonomous mutation.
    - Automation comments include the AI analysis marker or equivalent text that
      makes the output clearly machine-generated and review-only.
+   - Rules remain disabled until an operator can add Rovo "Use agent" actions
+     on a Jira Premium/Enterprise site with Atlassian Intelligence enabled.
 
 5. Verification and operations
    - `forge install list` shows the Jira development installation as
@@ -125,8 +131,10 @@ Acceptance:
 The repo must include portable seed data that exercises the primary agent paths.
 
 Acceptance:
-- `automation/seed/aigo-seed-issues.csv` imports into a fresh team-managed
-  `AIGO` project as `Task` issues.
+- `automation/seed/aigo-seed-issues.csv` covers all 14 canonical issue types on
+  a configured AIGO project.
+- On a minimally configured fresh project, the renderer/import path can still
+  fall back to `Task` issues while preserving intended type text.
 - Imported issues are labeled `aigo-seed`.
 - The descriptions preserve intended AIGO types and target statuses for testing.
 
@@ -218,8 +226,11 @@ Acceptance:
 
 - Rovo site availability must be confirmed manually in Jira; CLI smoke tests
   verify installation but not UI visibility.
-- Team-managed Jira projects may require manual issue-type and workflow setup.
+- Fresh team-managed Jira projects may require manual issue-type, board/status,
+  and Automation setup even though the development AIGO project is configured.
 - Jira Automation import format can drift; manual rule rebuild must remain
   documented as a fallback.
+- Jira Automation "Use agent" requires Atlassian Intelligence/Premium support;
+  Free/Standard sites cannot complete the final live Automation proof.
 - Current local Node is newer than Forge's supported range. Use Node 22 or 24
   for deploy/install work if Forge behavior becomes unstable.

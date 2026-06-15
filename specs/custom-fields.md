@@ -8,10 +8,20 @@ Custom-field catalog for the AI Growth Ops control plane. Source: field list in
 hard-coded. They are injected at runtime via environment variables in
 `src/config.ts` (`FIELD_IDS`). For the MVP, agent output is surfaced through
 comments/labels rather than field writes; field writes, if ever enabled, are
-gated per `policies/safe-mutations.md`. Only six fields are wired to env vars
-today; the rest are catalogued here for the target state and have **no env var
-yet** (creating them is `jira-admin` / `forge-engineer` work, plan-approval
-gated).
+gated per `policies/safe-mutations.md`.
+
+Current live AIGO development site state:
+
+- Six MVP fields exist: Segment (`customfield_10043`), Primary Metric
+  (`customfield_10044`), Claims Risk (`customfield_10045`), Experiment ID
+  (`customfield_10046`), Workflow Area (`customfield_10047`), and Priority
+  Score (`customfield_10048`).
+- The six matching Forge environment variables are set in `development`.
+- Field options are configured for Segment, Primary Metric, Claims Risk, and
+  Workflow Area.
+- The remaining catalog fields below are target-state fields with no env var
+  yet; creating/wiring them remains `jira-admin` / `forge-engineer` work and is
+  plan-approval gated.
 
 **Type legend:** text = single/multi-line text · number = numeric ·
 date = date picker · select = single-select · multi-select = multi-select.
@@ -48,13 +58,13 @@ date = date picker · select = single-select · multi-select = multi-select.
 | 28 | Launch Date | date | Employer Launch, Campaign | — |
 | 29 | Assets Required | multi-select | Creative Request, Employer Launch | — |
 | 30 | Readiness Score | number | Employer Launch | — |
-| 31 | Blockers | text | AI Growth Request, Employer Launch, Bug / Tracking Issue | — |
-| 32 | Funnel Step | select | Signup Funnel Issue, Bug / Tracking Issue | — |
+| 31 | Blockers | text | AI Growth Request, Employer Launch, Bug | — |
+| 32 | Funnel Step | select | Signup Funnel Issue, Bug | — |
 | 33 | Affected Segment | select | Signup Funnel Issue, Research Brief | — |
 | 34 | Drop-off Impact | select | Signup Funnel Issue | — |
-| 35 | Evidence | text | Signup Funnel Issue, Research Brief, Claims Review, Decision Memo, Positioning Update, Bug / Tracking Issue | — |
+| 35 | Evidence | text | Signup Funnel Issue, Research Brief, Claims Review, Decision Memo, Positioning Update, Bug | — |
 | 36 | Expected Lift | select | Experiment, Signup Funnel Issue | — |
-| 37 | QA Required | select | Creative Request, Employer Launch, Signup Funnel Issue, Bug / Tracking Issue | — |
+| 37 | QA Required | select | Creative Request, Employer Launch, Signup Funnel Issue, Bug | — |
 
 ## Notes on additional config-only fields
 

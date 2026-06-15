@@ -127,12 +127,19 @@ key `AIGO`. Portable installs use an instance config under `instances/` or
 environment variables to supply site, project key, project name, seed label, and
 optional template project key.
 
+The live AIGO development project has the 14 canonical issue types, 15 retyped
+seed issues, six MVP custom fields, the MVP status set, seven saved filters, six
+dashboards, and five imported Automation rules. Team-managed project limitations
+still matter: some status/board mapping and Rovo Automation setup is UI- or
+plan-gated.
+
 The repo provides a seed template that renders to a project-specific CSV before
 import. For scalable Jira configuration, create a golden company-managed
 template project with the intended issue types, screens, board, statuses, and
 workflow; ACLI can then create customer/project instances from that template.
-Fresh team-managed projects can still use the seed data as `Task` issues, but
-they need manual Jira configuration before full readiness passes.
+Fresh team-managed projects remain useful for smoke tests, but they may require
+manual issue-type, board/status, and Automation steps before full readiness
+passes.
 
 ### Instance Provisioning
 
@@ -239,15 +246,14 @@ Integration tests protect deployability by checking:
 
 ## Remaining Design Gaps Before MVP
 
-1. Jira issue types and workflow statuses are not fully verified in the live
-   project. The seed issues currently work as `Task` issues.
-2. Jira Automation rules have definitions and docs, but need live import,
-   placeholder replacement, enablement, and audit-log validation.
-3. Rovo agent visibility must be manually confirmed in Jira UI after install.
-4. Manual agent-output checks need to be recorded against seeded issue keys.
-5. A release/runbook checklist should capture deploy, install, smoke, manual
-   Rovo checks, and rollback steps.
-6. Each new Jira tenant/project needs an instance config and either a golden
+1. Jira Automation rules are imported disabled, but live Rovo "Use agent" steps
+   require Atlassian Intelligence/Premium support before they can be enabled and
+   audit-log validated.
+2. Live Rovo comments from Automation are pending the same Automation/Rovo plan
+   blocker.
+3. Field writes, issue transitions, subtask creation, and linked-ticket creation
+   remain deliberately deferred behind a future allowlisted write design.
+4. Each new Jira tenant/project needs an instance config and either a golden
    template project clone or manual Jira project setup.
 
 ## Post-MVP Design Options

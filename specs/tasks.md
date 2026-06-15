@@ -50,12 +50,12 @@ Acceptance:
   keys.
 - `[x]` Add a repeatable provision/check entrypoint for future Jira sites and
   boards.
-- `[ ]` Add or verify the 12 intended AIGO issue types.
-- `[ ]` Add or verify all MVP workflow statuses.
-- `[ ]` Wire workflow transitions for Intake, Claims Review, Experiment,
-  Employer Launch, Blocked, Decision Needed, and Done paths.
-- `[ ]` Re-import or recreate seed issues with custom issue types after the
-  project supports them, if useful.
+- `[x]` Add or verify the 14 canonical AIGO issue types.
+- `[x]` Add or verify the MVP workflow status set.
+- `[~]` Wire workflow/status paths for Intake, Claims Review, Experiment,
+  Employer Launch, Decision Needed, Launch Prep, and Done paths.
+- `[x]` Re-type or recreate seed issues with canonical issue types after the
+  project supports them.
 - `[x]` Document any live Jira differences from the ideal AIGO workflow.
 
 Acceptance:
@@ -84,13 +84,13 @@ Acceptance:
 
 ## Milestone 5: Import and Validate Jira Automation
 
-- `[ ]` Import `automation/rules/aigo-automation-ruleset.json`, or rebuild the
+- `[x]` Import `automation/rules/aigo-automation-ruleset.json`, or rebuild the
   five MVP rules manually if import schema drifts.
-- `[ ]` Replace all placeholders:
+- `[x]` Replace all placeholders:
   project key, project id, actor account id, and agent keys.
 - `[ ]` Enable only one rule at a time.
 - `[ ]` Validate Intake Triage on a newly created AIGO issue.
-- `[ ]` Validate Creative Claims on a Ready creative issue.
+- `[ ]` Validate Creative Claims on a Spec Ready creative issue.
 - `[ ]` Validate Experiment Spec on an experiment issue.
 - `[ ]` Validate Employer Launch on an employer launch issue.
 - `[ ]` Validate Weekly Readout manually before scheduling.
@@ -128,7 +128,7 @@ Acceptance:
   `AIGO_REQUIRE_FORGE_INSTALL=1 npm run test:smoke:jira`.
 - `[ ]` Run the six manual Rovo checks from Milestone 4.
 - `[ ]` Run all five Automation checks from Milestone 5.
-- `[ ]` Review safety policies against live Automation behavior.
+- `[x]` Review safety policies against live Automation behavior.
 - `[x]` Create a final MVP readiness note with blockers, risks, and decisions.
 
 Acceptance:
@@ -154,15 +154,15 @@ Acceptance:
   [`alc0der/terraform-provider-jira-automation`](https://github.com/alc0der/terraform-provider-jira-automation).
 - `[x]` Add the detailed 10-outcome roadmap in
   [`outcome-roadmap.md`](./outcome-roadmap.md).
-- `[ ]` Finalize the canonical issue-type catalog for:
+- `[x]` Finalize the canonical issue-type catalog for:
   AI Growth Request, Creative Request, Experiment, Segmentation Request,
   Personalization Journey, Employer Launch, Campaign, Dashboard Request,
   Signup Funnel Issue, Research Brief, Claims Review, Decision Memo,
   Positioning Update, and any retained compatibility types.
-- `[ ]` Finalize the custom-field catalog for segmentation, personalization,
+- `[x]` Finalize the custom-field catalog for segmentation, personalization,
   creative, experimentation, research, campaigns, conversion optimization,
   analytics, and positioning.
-- `[ ]` Add or verify the expanded Jira workflows, screens, queues, filters, and
+- `[x]` Add or verify the expanded Jira workflows, screens, queues, filters, and
   dashboards described in the outcome roadmap.
 - `[ ]` Add missing Forge/Rovo agents and compatibility mappings for requested
   names that differ from the current manifest.
@@ -170,11 +170,11 @@ Acceptance:
   personalization journey, objection mining, experiment readout, positioning,
   anomaly summary, decision recommendation, and any separated launch-readiness
   or regression-check logic.
-- `[ ]` Add per-instance Automation rule rendering and contract tests.
+- `[x]` Add per-instance Automation rule rendering and contract tests.
 - `[ ]` Run the bounded Terraform/provider spike after the control-plane spec is
   stable; keep Forge, ACLI, Jira REST, and golden-project cloning as the
   supported portable path until a provider is proven.
-- `[ ]` Update the integration, portability, runbook, workflow, claims,
+- `[~]` Update the integration, portability, runbook, workflow, claims,
   operating-model, and agent-skill docs as the roadmap tasks land.
 
 Acceptance:
@@ -194,14 +194,14 @@ Acceptance:
 - `[x]` Classify workflow area, recommended issue type, priority, risk, missing
   information, owner group, next status, acceptance criteria, and subtasks.
 - `[x]` Keep triage output comment-only and reviewable.
-- `[ ]` Add or verify canonical intake issue types and statuses:
-  New Intake, AI Triage, Needs Human Review, Ready, In Progress,
-  Decision Needed, and Done.
-- `[ ]` Manually run Growth Triage, Requirements Gap, Acceptance Criteria, and
+- `[x]` Add or verify canonical intake issue types and statuses:
+  Intake, Triage, In Review, Spec Ready, In Progress, Decision Needed, and
+  Done.
+- `[~]` Manually run Growth Triage, Requirements Gap, Acceptance Criteria, and
   Duplicate Detector on seed issues; capture expected vs actual output.
-- `[ ]` Import or rebuild the Intake Triage Automation rule and capture
+- `[~]` Import or rebuild the Intake Triage Automation rule and capture
   audit-log success.
-- `[ ]` Decide whether recommended next status remains comment-only for MVP or
+- `[x]` Decide whether recommended next status remains comment-only for MVP or
   becomes an allowlisted Automation transition later.
 
 Acceptance:
@@ -225,7 +225,7 @@ Acceptance:
   `readyForWarehouseCompute`.
 - `[ ]` Add tests for unknown signals, missing source systems,
   consent/suppression gaps, clinical targeting language, and no invented reach.
-- `[ ]` Verify `Segmentation Request` issue type, fields, and workflow statuses
+- `[~]` Verify `Segmentation Request` issue type, fields, and workflow statuses
   in Jira.
 - `[ ]` Manually run the segmentation agent on a seeded issue and check Forge
   logs.
@@ -240,7 +240,7 @@ Acceptance:
 
 - `[~]` Current personalization logic proposes variables, rules, fallbacks, and
   privacy notes, but it is not yet a complete journey artifact.
-- `[ ]` Add `Personalization Journey` issue type, custom fields, workflow, and
+- `[~]` Add `Personalization Journey` issue type, custom fields, workflow, and
   seed issue.
 - `[ ]` Add a dedicated journey module, or expand `src/audience.ts`, to produce
   a full journey spec: segment, stage, channels, triggers, sequence, timing,
@@ -340,15 +340,15 @@ Acceptance:
 - `[x]` Implement draft-only campaign plan with channels, cadence, suppression
   checks, tracking, and approvals.
 - `[x]` Add disabled Employer Launch Automation that comments analysis only.
-- `[ ]` Add or verify `Campaign` issue type and campaign-specific fields.
-- `[ ]` Manually validate Employer Launch on the Acme launch seed issue.
+- `[~]` Add or verify `Campaign` issue type and campaign-specific fields.
+- `[~]` Manually validate Employer Launch on the Acme launch seed issue.
 - `[ ]` Manually validate Campaign Planner on the re-engagement campaign seed
   issue.
-- `[ ]` Decide whether Campaign Planner needs an Automation rule or remains
+- `[x]` Decide whether Campaign Planner needs an Automation rule or remains
   manual-only.
 - `[ ]` Design optional post-MVP writeback for readiness score and subtasks
   behind an explicit allowlist.
-- `[ ]` Add `launch-readiness-agent` if readiness remains separate from the
+- `[x]` Add `launch-readiness-agent` if readiness remains separate from the
   employer launch agent.
 
 Acceptance:
@@ -366,9 +366,9 @@ Acceptance:
   issues.
 - `[ ]` Add or rename `product-ticket-agent` and `regression-check-agent`, or
   document compatibility mappings to current modules.
-- `[ ]` Manually validate Funnel Friction on the mobile Safari signup seed
+- `[~]` Manually validate Funnel Friction on the mobile Safari signup seed
   issue.
-- `[ ]` Add or explicitly defer a Funnel Friction Automation rule for new or
+- `[x]` Add or explicitly defer a Funnel Friction Automation rule for new or
   blocked Signup Funnel Issue tickets.
 - `[ ]` Add analytics/session-replay source integration or require linked
   evidence fields before impact sizing.
@@ -390,10 +390,10 @@ Acceptance:
 - `[x]` Add disabled scheduled Weekly Readout Automation that creates a Decision
   Memo.
 - `[x]` Add dashboard spec category for weekly growth decision support.
-- `[ ]` Add or rename `anomaly-summary-agent` and
+- `[x]` Add or rename `anomaly-summary-agent` and
   `decision-recommendation-agent`, or document compatibility mappings.
-- `[ ]` Manually validate Weekly Readout over recent AIGO issues.
-- `[ ]` Import or enable Weekly Readout Automation and capture audit-log
+- `[~]` Manually validate Weekly Readout over recent AIGO issues.
+- `[~]` Import or enable Weekly Readout Automation and capture audit-log
   success.
 - `[ ]` Add evidence-aware decision support using custom fields or linked
   analytics data instead of only status/type/label buckets.
@@ -410,7 +410,7 @@ Acceptance:
 
 - `[~]` Creative, campaign, landing-page, audience, and claims modules support
   parts of positioning, but there is no dedicated positioning system.
-- `[ ]` Add `Positioning Update` issue type, fields, workflow, and seed issue.
+- `[~]` Add `Positioning Update` issue type, fields, workflow, and seed issue.
 - `[ ]` Add `src/positioning.ts` with AI capability, member value proposition,
   employer value proposition, proof requirements, differentiators, objection
   matrix, channel examples, CTAs, claims risk, and missing-evidence warnings.
@@ -431,14 +431,14 @@ Acceptance:
 
 ## Outcome Platform Tasks
 
-- `[ ]` Add per-instance Automation rule rendering for project key/id, actor
+- `[x]` Add per-instance Automation rule rendering for project key/id, actor
   account id, and agent keys; fail if placeholders remain.
-- `[ ]` Add Automation template contract tests for manifest agent references,
+- `[x]` Add Automation template contract tests for manifest agent references,
   AI-analysis comments, disabled-by-default rules, claims safety, and no launch
   behavior.
 - `[ ]` Validate the golden template project with canonical issue types,
   statuses, screens, fields, board, queues, filters, and Automation placeholders.
-- `[ ]` Extend readiness checks for transition paths, required fields, screens,
+- `[~]` Extend readiness checks for transition paths, required fields, screens,
   seed coverage, Rovo UI visibility, and Automation audit logs.
 - `[ ]` Run the Terraform/provider spike against a disposable Jira site before
   adding production `.tf` resources.

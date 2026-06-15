@@ -2,115 +2,143 @@
 
 Workflow spec for the AI Growth Ops control plane: statuses, per-issue-type
 transition paths, required fields per transition, and human approval gates.
-This file is reviewed by `safety-reviewer` before T-M2-05 proceeds.
 
-References: statuses align with `specs/agent-team/MISSION.md` (definition of
-done #4) and `specs/agent-team/VERIFICATION_MATRIX.md` (VM-JIRA-WORKFLOW).
-Issue types: `specs/issue-types.md`. Fields: `specs/custom-fields.md`. Safety:
-`policies/safe-mutations.md`, `policies/claims-risk-policy.md`,
-`policies/experiment-policy.md`.
+References: issue types in `specs/issue-types.md`; fields in
+`specs/custom-fields.md`; safety rules in `policies/safe-mutations.md`,
+`policies/claims-risk-policy.md`, and `policies/experiment-policy.md`.
 
-**Current vs target.** The live AIGO project uses only `To Do → In Progress →
-Done`. The 12 statuses below are the **target** state and require a `jira-admin`
-workflow-scheme change, which is plan-approval gated per
-`specs/agent-team/TEAM_CHARTER.md`.
+## Current Live State
 
----
+The live AIGO development project is team-managed. Its workflow/status setup is
+a pragmatic MVP control plane, not a full company-managed workflow scheme.
 
-## 1. The 12 MVP statuses
+Live status evidence:
+
+- Default statuses: `To Do`, `In Progress`, `Done`.
+- AIGO project-scoped statuses: `Intake`, `Triage`, `Spec Ready`, `In Review`,
+  `Claims Review`, `Experiment Running`, `Decision Needed`, `Launch Prep`.
+- Evidence files:
+  - `evidence/jira-config/statuses.json`
+  - `evidence/jira-config/T-M2-05-result.md`
+  - `docs/MVP_READINESS.md`
+
+Team-managed Jira constraints:
+
+- Statuses can be created through REST, but board/status mapping is partly UI
+  controlled.
+- Workflow validators, transition conditions, and post-functions are not yet
+  enforced as Forge workflow modules.
+- `blocked` and `readout-needed` are queue/filter labels, not dedicated MVP
+  statuses.
+
+## 1. MVP Status Set
 
 | # | Status | Category | Meaning |
 |---|---|---|---|
-| 1 | To Do | To Do | Created, not yet triaged. |
-| 2 | AI Triage | In Progress | AI classifier is analyzing (comment-only). |
-| 3 | Needs Info | To Do | Missing required fields/context; awaiting requester. |
-| 4 | Needs Human Review | In Progress | AI analysis done; awaiting human decision. |
-| 5 | Ready | To Do | Triaged and complete; ready to be worked. |
-| 6 | In Progress | In Progress | Being actively worked. |
-| 7 | Blocked | In Progress | Work stopped on an external dependency. |
-| 8 | Decision Needed | In Progress | A human decision (Decision Memo) is required. |
-| 9 | Claims Review | In Progress | Health/clinical claims await Compliance review. |
-| 10 | Experiment Running | In Progress | Approved experiment is live; awaiting readout. |
-| 11 | Readout Needed | In Progress | Work/experiment ended; results must be summarized. |
-| 12 | Done | Done | Completed and accepted. |
+| 1 | To Do | To Do | Created, not yet routed into the AIGO workflow. |
+| 2 | Intake | To Do | Ready for AI/human intake triage. |
+| 3 | Triage | In Progress | AI classifier or reviewer is analyzing. |
+| 4 | Spec Ready | In Progress | AI/human spec is complete enough for execution review. |
+| 5 | In Review | In Progress | Human review is needed for missing info, claims, approvals, or decisions. |
+| 6 | In Progress | In Progress | Work is actively being executed by a human owner. |
+| 7 | Claims Review | In Progress | Health/clinical claims await Compliance review. |
+| 8 | Experiment Running | In Progress | Human-approved experiment is running; AI cannot launch it. |
+| 9 | Decision Needed | In Progress | A human decision owner must decide. |
+| 10 | Launch Prep | In Progress | Employer/campaign launch is being readied and checked. |
+| 11 | Done | Done | Completed and accepted. |
 
-**Canonical happy path:**
-`To Do → AI Triage → (Needs Info | Needs Human Review) → Ready → In Progress →
-(Blocked | Decision Needed | Claims Review | Experiment Running) → Readout Needed
-→ Done`.
+Logical states represented outside the status list:
 
-`Needs Info` loops back to `AI Triage`/`Ready` once the requester fills gaps.
-`Blocked` returns to `In Progress` when unblocked.
+- **Blocked:** `blocked` label or stale in-progress queue.
+- **Readout Needed:** `readout-needed` label.
+- **Needs Info / Needs Human Review:** `In Review` status plus AI/human comment
+  describing the missing info or approval needed.
+- **Ready:** `Spec Ready`.
 
----
+Canonical happy path:
 
-## 2. Per-issue-type transition matrices
+```text
+To Do -> Intake -> Triage -> Spec Ready -> In Progress -> Done
+```
 
-All types share the intake spine (`To Do → AI Triage → Needs Info /
-Needs Human Review → Ready → In Progress → … → Done`). The columns below mark
-which **branch statuses** each type uses.
+Branch paths:
 
-| Issue type | Claims Review | Experiment Running | Decision Needed | Readout Needed | Blocked |
-|---|---|---|---|---|---|
-| AI Growth Request | — | — | ● | — | ● |
-| Creative Request | ● | — | — | — | ● |
-| Experiment | — | ● | ● | ● | ● |
-| Segmentation Request | — | — | ● | — | ● |
-| Personalization Journey | ● | — | — | — | ● |
-| Employer Launch | — | — | ● | ● | ● |
-| Campaign | ● | — | ● | ● | ● |
-| Dashboard Request | — | — | — | — | ● |
-| Signup Funnel Issue | — | — | — | ● | ● |
-| Research Brief | — | — | — | ● | ● |
-| Claims Review | ● | — | ● | — | ● |
-| Decision Memo | — | — | ● | — | ● |
-| Positioning Update | ● | — | ● | — | ● |
-| Bug / Tracking Issue | — | — | — | — | ● |
+```text
+Triage / Spec Ready -> In Review -> Spec Ready
+In Progress -> Claims Review -> In Review / Spec Ready
+In Progress -> Experiment Running -> readout-needed label -> Done
+In Progress -> Decision Needed -> Spec Ready / Done
+Employer Launch / Campaign -> Launch Prep -> In Progress / Done
+Any active issue -> blocked label -> queue follow-up -> prior status
+```
 
-● = type uses that branch status. All types use the intake spine and `Done`.
+## 2. Per-Issue-Type Branch Matrix
 
----
+All types can use the intake spine (`To Do -> Intake -> Triage -> Spec Ready ->
+In Progress -> Done`). Branch columns below mark additional statuses or labels
+that type is expected to use.
 
-## 3. Required fields per transition
+| Issue type | Claims Review | Experiment Running | Decision Needed | Launch Prep | readout-needed label | blocked label |
+|---|---|---|---|---|---|---|
+| AI Growth Request | - | - | yes | - | - | yes |
+| Creative Request | yes | - | - | - | - | yes |
+| Experiment | - | yes | yes | - | yes | yes |
+| Segmentation Request | - | - | yes | - | - | yes |
+| Personalization Journey | yes | - | - | - | - | yes |
+| Employer Launch | - | - | yes | yes | yes | yes |
+| Campaign | yes | - | yes | yes | yes | yes |
+| Dashboard Request | - | - | - | - | - | yes |
+| Signup Funnel Issue | - | - | - | - | yes | yes |
+| Research Brief | - | - | - | - | yes | yes |
+| Claims Review | yes | - | yes | - | - | yes |
+| Decision Memo | - | - | yes | - | - | yes |
+| Positioning Update | yes | - | yes | - | - | yes |
+| Bug | - | - | - | - | - | yes |
 
-A transition is **blocked** unless the listed fields are populated. (For the MVP
-these are enforced by review/readiness checks, not by autonomous field writes.)
+## 3. Required Fields Per Transition
 
-| Transition | Required fields |
+A transition should be blocked by human review or readiness checks unless the
+listed fields/evidence are present. These are not autonomous field writes.
+
+| Transition / gate | Required fields or evidence |
 |---|---|
-| To Do → AI Triage | (none — AI runs on summary/description) |
-| AI Triage → Needs Info | Blockers (lists what is missing) |
-| AI Triage → Ready | Primary Metric (where the type has one) |
-| Any → Claims Review | **Claims Risk** (must be set; Medium/High/Prohibited routes here), Proof Point |
-| Any → Experiment Running | Hypothesis, Primary Metric, Guardrail Metrics, Variant ID, Decision Date, Sample Feasibility, tracking note (per `policies/experiment-policy.md`) |
-| Any → Decision Needed | Decision Needed, plus a linked **Decision Memo** |
-| Experiment Running → Readout Needed | Experiment ID, Primary Metric (so results are measurable) |
-| In Progress → Readout Needed | Primary Metric or Conversion Impact |
-| Any → Done | Type-specific acceptance fields satisfied; no open required gate |
+| To Do -> Intake | Summary and description are present. |
+| Intake -> Triage | Jira issue context is readable by Forge/Rovo. |
+| Triage -> In Review | Comment lists missing info, approval need, or risk reason. |
+| Triage -> Spec Ready | Primary Metric where applicable; AI comment includes issue type, owner group, priority/risk, and acceptance criteria. |
+| Any -> Claims Review | Claims Risk, Proof Point or copy/evidence being reviewed. |
+| Any -> Experiment Running | Hypothesis, Primary Metric, Guardrail Metrics, Variant ID, Decision Date, Sample Feasibility, and tracking plan per `policies/experiment-policy.md`. |
+| Any -> Decision Needed | Decision Needed plus a linked or drafted Decision Memo. |
+| Employer Launch / Campaign -> Launch Prep | Launch Date, Assets Required, Readiness Score or blocker list, QA Required. |
+| Experiment Running -> readout-needed label | Experiment ID and Primary Metric are known so results can be summarized. |
+| In Progress -> readout-needed label | Primary Metric, Conversion Impact, or evidence source is available. |
+| Any -> Done | Type-specific acceptance fields are satisfied and no human gate is open. |
 
 Type-specific notes:
-- **Experiment → Experiment Running** must satisfy the full experiment-policy
-  field set; missing measurement/guardrails/decision-rule blocks the move.
-- **Employer Launch → Done** requires Readiness Score and QA Required cleared.
-- **Signup Funnel Issue → Done** requires Evidence and Expected Lift recorded.
 
----
+- **Experiment -> Experiment Running** requires human launch approval and the
+  full experiment-policy field set.
+- **Employer Launch -> Done** requires readiness blockers cleared and launch QA
+  evidence.
+- **Signup Funnel Issue -> Done** requires Evidence and Expected Lift or a clear
+  "tracking issue only" resolution.
 
-## 4. Human approval gates
+## 4. Human Approval Gates
 
-AI may analyze and recommend at any status but **never** crosses these gates
-itself (see `policies/safe-mutations.md` and the MISSION safety contract):
+AI may analyze and recommend at any status but must never cross these gates
+itself.
 
-| Gate (status / transition) | Who must approve | Rule |
+| Gate | Who must approve | Rule |
 |---|---|---|
-| **Claims Review** | Compliance / Medical Review **human** | AI may flag, score Claims Risk, and recommend safer copy, but **must not approve** clinical/health claims or move the item to `Done`/approved. (`policies/claims-risk-policy.md`) |
-| **Experiment Running** (launch) | **Human** Launch approver | An experiment moves to `Experiment Running` only after a human approves launch; AI cannot launch. Requires the full experiment-policy field set first. |
-| **Decision Needed** | **Human** decision owner | Requires a linked **Decision Memo**; the human records the decision. AI drafts the memo and recommendation only. |
-| **High-risk → Done / approved** | **Human** reviewer | High-risk tickets cannot be closed or approved without human review. AI cannot auto-close. |
-| Enabling any Automation rule that drives a transition | `lead` + `safety-reviewer` (plan-approval) | Automation rules are imported disabled; transitions via Automation are out of scope for MVP unless explicitly allowlisted. |
+| Claims Review | Compliance / Medical Review human | AI may flag, score Claims Risk, and recommend safer copy, but must not approve clinical/health claims or close the item. |
+| Experiment Running | Human launch approver | AI may draft the experiment spec; only a human can approve launch. |
+| Decision Needed | Human decision owner | AI may draft the memo and recommendation; the decision owner records the decision. |
+| Launch Prep -> execution | Human launch owner | AI may produce readiness and blockers; it cannot launch campaigns or alter audiences. |
+| High-risk -> Done | Human reviewer | High-risk tickets cannot be closed or approved without human review. |
+| Enabling Automation rules | Lead + safety reviewer + operator | Rules are imported disabled; Rovo "Use agent" in Automation is blocked until the site has Atlassian Intelligence/Premium support. |
 
-All AI contributions across every status are comment-only via
-`addAnalysisComment`, the single mutating Forge action. No transition,
-field write, or approval is performed by AI.
+All AI contributions remain comment-only through the safe mutation path. Field
+writes, transitions, approvals, audience changes, and campaign sends require a
+future allowlisted write design.
 
-safety-reviewer: approved 2026-06-14
+safety-reviewer: approved 2026-06-14; live status setup updated 2026-06-15

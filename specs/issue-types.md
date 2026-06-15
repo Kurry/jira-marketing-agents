@@ -2,13 +2,16 @@
 
 Canonical issue-type catalog for the Jira-native AI Growth Ops control plane.
 
-**Current vs target state.** The live AIGO project today uses only the
-team-managed defaults — **Workstream, Task, Sub-task** — and seed issues encode
-their intended AIGO type in the description (see `automation/seed/` and
-`specs/requirements.md` REQ-005). The 14 types below are the **target** state.
-Until the project is reconfigured (owned by `jira-admin`, gated per
-`specs/agent-team/TEAM_CHARTER.md`), agents classify issues into these types via
-comments rather than relying on the Jira issue type itself.
+**Current vs target state.** The live AIGO development project now has all 14
+canonical issue types available in the team-managed project. They were added via
+Jira Project Settings because team-managed projects do not expose a reliable
+REST path for project-scoped issue-type attachment. See
+`evidence/jira-config/issue-types.json` and
+`evidence/jira-config/seeds-output.json`.
+
+The legacy **Workstream**, **Task**, and **Sub-task** defaults may still exist on
+the project, but the 15 seed issues have been retyped to the canonical catalog
+below. New work should use these canonical types.
 
 Field names referenced below are defined in `specs/custom-fields.md` and the
 field catalog in `specs/outcome-roadmap.md`. Workflows and statuses per type are
@@ -135,13 +138,14 @@ differentiators, objection matrix, claims risk, missing-evidence warnings.
   Evidence.
 - **Legacy aliases:** none (new type).
 
-## 14. Bug / Tracking Issue
+## 14. Bug
 
 An engineering/tracking defect — including analytics/tracking instrumentation
 gaps that masquerade as funnel friction.
 
 - **Primary fields:** Funnel Step, Evidence, QA Required, Blockers.
-- **Legacy aliases:** none (standard Jira-style type retained for completeness).
+- **Legacy aliases:** **Bug / Tracking Issue** → Bug. Jira simplified the
+  project-scoped type name to `Bug`; use `Bug` in config and seed files.
 
 ---
 
@@ -152,8 +156,8 @@ gaps that masquerade as funnel friction.
 | Insight / Research Brief | Research Brief |
 | Growth Task | AI Growth Request |
 | Automation Request | AI Growth Request (when the ask is AI-driven) |
-| Workstream / Task / Sub-task (live defaults) | Mapped per description until reconfigured |
+| Bug / Tracking Issue | Bug |
+| Workstream / Task / Sub-task | Transitional defaults only; do not use for new AIGO work |
 
-`Workstream`, `Task`, and `Sub-task` remain the **live** issue types; the 14
-canonical types are the target catalog and require a `jira-admin` reconfiguration
-(plan-approval gated) before they exist in Jira.
+Current live AIGO IDs on `myhealthcaresite.atlassian.net` are 10048-10061. IDs
+are instance-specific and must not be hard-coded into source.
