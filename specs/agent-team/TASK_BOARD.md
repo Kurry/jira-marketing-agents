@@ -1,295 +1,236 @@
-# Task Board (seed for the shared task list)
+# Task Board (v2 — audit → remediate → prove)
 
-The lead should create one Claude Code task per `T-*` row below in the shared
-task list at startup, preserving the id, owner, and dependencies. Tasks with
-unsatisfied dependencies stay `pending`; tasks become `claimable` only when
-their `deps` column is empty or fully `completed`.
+The lead seeds the shared task list from this file at startup. Task ids
+are stable; the v1 board is abandoned. Tasks with unsatisfied `deps`
+cannot be claimed.
 
-Evidence paths are relative to `evidence/` in the repo. Every `[x]`
-acceptance bullet must be backed by a file or log fragment at that path.
+Legend: `owner:<name>` matches `TEAM_CHARTER.md`; `vm:<row>` points to
+`SCRIPTABLE_VERIFICATION.md`; `deps=*` means no dependency.
 
-Legend:
+## Phase 0 — Bootstrap
 
-- `deps=*` means no dependencies.
-- `owner:<name>` must exactly match a teammate in `TEAM_CHARTER.md`.
-- `verify:<row>` refers to a row in `VERIFICATION_MATRIX.md`.
+- **T-B-01** [owner:iac-architect] [deps:*]
+  Copy the v2 spec bundle from `/tmp/outputs/` (minus the `v1/` dir)
+  into `specs/agent-team/` if not already there. Commit.
+  Evidence: `evidence/audit/spec-copy.json` produced by
+  `scripts/audit/spec-copy.mjs`.
 
----
+- **T-B-02** [owner:script-eng] [deps:*]
+  Create the skeleton of the scripts tree and npm scripts per
+  `SCRIPTS_CONTRACT.md`. Every new script exits 0 with a stub JSON
+  report until real logic lands. Commit.
+  Evidence: `evidence/infra/bootstrap.json`.
 
-## Milestone M0 — Repo baseline, CI, and ground truth
+- **T-B-03** [owner:safety-tester] [deps:*]
+  Install hooks from `QUALITY_GATES.md` under `.claude/hooks/`,
+  `chmod +x`, and verify they trigger with the local `claude` CLI if
+  possible. Commit. Evidence: `evidence/infra/hooks.json`.
 
-- **T-M0-01** [owner:architect] [deps:*]
-  Confirm current state matches `MISSION.md` starting assumptions. Read
-  `specs/`, `manifest.yml`, `package.json`, `docs/MVP_READINESS.md`. Produce
-  `evidence/ground-truth.md` listing: Forge app id, installed Jira sites,
-  AIGO project key, seed count, Node version, any repo drift. Verify: none;
-  this is discovery.
+- **T-B-04** [owner:docs-scribe] [deps:T-B-01]
+  Create `STATUS.md` (template in `RUNBOOK.md`) and `CLAUDE.md` at
+  the repo root. `CLAUDE.md` summarises `IAC_PRINCIPLES.md` and the
+  ownership map. Commit.
 
-- **T-M0-02** [owner:forge-engineer] [deps:*]
-  Run the local quality gates (`npm ci`, `npm run build`, `npm test`,
-  `npm run test:integration`, `forge lint`). Capture output under
-  `evidence/gates/initial.log`. If anything fails, raise child tasks to fix,
-  tagged `M0`.
-  Verify: `VERIFICATION_MATRIX.md#VM-LOCAL-GATES` must be green before M1
-  unblocks.
+## Phase 1 — Audit (all of A-x from `AUDIT_PLAN.md`)
 
-- **T-M0-03** [owner:docs-writer] [deps:*]
-  Create `STATUS.md` at repo root with the template in
-  `RUNBOOK.md#status-template`. Lead keeps it updated thereafter.
+- **T-A-01** [owner:script-eng] [deps:T-B-02]
+  Implement `scripts/audit/repo-snapshot.mjs`. Acceptance: runs and
+  emits `evidence/audit/repo.json` as specified in `AUDIT_PLAN.md`.
 
-- **T-M0-04** [owner:forge-engineer] [deps:T-M0-02]
-  Extend `.github/workflows/ci.yml` (if missing any step) to run: lint,
-  build, unit tests, integration tests, automation JSON schema check, and
-  `npm run seed:render`. Commit. Evidence: green CI run link in
-  `evidence/gates/ci.md`.
+- **T-A-02** [owner:forge-rovo-eng] [deps:T-B-02]
+  Implement `scripts/audit/forge-snapshot.mjs`.
 
-- **T-M0-05** [owner:qa-verifier] [deps:T-M0-01]
-  Create `evidence/` directory scaffolding:
-  `evidence/{gates,agent-runs,automation,rovo,decisions,blockers,safety-refusals,outcomes}/`
-  each with a placeholder `README.md`. Commit.
+- **T-A-03** [owner:jira-client-eng] [deps:T-B-02]
+  Implement `scripts/audit/jira-snapshot.mjs`. Read-only; no mutations.
 
-- **T-M0-06** [owner:architect] [deps:T-M0-01]
-  Create top-level `CLAUDE.md` summarising: repo purpose, safety contract,
-  file-ownership map, "always read before acting" references to files in
-  this spec bundle. Commit.
+- **T-A-04** [owner:iac-architect] [deps:T-B-02]
+  Implement `scripts/audit/v1-attempt.mjs`. Classifies prior
+  commits/files as `iac-ok` / `manual-artifact` / `to-rewrite` /
+  `to-revert`.
 
-## Milestone M1 — Forge deploy + Rovo visibility on staging
+- **T-A-05** [owner:safety-tester] [deps:T-B-02]
+  Implement `scripts/audit/safety-snapshot.mjs`. Scope audit + banned
+  phrase scan + automation action audit.
 
-- **T-M1-01** [owner:forge-engineer] [deps:T-M0-02]
-  Run `forge deploy -e development`. Capture stdout/stderr to
-  `evidence/gates/forge-deploy.log`. If the version changed, note the new
-  manifest version.
-  Verify: `VM-FORGE-DEPLOY`.
+- **T-A-06** [owner:iac-architect] [deps:T-A-01..T-A-05]
+  Implement `scripts/audit/summarize.mjs` producing
+  `evidence/audit/summary.json`. Print the delta summary to stderr.
 
-- **T-M1-02** [owner:forge-engineer] [deps:T-M1-01]
-  Run `forge install --upgrade -e development -p jira --site
-  myhealthcaresite.atlassian.net --confirm-scopes` if scopes changed;
-  otherwise just `forge install list`. Record output at
-  `evidence/gates/forge-install.log`.
-  Verify: `VM-FORGE-INSTALL`.
+- **T-A-07** [owner:lead] [deps:T-A-06]
+  Run `scripts/audit/summary-to-tasks.mjs` and inject resulting
+  `T-S-*`, `T-D-*`, `T-R-*` tasks into the shared task list.
 
-- **T-M1-03** [owner:qa-verifier] [deps:T-M1-02]
-  Run `AIGO_REQUIRE_FORGE_INSTALL=1 npm run test:smoke:jira`. Capture to
-  `evidence/gates/smoke-jira.log`.
-  Verify: `VM-SMOKE-JIRA`.
+## Phase 2 — Safety-first findings (`T-S-*`, created by audit)
 
-- **T-M1-04** [owner:qa-verifier] [deps:T-M1-02]
-  Confirm all 19 Rovo agents visible in the Jira UI. The team has Jira REST
-  access; enumerate agents via Forge Rovo APIs where possible, and record
-  navigation path + agent names in `evidence/rovo/visibility.md`. If the
-  REST surface does not expose this reliably, this task becomes
-  `blocked-human` and the lead asks the operator to paste confirmation.
-  Verify: `VM-ROVO-VISIBILITY`.
+These are **generated** by the audit. Template (actual ids assigned at
+runtime):
 
-- **T-M1-05** [owner:safety-reviewer] [deps:T-M1-01]
-  Verify `manifest.yml` scopes are still `read:jira-work`, `write:jira-work`,
-  `read:chat:rovo`. Diff against the last known-good and record in
-  `evidence/safety/scope-audit.md`. Reject any broadening.
+- Any extra Forge scope → revert task.
+- Any prompt containing banned phrases → rewrite task + safety test.
+- Any automation rule action that could approve/send → remove task.
+- Any policy referenced but missing → restore or rewrite task.
 
-## Milestone M2 — AIGO project configuration (staging)
+All `T-S-*` tasks are highest priority. Nothing else may be claimed
+while any `T-S-*` is pending.
 
-- **T-M2-01** [owner:architect] [deps:T-M1-03]
-  Finalize the canonical issue-type catalog (14 types) in
-  `specs/issue-types.md`: AI Growth Request, Creative Request, Experiment,
-  Segmentation Request, Personalization Journey, Employer Launch, Campaign,
-  Dashboard Request, Signup Funnel Issue, Research Brief, Claims Review,
-  Decision Memo, Positioning Update, Bug/Tracking Issue. Document any
-  legacy aliases (e.g. Insight/Research Brief → Research Brief).
+## Phase 3 — Delete manual artefacts (`T-D-*`, generated)
 
-- **T-M2-02** [owner:architect] [deps:T-M1-03]
-  Finalize the custom-field catalog per field list in
-  `specs/outcome-roadmap.md` (Target Population, Signal Sources, Segment,
-  Suppression Rules, Primary Metric, Targeting Confidence, Journey Stage,
-  Channels, Behavior Trigger, Proof Point, Claims Risk, Creative Type,
-  Hook Type, Variant ID, Experiment ID, Hypothesis, Guardrail Metrics,
-  Sample Feasibility, Decision Date, Decision Needed, Confidence,
-  Research Source, Theme, Frequency, Conversion Impact, Recommended Test,
-  Campaign Goal, Launch Date, Assets Required, Readiness Score, Blockers,
-  Funnel Step, Affected Segment, Drop-off Impact, Evidence, Expected Lift,
-  QA Required). Record in `specs/custom-fields.md`.
+For every file under `evidence/` from v1 classified as
+`manual-artifact`:
 
-- **T-M2-03** [owner:jira-admin] [deps:T-M2-01]
-  Submit plan for lead approval, then create the missing issue types in
-  AIGO via Jira REST / ACLI. Capture before/after in
-  `evidence/jira-config/issue-types.json`. Update
-  `scripts/aigo-project-readiness.cjs` to assert the full set.
-  Verify: `VM-JIRA-ISSUE-TYPES`.
+- Delete it.
+- If its intent is still useful, open a `T-R-*` task to regenerate
+  from a script.
 
-- **T-M2-04** [owner:jira-admin] [deps:T-M2-02]
-  Create missing custom fields and attach them to the appropriate issue
-  types via screens. Evidence: `evidence/jira-config/custom-fields.json`
-  and screen IDs. Update readiness script.
-  Verify: `VM-JIRA-FIELDS`.
+Also delete from v1: any `docs/*.md` that directs the operator to
+perform manual UI actions. `docs-scribe` rewrites them to point at the
+scripted verb.
 
-- **T-M2-05** [owner:jira-admin] [deps:T-M2-03]
-  Build the MVP team-managed workflow/status set and attach it to the AIGO
-  board. Statuses: To Do, Intake, Triage, Spec Ready, In Review, In Progress,
-  Claims Review, Experiment Running, Decision Needed, Launch Prep, Done.
-  Blocked and readout-needed work is represented by labels/filters. Build
-  transition expectations per `specs/workflows.md` (produced in T-M2-06).
-  Evidence: `evidence/jira-config/statuses.json`.
-  Verify: `VM-JIRA-WORKFLOW`.
+## Phase 4 — Declarative state scaffolding
 
-- **T-M2-06** [owner:architect] [deps:T-M2-01]
-  Produce `specs/workflows.md` describing per-issue-type transition
-  matrices, required fields per transition, and required human approval
-  gates. Reviewed by `safety-reviewer`.
+- **T-R-INFRA-01** [owner:iac-architect] [deps:T-A-07]
+  Create `infra/` tree per `DECLARATIVE_STATE.md`:
+  `instances/staging.yaml`, and empty `schemaVersion: 1` stubs for
+  issue-types, fields, screens, screen-schemes, workflow,
+  workflow-schemes, filters, queues, dashboards, automation,
+  seeds/matrix, rovo/agents. Commit.
+  Evidence: `evidence/infra/tree.json`.
 
-- **T-M2-07** [owner:jira-admin] [deps:T-M2-05]
-  Re-import seeds via `npm run seed:render` then `acli jira work import`
-  (or equivalent), with at least one issue per canonical type.
-  Evidence: `evidence/jira-config/seeds.md` listing issue keys per type.
-  Verify: `VM-SEED-COVERAGE`.
+- **T-R-INFRA-02** [owner:script-eng] [deps:T-R-INFRA-01]
+  Implement `scripts/infra/plan.mjs` as a pure composition over
+  `scripts/infra/jira-*-plan.mjs` stubs. `npm run infra:plan` now
+  returns a "nothing to do because declarations are empty" report
+  without errors.
 
-- **T-M2-08** [owner:qa-verifier] [deps:T-M2-07]
-  Extend `scripts/aigo-project-readiness.cjs` to verify transition paths,
-  required fields, screens, seed coverage, and Rovo visibility. Output
-  goes to `evidence/readiness/full.log`.
-  Verify: `VM-READINESS`.
+- **T-R-INFRA-03** [owner:script-eng] [deps:T-R-INFRA-02]
+  Implement `scripts/infra/apply.mjs` composition (empty stubs apply
+  no changes). Idempotent.
 
-## Milestone M3 — Jira Automation import & validation
+- **T-R-INFRA-04** [owner:script-eng] [deps:T-R-INFRA-03]
+  Implement `scripts/verify/run-all.mjs` that runs every
+  `scripts/verify/*.mjs` and aggregates JSON. Satisfies `npm run
+  infra:verify`.
 
-- **T-M3-01** [owner:automation-eng] [deps:T-M2-07]
-  Implement per-instance rule rendering. Take the five templates in
-  `automation/rules/*.json`, replace `{{projectKey}}`,
-  `{{projectId}}`, `{{actorAccountId}}`, `{{agentKey}}` from the
-  instance config; fail loudly if placeholders remain. Add tests under
-  `tests/automation/*.test.ts`.
-  Verify: `VM-AUTOMATION-RENDER`.
+- **T-R-INFRA-05** [owner:jira-client-eng] [deps:T-R-INFRA-02]
+  Implement `scripts/lib/jira.mjs` client (auth, retries, rate-limit,
+  typed responses). All Jira calls go through it.
+  Evidence: unit tests under `tests/lib/jira.test.ts`.
 
-- **T-M3-02** [owner:automation-eng] [deps:T-M3-01]
-  Import each rule one at a time via Jira Automation REST (or the UI if
-  REST is insufficient); keep all five rules **disabled** after import.
-  Evidence per rule at `evidence/automation/<rule>.md`.
-  Verify: `VM-AUTOMATION-IMPORT`.
+- **T-R-INFRA-06** [owner:forge-rovo-eng] [deps:T-R-INFRA-02]
+  Implement `scripts/lib/forge.mjs` (wraps `forge` CLI and where
+  possible the Rovo REST).
 
-- **T-M3-03** [owner:automation-eng, qa-verifier] [deps:T-M3-02]
-  For each of the five rules:
-   1. Create (or reuse) a seed issue that triggers the rule.
-   2. Enable the rule temporarily.
-   3. Trigger it; capture audit log + resulting comment.
-   4. If green, leave enabled; otherwise disable and open a child task.
-  Evidence: `evidence/automation/<rule>-audit.md`.
-  Safety: Creative Claims rule must never have a step that *approves*
-  claims. `safety-reviewer` pre-approves the enablement plan.
-  Verify: `VM-AUTOMATION-VALIDATE`.
+- **T-R-INFRA-07** [owner:iac-architect] [deps:T-R-INFRA-01]
+  Fill `infra/jira/issue-types.yaml` with the canonical catalog.
+  Fill `infra/jira/fields.yaml` with the full custom-field catalog
+  from `specs/outcome-roadmap.md`. Fill `infra/jira/workflow/aigo-
+  default.yaml` with 12 statuses + transition matrix.
 
-- **T-M3-04** [owner:automation-eng] [deps:T-M3-01]
-  Add automation template contract tests: each rule must reference a real
-  manifest agent key, add AI-analysis comment text, be disabled by
-  default, and never approve claims or launch work.
+## Phase 5 — Per-resource apply + verify (all depend on Phase 4)
 
-## Milestone M4 — Primary agent manual validation (6 agents)
+For each resource category, one apply script + one verify script:
 
-All six tasks below share `deps:T-M2-07`. Run in parallel.
+| Resource        | Apply                                          | Verify                               | VM                  |
+| --------------- | ---------------------------------------------- | ------------------------------------ | ------------------- |
+| Issue types     | `scripts/infra/jira-issue-types-apply.mjs`     | `scripts/verify/jira-issue-types.mjs`| VM-JIRA-ISSUE-TYPES |
+| Fields+screens  | `scripts/infra/jira-fields-apply.mjs`          | `scripts/verify/jira-fields.mjs`     | VM-JIRA-FIELDS      |
+| Workflow        | `scripts/infra/jira-workflow-apply.mjs`        | `scripts/verify/jira-workflow.mjs`   | VM-JIRA-WORKFLOW    |
+| Filters         | `scripts/infra/jira-filters-apply.mjs`         | `scripts/verify/jira-filters.mjs`    | VM-JIRA-FILTERS     |
+| Dashboards      | `scripts/infra/jira-dashboards-apply.mjs`      | `scripts/verify/jira-dashboards.mjs` | VM-JIRA-DASHBOARDS  |
+| Seeds           | `scripts/infra/jira-seeds-apply.mjs`           | `scripts/verify/jira-seeds.mjs`      | VM-JIRA-SEEDS       |
+| Automation      | `scripts/infra/automation-apply.mjs`           | `scripts/verify/automation-audit.mjs`| VM-AUTOMATION-*     |
+| Rovo derivation | `scripts/infra/rovo-derive.mjs`                | `scripts/verify/rovo-agents.mjs`     | VM-ROVO-*           |
 
-- **T-M4-01** [owner:qa-verifier] — Run AI Growth Triage Agent on the mobile
-  Safari signup seed issue. Record expected vs actual at
-  `evidence/agent-runs/growth-triage-agent.md`. Check
-  `forge logs -e development --since 1h` for handler errors and attach.
-  Verify: `VM-AGENT-RUN`.
+One `T-R-P5-<resource>` task per row, owned by `jira-client-eng`
+(Jira rows) or `forge-rovo-eng` (Rovo/Forge rows), with `script-eng`
+as reviewer. Every task is blocked on `T-R-INFRA-07`.
 
-- **T-M4-02** [owner:qa-verifier] — AI Creative Claims Agent on the risky
-  creative issue. `evidence/agent-runs/creative-claims-agent.md`.
+Each task's acceptance:
 
-- **T-M4-03** [owner:qa-verifier] — AI Experiment Design Agent on the email
-  subject-line experiment. `evidence/agent-runs/experiment-design-agent.md`.
+1. Apply script converges Jira to match declaration.
+2. Verify script exits 0.
+3. Re-run of apply reports `changes: []`.
+4. Scripted evidence file exists.
 
-- **T-M4-04** [owner:qa-verifier] — AI Employer Launch Agent on the Acme
-  launch issue. `evidence/agent-runs/employer-launch-agent.md`.
+## Phase 6 — Agent invocation harnesses
 
-- **T-M4-05** [owner:qa-verifier] — AI Duplicate Detector Agent on the mobile
-  Safari funnel issue. `evidence/agent-runs/duplicate-detector-agent.md`.
+- **T-R-AGENT-01** [owner:forge-rovo-eng] [deps:T-R-P5-*]
+  `scripts/invoke/run-all.mjs` + one wrapper per Rovo agent under
+  `scripts/invoke/<agent>.mjs`. Each wrapper invokes the agent
+  against its declared seed issue and asserts safety predicates.
 
-- **T-M4-06** [owner:qa-verifier] — AI Weekly Readout Agent over recent AIGO
-  issues. `evidence/agent-runs/weekly-readout-agent.md`.
+- **T-R-AGENT-02** [owner:safety-tester] [deps:T-R-AGENT-01]
+  `tests/safety/agent-outputs.test.ts` loads every
+  `evidence/agent-runs/*.json` and re-asserts safety predicates so CI
+  catches regressions.
 
-Each task is **not** complete until `safety-reviewer` signs off that output
-does not violate the safety contract.
+## Phase 7 — Safety tests & hooks
 
-## Milestone M5 — Outcome workflows 1–10 (parallel tracks)
+- **T-R-SAFE-01** [owner:safety-tester] [deps:T-R-INFRA-01]
+  Write `tests/safety/*.test.ts` covering the VM-SAFETY row bullets.
 
-Each outcome is one parent task with child tasks. Parent is owned by
-`architect`; children distribute across `forge-engineer`,
-`automation-eng`, `jira-admin` per the ownership map in
-`TEAM_CHARTER.md`. All depend on `T-M2-07` and the matching M4 run.
+- **T-R-SAFE-02** [owner:safety-tester] [deps:T-R-SAFE-01]
+  Wire CI job to run `npm run test:safety` and fail the build on red.
 
-- **T-M5-01** Outcome 1: AI Growth Intake & Triage
-- **T-M5-02** Outcome 2: AI Segmentation & Targeting
-- **T-M5-03** Outcome 3: AI Personalization Journey
-- **T-M5-04** Outcome 4: AI Creative Production
-- **T-M5-05** Outcome 5: AI Experimentation Engine
-- **T-M5-06** Outcome 6: AI Research & Objection Mining
-- **T-M5-07** Outcome 7: Campaign & Employer Launch Orchestration
-- **T-M5-08** Outcome 8: AI Conversion Optimization (signup funnel)
-- **T-M5-09** Outcome 9: AI Analytics & Decision Support (weekly readout)
-- **T-M5-10** Outcome 10: AI Product Positioning & Messaging
+## Phase 8 — Docs regenerated from state
 
-For each parent, the lead expands the matching section of
-`specs/outcome-roadmap.md` (or `specs/tasks.md` Outcome N Tasks) into child
-tasks. Every child must:
+- **T-R-DOC-01** [owner:docs-scribe] [deps:T-R-P5-*]
+  Implement `scripts/docs/generate.mjs` that rebuilds
+  `docs/INTEGRATION.md`, `docs/PORTABILITY.md`, `docs/MVP_RUNBOOK.md`,
+  and `docs/TROUBLESHOOTING.md` from the `infra/` tree and the
+  verification matrix. Runs in CI; CI fails if `docs/` diverges.
 
-- map to a code module under `src/` (create or extend),
-- or a Jira configuration change,
-- or a prompt/automation rule,
-- produce a passing test,
-- produce an evidence file showing a real staging run.
+- **T-R-DOC-02** [owner:docs-scribe] [deps:T-R-DOC-01]
+  Regenerate. Commit. Delete any old hand-written runbook sections
+  that contradict scripted state.
 
-Completion criteria per outcome are the Acceptance bullets already present
-in `specs/outcome-roadmap.md`; the lead copies them into each parent task's
-acceptance field.
+## Phase 9 — CI parity
 
-## Milestone M6 — Queues, filters, dashboards
+- **T-R-CI-01** [owner:script-eng] [deps:T-R-INFRA-04]
+  Extend `.github/workflows/ci.yml` to run
+  `npm ci && npm run build && npm test && npm run test:safety && npm
+  run forge:lint && npm run infra:plan`. `infra:plan` uses a
+  `--dry-run` mode against a recording of the staging snapshot
+  (sourced from `evidence/audit/jira.json`), not the live site, so
+  CI is deterministic and offline.
 
-- **T-M6-01** [owner:jira-admin] [deps:T-M2-05] Queue/filter specs per
-  `specs/outcome-roadmap.md` Jira Control Plane Tasks (Intake,
-  Claims Review, Launch Readiness, Readout Needed, Decision Needed,
-  Blocked, Experiment Running). Evidence: `evidence/jira-config/queues.md`.
-- **T-M6-02** [owner:jira-admin] [deps:T-M5-*] Build dashboards listed in
-  `specs/outcome-roadmap.md`. Evidence: dashboard IDs and screenshots
-  in `evidence/jira-config/dashboards.md`.
+- **T-R-CI-02** [owner:script-eng] [deps:T-R-CI-01]
+  Add a nightly job that runs `npm run infra:verify` against live
+  staging with a dedicated CI credential (if the operator provides
+  one) or marks itself `skipped` on missing auth.
 
-## Milestone M7 — Docs, runbook, release checklist
+## Phase 10 — Final proof
 
-- **T-M7-01** [owner:docs-writer] [deps:T-M4-*] Update
-  `docs/INTEGRATION.md` to the final deploy/install flow.
-- **T-M7-02** [owner:docs-writer] [deps:T-M3-03] Update
-  `docs/MVP_RUNBOOK.md` to reflect imported rules and validated agents.
-- **T-M7-03** [owner:docs-writer] [deps:T-M5-*] Update
-  `docs/PORTABILITY.md` with verified steps for cloning from staging to
-  another site.
-- **T-M7-04** [owner:docs-writer] [deps:T-M1-03] Create
-  `docs/TROUBLESHOOTING.md` (Rovo UI vs Forge install, log recipes,
-  Automation audit log).
-- **T-M7-05** [owner:docs-writer] [deps:T-M3-03] Create
-  `docs/RELEASE_CHECKLIST.md` for future manifest/prompt changes.
-- **T-M7-06** [owner:docs-writer] [deps:*] Keep `README.md` section links
-  current.
+- **T-F-01** [owner:lead] [deps:everything above]
+  Run:
+  ```
+  rm -rf evidence/
+  npm run infra:plan
+  npm run infra:apply
+  npm run infra:apply            # idempotency proof
+  npm run infra:verify
+  ```
+  Every command exits 0 on the second attempt. `evidence/` rebuilds
+  from scripts. Commit regenerated state.
 
-## Milestone M8 — Final verification & handoff
+- **T-F-02** [owner:safety-tester] [deps:T-F-01]
+  Full audit pass: run `scripts/audit/safety-snapshot.mjs` against
+  the final state and attach to `evidence/safety/final.json`.
 
-- **T-M8-01** [owner:qa-verifier] [deps:T-M1..T-M7 all completed]
-  Run every row in `VERIFICATION_MATRIX.md` sequentially; pipe output to
-  `evidence/final-verification.log`.
-- **T-M8-02** [owner:safety-reviewer] [deps:T-M8-01]
-  Full re-read of every prompt in `prompts/`, every rule in
-  `automation/rules/`, and every `policies/*.md`. Produce
-  `evidence/safety/final-audit.md` with sign-off or objections.
-- **T-M8-03** [owner:architect] [deps:T-M8-02]
-  Write `evidence/DONE.md` with pointers to every evidence file and a
-  concise summary of the end state.
-- **T-M8-04** [owner:lead] [deps:T-M8-03]
-  Post handoff message to the human operator; await instruction to clean
-  up the team. Do **not** run cleanup autonomously; cleanup requires
-  explicit human approval.
+- **T-F-03** [owner:iac-architect] [deps:T-F-01, T-F-02]
+  `evidence/DONE.json` is produced by `npm run infra:verify` only
+  when every VM row is green or marked
+  `unsupported-by-platform` with a matching blocker file. Commit.
 
-## Continuous / non-milestone tasks
+- **T-F-04** [owner:lead] [deps:T-F-03]
+  Post handoff summary to the operator. Wait for explicit "clean up"
+  before cleaning up the team.
 
-- **T-CX-01** [owner:docs-writer] Keep `STATUS.md` refreshed every ~20
-  minutes. Never complete; remains `in progress` for the mission.
-- **T-CX-02** [owner:safety-reviewer] Review every diff that lands on
-  `main`. Opens objections as child tasks on the offending parent.
-- **T-CX-03** [owner:qa-verifier] Re-run the VM-LOCAL-GATES at least once
-  per milestone transition; append to `evidence/gates/rolling.log`.
-- **T-CX-04** [owner:lead] Watch for hook feedback (TaskCompleted,
-  TeammateIdle); react within the next tick.
+## Continuous
+
+- **T-CX-STATUS** [owner:lead] Never completes; update every ~20
+  minutes.
+- **T-CX-SAFETY** [owner:safety-tester] Never completes; review every
+  diff on `main`.
+- **T-CX-EVIDENCE** [owner:script-eng] Never completes; ensure every
+  new file under `evidence/` has a `generated_by` header.

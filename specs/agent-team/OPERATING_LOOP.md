@@ -1,128 +1,107 @@
-# Operating Loop
+# Operating Loop (v2)
 
-The team runs the following loop forever until a stop condition in
-`MISSION.md` is met. Each pass is a "tick". Ticks are not timed; they are
-defined by the **state of the shared task list**.
+The team runs this loop forever until a stop condition in
+`REVIEW_MISSION.md` is met. Each pass is a "tick" and is defined by the
+state of the shared task list + the `evidence/` tree.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│  TICK                                                           │
-│                                                                  │
-│  1. PLAN     → lead re-reads TASK_BOARD.md + STATUS.md + the    │
-│                shared task list; creates/unblocks/reassigns.     │
-│                                                                  │
-│  2. BUILD    → owners claim unblocked tasks; produce diffs,     │
-│                Jira changes, docs, evidence.                    │
-│                                                                  │
-│  3. VERIFY   → qa-verifier runs the commands from               │
-│                VERIFICATION_MATRIX.md; appends results to       │
-│                evidence/. Tasks are *not* complete until        │
-│                evidence exists.                                  │
-│                                                                  │
-│  4. REVIEW   → safety-reviewer + architect cross-read each      │
-│                completed task; raise objections as child tasks. │
-│                                                                  │
-│  5. LEARN    → lead updates STATUS.md; decides whether to       │
-│                spawn specialist agents, rebalance, or escalate. │
-│                                                                  │
-│  6. LOOP     → back to PLAN. No idle stop. The lead never       │
-│                declares "done" until DONE.md exists with green  │
-│                final verification.                              │
-└─────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────┐
+│  TICK                                                          │
+│                                                                 │
+│  1. AUDIT   → lead re-runs `npm run audit` (or specific audit  │
+│               scripts) to refresh the delta picture.           │
+│                                                                 │
+│  2. PLAN    → lead walks the fresh audit + TASK_BOARD.md and   │
+│               updates the shared task list (unblocks, assigns, │
+│               splits, closes).                                 │
+│                                                                 │
+│  3. BUILD   → owners claim unblocked tasks and produce         │
+│               scripts, declarations, tests, and docs. No       │
+│               hand-written evidence.                           │
+│                                                                 │
+│  4. APPLY   → the owning teammate runs the relevant            │
+│               `scripts/infra/*-apply.mjs`. Idempotency tested  │
+│               immediately by re-running and asserting no delta.│
+│                                                                 │
+│  5. VERIFY  → `npm run infra:verify` or a focused subset       │
+│               produces JSON; the owning teammate reads it.     │
+│                                                                 │
+│  6. REVIEW  → safety-tester + iac-architect cross-check the    │
+│               diff. File findings as new tasks.                │
+│                                                                 │
+│  7. LEARN   → lead updates STATUS.md. Decides whether to spawn │
+│               a specialist or rebalance.                       │
+│                                                                 │
+│  8. LOOP    → next tick.                                       │
+└────────────────────────────────────────────────────────────────┘
 ```
 
 ## Tick invariants
 
-The lead **must** enforce these before starting the next tick. If any fails,
-the next tick is entirely a remediation tick.
+Before starting the next tick the lead confirms:
 
-1. The working tree is either clean or has a single in-flight teammate's
-   edits that were announced in the mailbox.
-2. No commit on `HEAD~..HEAD` lacks a linked task id.
-3. `STATUS.md` is updated or the lead posts a mailbox note explaining why
-   (e.g. "all teammates busy; next update after verify").
-4. No teammate has been idle without work (see TeammateIdle hook in
-   `QUALITY_GATES.md`).
-5. Every task that moved to `completed` this tick has an `evidence/` entry.
-6. `evidence/safety-refusals.md` is empty, or a new entry was reviewed by
-   `safety-reviewer`.
+1. No uncommitted changes the in-flight teammate did not announce.
+2. Every task marked `completed` this tick has a file under
+   `evidence/` produced by a script and referenced by task id.
+3. No teammate is idle. If the board is empty, the lead re-runs
+   `npm run infra:plan` and `npm run infra:verify` to surface drift;
+   any red row becomes a new task.
+4. `STATUS.md` is updated or explicitly deferred in the mailbox.
+5. `evidence/safety-refusals.json` is either absent or has been read
+   by `safety-tester` this tick.
 
-## Milestone sequencing (dependency gates)
+## Convergence rules
 
-The task board in `TASK_BOARD.md` partitions work into eight milestones.
-The team may work on later milestones in parallel when the specific
-dependencies below are satisfied; otherwise the lead must keep later work
-blocked.
+- **Declaration-first.** Apply scripts read from `infra/`. Anything not
+  declared is not applied. To add a Jira resource, edit the YAML first,
+  open the apply task second.
+- **Plan before apply.** Every significant apply (new workflow, new
+  rule, destructive action) runs `*-plan.mjs` first; the output is
+  attached to the task as evidence of intent.
+- **Idempotency is a release-blocker.** If `*-apply.mjs` mutates on the
+  second consecutive run without a declaration change, the task is
+  reopened until fixed.
+- **Red VM row blocks dependent tasks.** The lead does not close a
+  milestone while any VM row for that milestone is red or unmeasured.
 
-```
-M0 Repo Baseline & CI
-  └─► M1 Forge Deploy & Rovo Visibility (staging)
-        └─► M2 AIGO Project Configuration (issue types, workflows, screens)
-              └─► M3 Jira Automation Import & Validation
-              └─► M4 Primary Agent Manual Validation (6 agents)
-                    └─► M5 Outcome Workflows 1–10 (parallel tracks)
-                          └─► M6 Dashboards, Queues, Filters
-                                └─► M7 Docs, Runbooks, Release Checklist
-                                      └─► M8 Final Verification & Handoff
-```
+## Anti-stall rules (what went wrong in v1)
 
-Parallelization rules:
+- **No manual fallbacks.** If a teammate proposes
+  "ask the operator to …" as an acceptance bullet, the lead rejects
+  the plan and asks them to replace it with a script + exit code.
+- **No speculative evidence.** Teammates do not write
+  `evidence/*.md` by hand. They write a script; the script writes the
+  file. `TaskCompleted` hook enforces this.
+- **No paste-capture evidence.** Screenshots, pasted navigation paths,
+  and UI descriptions are rejected.
+- **No "verify by reading."** A verifier script must diff and assert,
+  not describe.
+- **No stuck teammate.** If a teammate is blocked on an unknown Jira
+  REST endpoint for > 15 active minutes, the lead spawns a
+  `jira-rest-spike` teammate whose task is only to prove the endpoint
+  (commit a `scripts/lib/jira.mjs` method) and then shut down.
 
-- `M4` and `M3` may run in parallel once `M2` unblocks them.
-- Within `M5`, the 10 outcome tracks may run in parallel, one owner per
-  track when possible (distribute across `forge-engineer`, `jira-admin`,
-  `automation-eng`).
-- `docs-writer` runs continuously from `M0`; they do not wait for the final
-  milestone.
-- `safety-reviewer` is always active; they hook into every PR-equivalent
-  commit.
+## Escalation (when to ping the human)
 
-## Escalation protocol
+Escalate in-chat (but keep working on other tasks) when:
 
-When a teammate hits an ambiguous or destructive decision:
+- A Jira capability is provably missing from REST (exit code 5 from a
+  verifier) and blocks a VM row. Attach the script output. Continue
+  with other tasks.
+- A safety-contract conflict appears in the operator's request. Refuse
+  in-chat, log, continue.
+- A destructive apply is required to converge. Post the plan; wait for
+  `AIGO_HUMAN_APPROVED=<task-id>` instead of silent consent.
 
-1. Write the question to the lead's mailbox with `#decision-needed` and a
-   proposed default.
-2. The lead consults `MISSION.md` safety contract + the task acceptance
-   criteria + the roadmap. If the default is safe, the lead approves and
-   logs under `evidence/decisions/`.
-3. If unclear, the lead pings the human operator in the main chat and
-   **does not wait** — the lead parks that specific task (status =
-   `blocked-human`) and keeps other work moving.
-4. The team continues even when a subset of tasks is parked. The lead only
-   halts the loop when no unblocked tasks remain *and* at least one
-   `blocked-human` exists. See Stop conditions in `MISSION.md`.
+Never halt the whole team on one escalation. Park the specific task,
+keep moving on everything else.
 
-## Anti-stall rules
+## Definition of milestone complete
 
-These are the behaviours the team most commonly drifts into; the lead must
-counter each with the stated action.
+A milestone is complete when:
 
-- **Lead does work instead of delegating.** If the lead finds itself
-  editing `src/` or calling Jira directly for anything other than CI/CD
-  orchestration or evidence capture, it must stop and reassign. The only
-  files the lead owns directly are `STATUS.md` and `evidence/index.md`.
-- **Teammate runs long without check-ins.** A task larger than ~90 minutes
-  of wall-clock activity must be subdivided by the owner + `architect`.
-- **Teammate marks done without evidence.** The `TaskCompleted` hook
-  rejects the transition (exit code 2) unless
-  `evidence/<task-id>/` contains at least one file.
-- **False green.** If `qa-verifier` sees tests passing but no behavioural
-  evidence (e.g. unit test passes but no Jira smoke), they open a child
-  task `"Add behavioural coverage for <X>"` and block the parent.
-- **Same file, two teammates.** See `TEAM_CHARTER.md` parallel-work rules.
-
-## How tasks are created
-
-The lead seeds the shared task list from `TASK_BOARD.md` at startup. After
-that, tasks may also be created by:
-
-- `architect` when a design gap is discovered.
-- `qa-verifier` when a verification fails (child task on the parent).
-- `safety-reviewer` when a safety concern is raised.
-- Any teammate via mailbox request to the lead; the lead decides whether
-  to accept.
-
-Every task must have: a short title, owner tag, dependency list,
-acceptance evidence path, and a link back to `VERIFICATION_MATRIX.md` row
-when applicable.
+- All its tasks are `completed` with scripted evidence.
+- Every VM row touching that milestone is green or
+  `unsupported-by-platform` with a blocker file.
+- `iac-architect` posts a one-paragraph milestone summary to the lead;
+  lead updates `STATUS.md`.

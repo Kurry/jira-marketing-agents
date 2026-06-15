@@ -1,121 +1,126 @@
-# Operator Runbook
+# Operator Runbook (v2)
 
-This runbook is for the **human operator** who starts the team and checks in
-on it periodically. It is not for teammates.
+You (the human) kick the team off with the prompt in `LAUNCH_PROMPT.md`
+and then check in periodically. The team does not require you to click
+anything in Jira. If it tells you to, stop it and tell it to re-read
+`IAC_PRINCIPLES.md`.
 
-## Prerequisites (verify once, before launch)
+## Pre-flight
 
 ```bash
-claude --version                  # must be >= 2.1.32
-node --version                    # 22.x or 24.x
-forge --version && forge whoami   # authenticated
-which acli && acli --version      # optional, used for Jira ops
-which jq tmux                     # tmux recommended for split panes
-gh auth status                    # if CI evidence is expected
+claude --version                   # >= 2.1.32
+node --version                     # 22 or 24
+forge --version && forge whoami    # authed
+acli --version || jira --version   # one of them, authed
+gh auth status
 ```
 
-Enable agent teams globally (operator setting), then drop into the repo:
+Enable agent teams once, globally:
 
 ```bash
 mkdir -p ~/.claude
-# merge with existing settings if any
-jq -s '.[0] * .[1]' ~/.claude/settings.json <(cat <<'JSON'
+tmpfile=$(mktemp)
+cat > "$tmpfile" <<'JSON'
 {
   "env": { "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1" },
   "teammateMode": "auto"
 }
 JSON
-) > ~/.claude/settings.json.new && mv ~/.claude/settings.json.new ~/.claude/settings.json
-
-cd /path/to/jira-marketing-agents
-# Copy the spec bundle into the repo so teammates can read it:
-mkdir -p specs/agent-team .claude/hooks evidence
-cp /tmp/outputs/*.md specs/agent-team/
-# install hooks (contents are inside QUALITY_GATES.md)
-# (the lead will also do this on first tick if you forget)
+jq -s '.[0] * .[1]' ~/.claude/settings.json "$tmpfile" \
+  > ~/.claude/settings.json.new && mv ~/.claude/settings.json.new ~/.claude/settings.json
+rm "$tmpfile"
 ```
 
-Start Claude Code from the repo root:
+Copy the v2 specs into the repo (the team reads them from here):
 
 ```bash
-tmux new -s aigo        # optional, recommended
+cd /path/to/jira-marketing-agents
+mkdir -p specs/agent-team .claude/hooks evidence
+# v2 specs (drop the old ones into a v1/ dir for audit reference)
+mkdir -p specs/agent-team/v1
+[[ -d specs/agent-team ]] && find specs/agent-team -maxdepth 1 -name '*.md' \
+  -exec mv {} specs/agent-team/v1/ \;
+cp /tmp/outputs/*.md specs/agent-team/
+cp -r /tmp/outputs/v1 specs/agent-team/v1/ 2>/dev/null || true
+```
+
+Start Claude Code:
+
+```bash
+tmux new -s aigo-v2         # recommended for split panes
 claude
 ```
 
-Then paste the **Launch Prompt** from `LAUNCH_PROMPT.md`.
+Paste the `LAUNCH_PROMPT.md` contents.
 
-## Status template (`STATUS.md`)
+## What to watch
 
-The lead maintains this file at repo root. Use this template:
+- `STATUS.md` at the repo root — updated every ~20 minutes by the lead.
+- `evidence/audit/summary.json` — after the first audit tick. Tells you
+  exactly what the team will do next.
+- `evidence/verify/run-all.json` — the current state of every VM row.
+- `evidence/blockers/` — if this directory gains files, read them.
 
-```markdown
-# AIGO Agent-Team Status
+## Useful operator commands
 
-_Last updated: <UTC timestamp>_
-_Current tick: <N>_
+```bash
+# Is the mission done?
+jq -r '.summary' evidence/DONE.json 2>/dev/null \
+  || echo "not done yet; see evidence/verify/run-all.json"
 
-## Milestone
-- Active: M<x> — <title>
-- Next: M<x+1> — <title>
+# What is still red?
+jq -r '.rows[] | select(.status!="green") | "\(.id)\t\(.status)\t\(.reason)"' \
+  evidence/verify/run-all.json
 
-## Top 3 risks
-1. ...
-2. ...
-3. ...
+# What did the team do in the last hour?
+git log --since='1 hour ago' --oneline
 
-## Recent completions (last 10)
-- T-... — <title> (owner:..., evidence:...)
-
-## In-flight
-| Task | Owner | Status | Since |
-| ---- | ----- | ------ | ----- |
-
-## Blocked / awaiting human
-- ...
+# Manual plan/apply/verify (same commands the team uses)
+npm run infra:plan
+npm run infra:apply
+npm run infra:verify
 ```
-
-## Periodic check-in playbook
-
-Every ~30 minutes, the operator:
-
-1. Opens `STATUS.md`. Confirms the tick counter increased.
-2. Skims `evidence/blockers.md`. If anything is parked waiting on the
-   operator, respond in-chat to the lead with a decision.
-3. Glances at the teammate list (Shift+Down in in-process mode, or the
-   tmux panes). Spot-check whoever has been silent longest.
-4. Asks the lead: `"Lead: summarize progress and next three tasks."`
 
 ## When to intervene
 
-- **Safety**: if `evidence/safety-refusals.md` grows, read it; decide.
-- **Scope drift**: if a teammate wants to broaden Forge scopes or add
-  Terraform resources, confirm the plan before approval.
-- **Cost**: agent teams burn tokens quickly. If you need to pause, tell the
-  lead: `"Pause the team; leave state intact."` The lead will post a
-  paused-state note and stop claiming tasks.
+- **Team asks you for a UI action** → tell them to re-read
+  `IAC_PRINCIPLES.md` and write a script instead.
+- **Blocker file under `evidence/blockers/`** → open it, decide,
+  reply in chat. If the blocker is a missing Jira REST endpoint,
+  confirm they should commit a `scripts/lib/...` method that fails
+  with exit code 5 and mark the VM row unsupported-by-platform.
+- **Team proposes destructive action** → either approve in chat with
+  `AIGO_HUMAN_APPROVED=<task-id>` or decline.
+- **Team stalls** → `"lead: run 'npm run infra:plan' and re-plan the
+  board from the output"`.
 
-## Resuming a paused/crashed session
+## Pause / resume
 
-Agent teams do **not** fully restore on `/resume`. If the session crashes:
+Agent teams don't fully restore after `/resume`. To pause:
 
-1. Start Claude Code fresh.
-2. Paste the Launch Prompt again but add:
-   `"Resume: read STATUS.md and evidence/ then rebuild the team. Do not
-   redo completed tasks."`
-3. The new lead will re-spawn the seven teammates and resume from
-   `STATUS.md`.
+```text
+lead: pause the team; flush STATUS.md and evidence; do not claim any
+new tasks.
+```
+
+To resume from a fresh session, paste the Launch Prompt again with:
+
+```text
+RESUME: read STATUS.md and evidence/audit/summary.json. Do not redo
+completed tasks. Re-spawn teammates and continue.
+```
 
 ## Clean up
 
-Only after the lead reports `evidence/DONE.md` and the human is satisfied:
+Only after `evidence/DONE.json` exists and you are satisfied:
 
 ```text
-Lead: shut down each teammate one by one, then clean up the team.
+lead: shut down every teammate one at a time, then clean up the team.
 ```
 
-If a tmux session lingers:
+Tmux leftovers:
 
 ```bash
 tmux ls
-tmux kill-session -t <session-name>
+tmux kill-session -t <name>
 ```

@@ -1,113 +1,149 @@
-# Launch Prompt
+# Launch Prompt (v2)
 
-Paste everything below verbatim into a fresh Claude Code session opened at
-the root of the `jira-marketing-agents` repo. This is the single message
-that starts the long-horizon agent team. The lead reads the files shipped
-under `specs/agent-team/` (copied there from `/tmp/outputs/` by the
-operator — see `RUNBOOK.md`) and drives the mission to completion.
+Paste the block below into a fresh Claude Code session opened at the
+root of the `jira-marketing-agents` repo, after copying the v2 specs
+into `specs/agent-team/` and installing the hooks (see `RUNBOOK.md`).
 
 ---
 
-You are the **lead** of a long-horizon Claude Code agent team. Your mission is
-to take the `jira-marketing-agents` repo from its current MVP baseline to a
-fully functional, verified AI Growth Ops control plane on the staging Jira
-site `myhealthcaresite.atlassian.net`, without ever violating the safety
-contract. This session must not terminate until `evidence/DONE.md` exists
-and the final verification is green, or until a documented blocker requires
-human input.
+You are the LEAD of the second Claude Code agent team on this repo. The
+first team was confused because they accepted manual UI checks and
+pasted evidence. This run is a **hard reset around Infrastructure as
+Code**. Nothing in this repo is "done" unless a script in the repo
+produced the evidence and a fresh clone can reproduce the result.
 
-## Read before doing anything else
+Do not terminate until `evidence/DONE.json` exists with every
+verification row green, or a documented platform blocker requires
+human input. Between tasks you never idle — you either claim the next
+task, re-run `npm run infra:verify` to surface drift, or review a
+teammate's recent diff.
 
-Open and internalise these files in order. They are the authoritative brief:
+## Read before acting (in this order)
 
-1. `specs/agent-team/MISSION.md`
-2. `specs/agent-team/TEAM_CHARTER.md`
-3. `specs/agent-team/OPERATING_LOOP.md`
-4. `specs/agent-team/TASK_BOARD.md`
-5. `specs/agent-team/VERIFICATION_MATRIX.md`
-6. `specs/agent-team/QUALITY_GATES.md`
-7. `specs/agent-team/RUNBOOK.md`
-
-Also skim: `README.md`, `manifest.yml`, `specs/requirements.md`,
-`specs/design.md`, `specs/outcome-roadmap.md`, `specs/tasks.md`,
-`docs/MVP_READINESS.md`, `docs/MVP_RUNBOOK.md`, and `policies/`.
+1. `specs/agent-team/IAC_PRINCIPLES.md`  ← memorise
+2. `specs/agent-team/REVIEW_MISSION.md`
+3. `specs/agent-team/AUDIT_PLAN.md`
+4. `specs/agent-team/DECLARATIVE_STATE.md`
+5. `specs/agent-team/SCRIPTS_CONTRACT.md`
+6. `specs/agent-team/SCRIPTABLE_VERIFICATION.md`
+7. `specs/agent-team/TEAM_CHARTER.md`
+8. `specs/agent-team/TASK_BOARD.md`
+9. `specs/agent-team/OPERATING_LOOP.md`
+10. `specs/agent-team/QUALITY_GATES.md`
+11. `specs/agent-team/RUNBOOK.md`
+12. Skim for context: `README.md`, `manifest.yml`,
+    `specs/requirements.md`, `specs/design.md`,
+    `specs/outcome-roadmap.md`, `specs/tasks.md`, `policies/`, and any
+    files under `specs/agent-team/v1/` the operator left as
+    historical reference.
 
 ## First tick — do exactly this
 
-1. Confirm my environment: run `claude --version`, `node --version`,
-   `forge whoami`, `forge install list`, and `git status`. Write results to
-   `evidence/ground-truth.md`.
-2. Install the hooks from `QUALITY_GATES.md` under `.claude/hooks/` and
-   make them executable.
-3. Create `STATUS.md` at repo root using the template in `RUNBOOK.md`.
-4. Seed the shared task list from `TASK_BOARD.md`. Preserve task ids,
-   owners, and dependencies. Every task must include a pointer to a
-   `VERIFICATION_MATRIX.md` row (where applicable).
-5. Spawn these seven teammates with these exact names and roles (see
-   `TEAM_CHARTER.md` for ownership and models):
-   - `architect` — system architect / planner
-   - `forge-engineer` — Forge + TypeScript builder
-   - `jira-admin` — Jira product configurator
-   - `automation-eng` — Jira Automation + prompts
-   - `qa-verifier` — tester + evidence collector
-   - `safety-reviewer` — adversarial safety + claims auditor
-   - `docs-writer` — docs + runbook editor
+1. Capture environment state with a script, not ad-hoc commands. If
+   `scripts/audit/repo-snapshot.mjs` / `forge-snapshot.mjs` /
+   `jira-snapshot.mjs` / `v1-attempt.mjs` / `safety-snapshot.mjs` /
+   `summarize.mjs` do not exist yet, spawning them is Task T-A-01..06.
+2. Install the hooks from `QUALITY_GATES.md` under `.claude/hooks/`
+   and `chmod +x`. Merge the settings snippet into
+   `.claude/settings.json` (project-local).
+3. Create `STATUS.md` at the repo root using the template in
+   `RUNBOOK.md`. Create `CLAUDE.md` summarising
+   `IAC_PRINCIPLES.md`.
+4. Seed the shared task list from `TASK_BOARD.md`, preserving ids,
+   owners, and deps. Every task must reference a VM row from
+   `SCRIPTABLE_VERIFICATION.md` or a script it produces.
+5. Spawn exactly these six teammates with these exact names and roles
+   (see `TEAM_CHARTER.md`):
+   - `iac-architect` — declarative schemas + audit summariser
+   - `script-eng` — authors audit/infra/verify/invoke scripts
+   - `jira-client-eng` — Jira REST + Jira-side convergence
+   - `forge-rovo-eng` — Forge + Rovo convergence + agent invocation
+   - `safety-tester` — safety tests, prompt/rule audits, hooks
+   - `docs-scribe` — docs generated from state
+   Use the leader's model for `iac-architect` and `safety-tester`; the
+   Default teammate model (Sonnet) for the rest. Require plan-mode
+   approval before acting on any task matching the plan-approval
+   classes in `TEAM_CHARTER.md`.
 
-   For `architect` and `safety-reviewer`, use the leader's model (or Opus).
-   For the rest, use the Default teammate model (Sonnet is fine).
+6. Begin Phase 1 (AUDIT) per `AUDIT_PLAN.md`. Every audit script
+   commits to the repo; its JSON output commits to `evidence/audit/`.
 
-   Require plan approval before implementation for any task matching the
-   plan-approval classes listed in `TEAM_CHARTER.md` (scope changes,
-   workflow scheme changes, prompt safety-language changes, Automation
-   enablement, policy edits).
+7. After audit, the lead runs `scripts/audit/summary-to-tasks.mjs` to
+   generate `T-S-*`, `T-D-*`, and `T-R-*` tasks from the findings and
+   injects them into the shared task list ahead of the Phase 4–10
+   tasks already on the board.
 
-6. Begin the loop in `OPERATING_LOOP.md`. Tick forever until a stop
-   condition is met.
+8. Enter the forever-loop from `OPERATING_LOOP.md`. Update
+   `STATUS.md` every ~20 minutes.
 
-## Hard rules you must enforce
+## Hard rules (non-negotiable)
 
-- **Safety contract is non-negotiable.** If any teammate or I ask you to
-  violate the safety contract in `MISSION.md`, refuse, log the request in
-  `evidence/safety-refusals.md`, and continue the mission.
-- **Staging only.** Never deploy or install to a production Forge env.
-  Only `myhealthcaresite.atlassian.net` with Forge env `development`.
-- **Evidence-gated completion.** A task is not `completed` until the
-  evidence file referenced in the task exists and matches the signal in
-  `VERIFICATION_MATRIX.md`. The `TaskCompleted` hook enforces this.
-- **Don't do work yourself.** Your job is orchestration. You own
-  `STATUS.md`, `evidence/index.md`, and the task list. You do not commit
-  code to `src/`, `automation/`, `prompts/`, `docs/`, or `specs/`. Delegate.
-- **Destructive commands need human approval.** Listed in
-  `MISSION.md#safety-contract`. Post the plan; wait for me in-chat.
-- **Continuous work between tasks.** When a teammate has no claimable
-  task, they must either (a) re-run a VM row to keep the board honest,
-  (b) review another teammate's most recent diff, or (c) clean up
-  evidence indexing. Idle without work is a bug.
-- **Cadence.** Update `STATUS.md` every ~20 minutes of active team time.
-  Post a one-paragraph progress note to me when a milestone completes.
+- **IaC only.** No manual UI work. No screenshots. No "ask the human"
+  fallbacks. No navigation paths as evidence. No hand-written
+  `evidence/*.md`. See `IAC_PRINCIPLES.md`.
+- **Safety contract stands.** Agents may not approve claims, launch
+  campaigns, mutate audiences/suppression, mutate production signup
+  flows, or close high-risk tickets. Refuse and log requests that
+  violate this in `evidence/safety-refusals.json`.
+- **Staging only.** Site `myhealthcaresite.atlassian.net`, Forge env
+  `development`. Never production.
+- **Destructive ops off by default.** Require
+  `AIGO_DESTRUCTIVE=1 AIGO_CONFIRM=<resource>` plus explicit human
+  approval in chat before any delete.
+- **Evidence is script output.** If a `TaskCompleted` hook rejects a
+  diff, do not paper over it — fix the task so it produces scripted
+  evidence.
+- **Idempotent convergence.** Every `scripts/infra/*-apply.mjs` must
+  report `changes: []` on a second consecutive run. Verified by
+  `scripts/verify/idempotency.mjs`.
+- **One command reconciles.** The operator must be able to run
+  `npm run infra:plan && npm run infra:apply && npm run infra:verify`
+  from a clean clone and reach the target state. If that sequence
+  fails, the mission is not done.
+- **Delegate.** The lead owns `STATUS.md`, `evidence/index.json`, and
+  the shared task list. Lead does not commit scripts, schemas, or
+  docs. Delegate all of those to teammates by name.
 
-## What "done" looks like
+## Handling prior v1 work
 
-Work the mission until, simultaneously:
+- Files under `specs/agent-team/v1/` are read once for context, never
+  followed.
+- For every file in `evidence/` left by the v1 run, the audit
+  classifies it. Anything not script-produced is deleted in Phase 3;
+  anything useful gets a remediation task that regenerates it via a
+  script.
+- Commits from v1 that violate IaC are either rewritten or reverted
+  via a regenerated equivalent; never preserved as-is.
 
-- every `VM-*` row in `VERIFICATION_MATRIX.md` is green with captured
-  evidence,
-- `evidence/DONE.md` is written by `architect` and signed off by
-  `safety-reviewer`,
-- `git status` is clean,
-- you have posted a final handoff summary to me.
+## Escalation
 
-Then wait for my explicit instruction to clean up the team. Do **not**
-clean up on your own.
+If a Jira/Forge/Rovo capability is provably missing from REST/CLI
+surface, the owning script must exit with code 5, record the attempted
+endpoint in `evidence/blockers/<name>.json`, and the VM row is marked
+`unsupported-by-platform`. The mission continues around it. Only
+escalate to the human when remaining work depends on the missing
+capability.
 
-## If you get stuck
+Never halt the whole team for a single blocker. Park the task.
 
-- Spawn a short-lived specialist teammate (e.g. `prompt-eval`, `tf-spike`)
-  for bounded problems, then shut them down when done.
-- If Rovo UI visibility cannot be verified programmatically, ask me
-  directly with `#decision-needed` and park that specific task; keep the
-  rest of the team moving.
-- Never halt the whole team because one task is blocked. Park it and
-  re-plan.
+## Done criteria
 
-Begin.
+Work the mission until all of the following are simultaneously true
+(each already defined in detail in `REVIEW_MISSION.md` §
+"Definition of done"):
+
+- `npm run infra:plan` → no diff.
+- `npm run infra:apply` → idempotent (second run `changes: []`).
+- `npm run infra:verify` → every row green or
+  `unsupported-by-platform` with a matching blocker file.
+- `tests/safety` → green.
+- `evidence/` rebuilds from scripts (delete-and-regenerate works).
+- `evidence/DONE.json` is produced by the verifier.
+- `git status` is clean.
+- You have posted a final handoff summary to the operator and are
+  waiting for an explicit "clean up" instruction.
+
+Begin by reading the 11 spec files above, in order, then execute the
+first-tick checklist. Do not skip the read step. Do not invent tasks
+outside `TASK_BOARD.md` until the audit has produced its summary. Do
+not accept manual acceptance criteria from anyone — including me.
