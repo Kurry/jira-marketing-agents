@@ -1,12 +1,12 @@
 # AIGO Agent-Team Status
 
-_Last updated: 2026-06-15T06:10Z_
-_Current tick: 22_
+_Last updated: 2026-06-15T10:10Z_
+_Current tick: 23_
 
 ## Milestone
 - Active: **M0-M2 ✓ · M6-filters ✓ · IaC ✓ · docs ✓ · safety-final-audit ✓ · DONE.md ✓ — awaiting operator: T-M3-02, T-M6-02, T-M1-04, T-M4-01..06**
 - M0 ✓ · M1 ✓ · M2 ✓ · M6-filters ✓ · IaC layer ✓ · docs ✓ · T-M8-01 ✓ (partial) · T-M8-02 ✓ · T-M8-03 ✓
-- Tests: **838 passing** (52 files) — unit + integration-mock (nock) — **build clean (0 TS errors)**
+- Tests: **838 unit + 90 integration passing** (52 files) — build clean (0 TS errors) — all src/ modules covered
 - Issue types: all 14 canonical live (IDs 10048-10061) ✓
 - Seeds: all 15 retyped to canonical types; all 14 types covered ✓
 - Safety: **T-M8-02 signed off** — evidence/safety/final-audit.md (PASS) ✓
