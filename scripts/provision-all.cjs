@@ -425,7 +425,21 @@ async function main() {
   }
 
   // -------------------------------------------------------------------------
-  // Step 11: Print manual steps
+  // Step 11: npm run check:rovo (Rovo agent visibility verification)
+  // -------------------------------------------------------------------------
+  const step11 = runNpmScript(
+    "Step 11: npm run check:rovo (verify Rovo agent count and install status)",
+    "check:rovo",
+    repoRoot
+  );
+  if (!step11.ok) {
+    console.error("\nFAIL at Step 11: Rovo agent visibility check.");
+    console.error("Run 'npm run check:rovo' for details. If agents are missing, re-deploy and re-install.");
+    process.exit(1);
+  }
+
+  // -------------------------------------------------------------------------
+  // Step 12: Print manual steps
   // -------------------------------------------------------------------------
   printManualSteps();
 

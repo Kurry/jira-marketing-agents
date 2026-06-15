@@ -196,6 +196,10 @@ Import rules**, then replace the documented placeholders. In short:
    - Employer Launch (created)
    - Weekly Readout (scheduled Monday 8 AM)
 
+**Saved Jira filters** for all seven operational queues are provisioned by
+`scripts/provision-filters.cjs` (idempotent). Filter details and IDs are in
+[`evidence/jira-config/queues.md`](evidence/jira-config/queues.md).
+
 ## 8. Custom fields guidance
 
 Custom field IDs are **instance-specific** and are not hard-coded. For the MVP,

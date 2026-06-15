@@ -1,14 +1,15 @@
 # AIGO Agent-Team Status
 
-_Last updated: 2026-06-15T06:20Z_
-_Current tick: 5_
+_Last updated: 2026-06-15T07:00Z_
+_Current tick: 6_
 
 ## Milestone
-- Active: **M2/M3 transition** — IaC provisioning fixed; awaiting 2 UI steps
-- M0 ✓ · M1 ✓ · M2 ✓ · IaC layer ✓ (fully corrected base URL + team-managed detection)
+- Active: **M6 in progress** — JQL filters live; awaiting operator UI steps to unblock M3/M4
+- M0 ✓ · M1 ✓ · M2 ✓ · M6 (filters) ✓ · IaC layer ✓
 - Tests: **421 passing** (39 files) — unit + integration-mock (nock)
 - Forge vars: 6 custom field IDs set (customfield_10043-10048) ✓
 - Field options: 24 options provisioned (Segment, Primary Metric, Claims Risk, Workflow Area) ✓
+- JQL filters: 7 created (IDs 10000-10006) — Intake, Claims Review, Launch Readiness, Readout Needed, Decision Needed, Blocked, Experiment Running ✓
 
 ## IaC provision-jira.cjs — now idempotent and correct
 Fixed bugs discovered this tick:
@@ -33,6 +34,12 @@ Once T-M2-03b done: T-M2-07 (seed import) → T-M3-02 (automation) → T-M4-01�
 1. **R-01 (Node v26):** forge CLI warns unsupported. All 421 tests pass. Low active risk.
 2. **R-03 (Rovo UI visibility):** All 19 agents in manifest; browser confirmation still pending (T-M1-04).
 3. **R-05 (Automation import scope):** `provision:automation` exits code 2 — admin scope needed. Workaround: operator imports via Jira UI.
+
+## Completed this tick
+| Task | Owner | Notes |
+| ---- | ----- | ----- |
+| T-M6-01 | jira-admin | 7 JQL filters created (IDs 10000-10006); evidence/jira-config/queues.md |
+| T-M7-05 | docs-writer | docs/RELEASE_CHECKLIST.md — already complete |
 
 ## In-flight
 | Task | Owner | Status |

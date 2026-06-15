@@ -20,6 +20,7 @@
     "provision:seeds": "node scripts/provision-seeds.cjs",
     "provision:automation": "node scripts/provision-automation.cjs",
     "provision:all": "node scripts/provision-all.cjs",
+    "check:rovo": "node scripts/check-rovo-visibility.cjs",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
