@@ -40,7 +40,8 @@
     "node": ">=22.0.0"
   },
   "dependencies": {
-    "@forge/api": "latest"
+    "@forge/api": "latest",
+    "jira.js": "^5.3.1"
   },
   "devDependencies": {
     "@types/node": "latest",

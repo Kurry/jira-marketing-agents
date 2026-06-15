@@ -1,0 +1,554 @@
+{
+  "generated_by": "scripts/audit/jira-snapshot.mjs",
+  "generated_at": "2026-06-15T14:30:32.204Z",
+  "git_sha": "70797ddf48dd667c6f4006a54aef3bb5a2374aa3",
+  "instance": "staging",
+  "exit_code": 0,
+  "data_source": "live",
+  "summary": "Jira snapshot [live]: project AIGO, 18 issue types, 8 custom fields, 7 filters, automation=api_unavailable",
+  "data": {
+    "project": {
+      "expand": "description,lead,issueTypes,url,projectKeys,permissions,insight",
+      "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/project/10000",
+      "id": "10000",
+      "key": "AIGO",
+      "description": "",
+      "lead": {
+        "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/user?accountId=557058:297f331c-0582-4201-8db9-72c7ec72bf14",
+        "accountId": "557058:297f331c-0582-4201-8db9-72c7ec72bf14",
+        "avatarUrls": {
+          "48x48": "https://secure.gravatar.com/avatar/cc442b285e3a2999d20e23a421ddcdf3?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FKT-2.png",
+          "24x24": "https://secure.gravatar.com/avatar/cc442b285e3a2999d20e23a421ddcdf3?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FKT-2.png",
+          "16x16": "https://secure.gravatar.com/avatar/cc442b285e3a2999d20e23a421ddcdf3?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FKT-2.png",
+          "32x32": "https://secure.gravatar.com/avatar/cc442b285e3a2999d20e23a421ddcdf3?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FKT-2.png"
+        },
+        "displayName": "Kurry Tran",
+        "active": true
+      },
+      "components": [],
+      "issueTypes": [
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10001",
+          "id": "10001",
+          "description": "Workstreams track a set of related work and activities that work towards a larger deliverable.",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10307?size=medium",
+          "name": "Workstream",
+          "subtask": false,
+          "avatarId": 10307,
+          "hierarchyLevel": 1
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10002",
+          "id": "10002",
+          "description": "A small, distinct piece of work.",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10318?size=medium",
+          "name": "Task",
+          "subtask": false,
+          "avatarId": 10318,
+          "hierarchyLevel": 0
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10003",
+          "id": "10003",
+          "description": "A small piece of work that's part of a larger task.",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10316?size=medium",
+          "name": "Sub-task",
+          "subtask": true,
+          "avatarId": 10316,
+          "hierarchyLevel": -1
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10048",
+          "id": "10048",
+          "description": "",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10321?size=medium",
+          "name": "AI Growth Request",
+          "subtask": false,
+          "avatarId": 10321,
+          "hierarchyLevel": 0
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10049",
+          "id": "10049",
+          "description": "",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10321?size=medium",
+          "name": "Creative Request",
+          "subtask": false,
+          "avatarId": 10321,
+          "hierarchyLevel": 0
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10050",
+          "id": "10050",
+          "description": "",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10321?size=medium",
+          "name": "Experiment",
+          "subtask": false,
+          "avatarId": 10321,
+          "hierarchyLevel": 0
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10051",
+          "id": "10051",
+          "description": "",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10321?size=medium",
+          "name": "Segmentation Request",
+          "subtask": false,
+          "avatarId": 10321,
+          "hierarchyLevel": 0
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10052",
+          "id": "10052",
+          "description": "",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10321?size=medium",
+          "name": "Personalization Journey",
+          "subtask": false,
+          "avatarId": 10321,
+          "hierarchyLevel": 0
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10053",
+          "id": "10053",
+          "description": "",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10321?size=medium",
+          "name": "Employer Launch",
+          "subtask": false,
+          "avatarId": 10321,
+          "hierarchyLevel": 0
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10054",
+          "id": "10054",
+          "description": "",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10321?size=medium",
+          "name": "Campaign",
+          "subtask": false,
+          "avatarId": 10321,
+          "hierarchyLevel": 0
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10055",
+          "id": "10055",
+          "description": "",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10321?size=medium",
+          "name": "Dashboard Request",
+          "subtask": false,
+          "avatarId": 10321,
+          "hierarchyLevel": 0
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10056",
+          "id": "10056",
+          "description": "",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10321?size=medium",
+          "name": "Signup Funnel Issue",
+          "subtask": false,
+          "avatarId": 10321,
+          "hierarchyLevel": 0
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10057",
+          "id": "10057",
+          "description": "",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10321?size=medium",
+          "name": "Research Brief",
+          "subtask": false,
+          "avatarId": 10321,
+          "hierarchyLevel": 0
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10058",
+          "id": "10058",
+          "description": "",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10321?size=medium",
+          "name": "Claims Review",
+          "subtask": false,
+          "avatarId": 10321,
+          "hierarchyLevel": 0
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10059",
+          "id": "10059",
+          "description": "",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10321?size=medium",
+          "name": "Decision Memo",
+          "subtask": false,
+          "avatarId": 10321,
+          "hierarchyLevel": 0
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10060",
+          "id": "10060",
+          "description": "",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10321?size=medium",
+          "name": "Positioning Update",
+          "subtask": false,
+          "avatarId": 10321,
+          "hierarchyLevel": 0
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10061",
+          "id": "10061",
+          "description": "Bugs track problems or errors.",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10303?size=medium",
+          "name": "Bug",
+          "subtask": false,
+          "avatarId": 10303,
+          "hierarchyLevel": 0
+        },
+        {
+          "self": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/issuetype/10062",
+          "id": "10062",
+          "description": "Stories track functionality or features expressed as user goals.",
+          "iconUrl": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/2/universal_avatar/view/type/issuetype/avatar/10315?size=medium",
+          "name": "Story",
+          "subtask": false,
+          "avatarId": 10315,
+          "hierarchyLevel": 0
+        }
+      ],
+      "assigneeType": "UNASSIGNED",
+      "versions": [],
+      "name": "AI Growth Ops",
+      "roles": {
+        "atlassian-addons-project-access": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/project/10000/role/10008",
+        "Administrator": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/project/10000/role/10005",
+        "jira-guest-member": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/project/10000/role/10009",
+        "Viewer": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/project/10000/role/10007",
+        "Member": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/project/10000/role/10006"
+      },
+      "avatarUrls": {
+        "48x48": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/universal_avatar/view/type/project/avatar/10415",
+        "24x24": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/universal_avatar/view/type/project/avatar/10415?size=small",
+        "16x16": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/universal_avatar/view/type/project/avatar/10415?size=xsmall",
+        "32x32": "https://api.atlassian.com/ex/jira/76683cc1-6501-400f-8b59-01eaad4418d2/rest/api/3/universal_avatar/view/type/project/avatar/10415?size=medium"
+      },
+      "projectTypeKey": "business",
+      "simplified": true,
+      "style": "next-gen",
+      "isPrivate": false,
+      "properties": {},
+      "entityId": "0341679d-bd1f-4eab-9fc1-4af2a7b2cab7",
+      "uuid": "0341679d-bd1f-4eab-9fc1-4af2a7b2cab7"
+    },
+    "issue_types": [
+      {
+        "id": "10001",
+        "name": "Workstream",
+        "subtask": false,
+        "hierarchyLevel": 1,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10002",
+        "name": "Task",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10003",
+        "name": "Sub-task",
+        "subtask": true,
+        "hierarchyLevel": -1,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10048",
+        "name": "AI Growth Request",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10049",
+        "name": "Creative Request",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10050",
+        "name": "Experiment",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10051",
+        "name": "Segmentation Request",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10052",
+        "name": "Personalization Journey",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10053",
+        "name": "Employer Launch",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10054",
+        "name": "Campaign",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10055",
+        "name": "Dashboard Request",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10056",
+        "name": "Signup Funnel Issue",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10057",
+        "name": "Research Brief",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10058",
+        "name": "Claims Review",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10059",
+        "name": "Decision Memo",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10060",
+        "name": "Positioning Update",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10061",
+        "name": "Bug",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      },
+      {
+        "id": "10062",
+        "name": "Story",
+        "subtask": false,
+        "hierarchyLevel": 0,
+        "scope": {
+          "type": "PROJECT",
+          "project": {
+            "id": "10000"
+          }
+        }
+      }
+    ],
+    "issue_types_source": "getIssueTypesForProject",
+    "custom_fields": [
+      {
+        "id": "customfield_10034",
+        "name": "Project",
+        "type": "atlas-project",
+        "custom": "com.atlassian.jira.plugin.system.customfieldtypes:atlas-project"
+      },
+      {
+        "id": "customfield_10037",
+        "name": "Design",
+        "type": "array",
+        "custom": "com.atlassian.jira.plugins.jira-development-integration-plugin:designcf"
+      },
+      {
+        "id": "customfield_10019",
+        "name": "Rank",
+        "type": "any",
+        "custom": "com.pyxis.greenhopper.jira:gh-lexo-rank"
+      },
+      {
+        "id": "customfield_10015",
+        "name": "Start date",
+        "type": "date",
+        "custom": "com.atlassian.jira.plugin.system.customfieldtypes:datepicker"
+      },
+      {
+        "id": "customfield_10040",
+        "name": "Category",
+        "type": "option",
+        "custom": "com.atlassian.jira.plugin.system.customfieldtypes:jwm-category"
+      },
+      {
+        "id": "customfield_10041",
+        "name": "Budget",
+        "type": "number",
+        "custom": "com.atlassian.jira.plugin.system.customfieldtypes:float"
+      },
+      {
+        "id": "customfield_10000",
+        "name": "Development",
+        "type": "any",
+        "custom": "com.atlassian.jira.plugins.jira-development-integration-plugin:devsummarycf"
+      },
+      {
+        "id": "customfield_10001",
+        "name": "Team",
+        "type": "team",
+        "custom": "com.atlassian.jira.plugin.system.customfieldtypes:atlassian-team"
+      }
+    ],
+    "filters": [
+      {
+        "id": "10005",
+        "name": "AIGO — Blocked",
+        "jql": null,
+        "owner": null
+      },
+      {
+        "id": "10001",
+        "name": "AIGO — Claims Review",
+        "jql": null,
+        "owner": null
+      },
+      {
+        "id": "10004",
+        "name": "AIGO — Decision Needed",
+        "jql": null,
+        "owner": null
+      },
+      {
+        "id": "10006",
+        "name": "AIGO — Experiment Running",
+        "jql": null,
+        "owner": null
+      },
+      {
+        "id": "10000",
+        "name": "AIGO — Intake",
+        "jql": null,
+        "owner": null
+      },
+      {
+        "id": "10002",
+        "name": "AIGO — Launch Readiness",
+        "jql": null,
+        "owner": null
+      },
+      {
+        "id": "10003",
+        "name": "AIGO — Readout Needed",
+        "jql": null,
+        "owner": null
+      }
+    ],
+    "automation": {
+      "status": "api_unavailable",
+      "http_status": 401
+    },
+    "failures": []
+  }
+}

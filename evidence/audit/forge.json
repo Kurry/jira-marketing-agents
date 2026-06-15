@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/audit/forge-snapshot.mjs",
-  "generated_at": "2026-06-15T14:21:35.315Z",
-  "git_sha": "b5b27649f7afbe0efd5740756193620642f4e598",
+  "generated_at": "2026-06-15T14:21:42.861Z",
+  "git_sha": "1ba8951ce3f3fb0d4fb9db203edcc5e3bff56b10",
   "instance": "staging",
   "exit_code": 0,
   "summary": "Forge app: Up-to-date on myhealthcaresite.atlassian.net, 19 agents, 22 actions",

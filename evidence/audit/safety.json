@@ -1,7 +1,7 @@
 {
   "generated_by": "scripts/audit/safety-snapshot.mjs",
-  "generated_at": "2026-06-15T14:22:30.738Z",
-  "git_sha": "36bf1fc45b9ae5f2ec8655a70defdf5b9d6e16b5",
+  "generated_at": "2026-06-15T14:23:48.509Z",
+  "git_sha": "80ff5461a0b14c2adaf226426d96f8d6649c5a3c",
   "instance": "staging",
   "exit_code": 0,
   "summary": "Safety snapshot OK: 3/3 hooks, 3/3 policies, 0 banned phrases, 2 allowlisted mutation(s)",

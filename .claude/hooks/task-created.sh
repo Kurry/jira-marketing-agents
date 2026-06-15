@@ -1,17 +1,27 @@
 #!/usr/bin/env bash
-# $1 = title, $2 = owner, $3 = deps, $4 = acceptance-path
+# Validates tasks on creation per QUALITY_GATES.md.
+# Args passed by Claude Code: $1 = task subject/title
 set -euo pipefail
 
-if [[ -z "${2:-}" ]]; then
-  echo "REJECT: task missing owner. Use owner:<teammate-name>." >&2
+TITLE="${1:-}"
+
+# Reject tasks with manual-UI language in the title
+if echo "$TITLE" | grep -Eiq 'paste|screenshot|navigate to|click|ui check|open jira|ask the (user|operator|human)'; then
+  echo "REJECT: task title contains banned manual-UI language." >&2
+  echo "IaC only — write a script instead of asking a human to click." >&2
   exit 2
 fi
 
-# Reject tasks that would widen Forge scopes without architect + safety
-# approval referenced in the description.
-if echo "$1" | grep -Eiq 'add.*scope|broaden.*permission'; then
+# Reject scope-widening tasks without a plan-approval reference
+if echo "$TITLE" | grep -Eiq 'add.*scope|broaden.*permission'; then
   echo "REJECT: scope changes require architect+safety plan approval." >&2
   echo "Open a plan-approval task instead and link it." >&2
+  exit 2
+fi
+
+# Reject tasks targeting production
+if echo "$TITLE" | grep -Eiq '\bprod(uction)?\b' | grep -Eiqv 'staging|development|dev'; then
+  echo "REJECT: task targets production. Staging only." >&2
   exit 2
 fi
 
