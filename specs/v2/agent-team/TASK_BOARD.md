@@ -12,6 +12,18 @@ Legend: `owner:<name>` matches [`TEAM_CHARTER.md`](TEAM_CHARTER.md);
 `vm:<row>` points to [`SCRIPTABLE_VERIFICATION.md`](SCRIPTABLE_VERIFICATION.md);
 `deps=*` means no dependency.
 
+## Required tooling — skill + ctx7 (not ready to claim without it)
+
+Every task that touches an Atlassian surface (Jira/JSM/JPD/Confluence/Assets/
+Forge/Rovo/Compass/Bitbucket/Analytics/Goals/Terraform) MUST name the skill(s)
+under `skills/` and the ctx7 topic it requires, per the canonical surface→skill→
+ctx7 mapping in [`_CONVENTIONS.md`](../_CONVENTIONS.md) §7. A task missing that
+`skill:` + `ctx7:` tag is **not ready to claim** — the owner cannot start until
+it is added. Per-task tags below reference the §7 per-task table rather than
+duplicating it; the `TaskCompleted` gate G-SKILL-CTX7
+([`QUALITY_GATES.md`](QUALITY_GATES.md)) rejects work that hardcodes an
+Atlassian API/CLI/GraphQL/manifest detail with no skill + ctx7 provenance.
+
 ## What changed from v1, and why
 
 The v1 board sequenced a bespoke `infra/` reconciler (Phase 4–5: per-resource
@@ -129,17 +141,23 @@ the roadmap. Sequencing is the load-bearing constraint:
 > wrapper/diff over its native owner, and the verify task is the real
 > deliverable. This is the NIH theme-3 resolution (`_CONVENTIONS.md §3`).
 
-| Roadmap item (see nih-roadmap.md) | Agent owner | Verify (vm) |
-| --- | --- | --- |
-| **T-NIH-03** ACLI capability inventory | jira-native-eng | VM-ACLI-INVENTORY |
-| **T-NIH-04** Golden-template clone validation | jira-native-eng | VM-GOLDEN-TEMPLATE |
-| **T-NIH-08** Purge internal/private endpoints from supported paths; documented `ATLASSIAN_TOKEN` auth | script-eng + safety-tester | VM-NO-INTERNAL-API |
-| **T-NIH-09** Golden template = source of truth; demote provisioning to clone-diff (deps T-NIH-04) | jira-native-eng | VM-GOLDEN-TEMPLATE |
-| **T-NIH-10** Reframe `infra/` plan/apply as read-only audit harness (deps T-NIH-03/04) | native-architect | VM-AUDIT-HARNESS |
-| **T-NIH-11** Segment/partner/service → JSM Assets; confidence/lift/discovery → JPD (deps T-NIH-05) | jira-native-eng | VM-NATIVE-ENTITIES |
-| **T-NIH-12** `@atlaskit/adf-utils` for ADF; JQL + native Duplicate links; JPD prioritization (behavior change — approval-gated) | forge-rovo-eng + safety-tester | VM-SRC-DELEGATION |
-| **T-NIH-13** Forge `--json` output instead of box-table parsing | forge-rovo-eng | VM-FORGE-JSON |
-| **T-NIH-14** Reconcile entity counts via the doc generator, not by hand (canonical model owns counts) | docs-scribe | VM-DOC-PARITY |
+Each row's **skill + ctx7 tag** is the per-task table in
+[`_CONVENTIONS.md`](../_CONVENTIONS.md) §7 ("Per-task tooling") — not restated
+here. The Atlassian-touching rows below (all except T-NIH-14) are **not ready to
+claim** until that tag is loaded; T-NIH-14 reconciles doc counts and touches no
+Atlassian surface, so it needs no skill/ctx7.
+
+| Roadmap item (see nih-roadmap.md) | Agent owner | Verify (vm) | Skill + ctx7 |
+| --- | --- | --- | --- |
+| **T-NIH-03** ACLI capability inventory | jira-native-eng | VM-ACLI-INVENTORY | §7 per-task |
+| **T-NIH-04** Golden-template clone validation | jira-native-eng | VM-GOLDEN-TEMPLATE | §7 per-task |
+| **T-NIH-08** Purge internal/private endpoints from supported paths; documented `ATLASSIAN_TOKEN` auth | script-eng + safety-tester | VM-NO-INTERNAL-API | §7 per-task |
+| **T-NIH-09** Golden template = source of truth; demote provisioning to clone-diff (deps T-NIH-04) | jira-native-eng | VM-GOLDEN-TEMPLATE | §7 per-task (as T-NIH-04) |
+| **T-NIH-10** Reframe `infra/` plan/apply as read-only audit harness (deps T-NIH-03/04) | native-architect | VM-AUDIT-HARNESS | §7 per-task |
+| **T-NIH-11** Segment/partner/service → JSM Assets; confidence/lift/discovery → JPD (deps T-NIH-05) | jira-native-eng | VM-NATIVE-ENTITIES | §7 per-task |
+| **T-NIH-12** `@atlaskit/adf-utils` for ADF; JQL + native Duplicate links; JPD prioritization (behavior change — approval-gated) | forge-rovo-eng + safety-tester | VM-SRC-DELEGATION | §7 per-task |
+| **T-NIH-13** Forge `--json` output instead of box-table parsing | forge-rovo-eng | VM-FORGE-JSON | §7 per-task |
+| **T-NIH-14** Reconcile entity counts via the doc generator, not by hand (canonical model owns counts) | docs-scribe | VM-DOC-PARITY | none (no Atlassian surface) |
 
 Each task's acceptance lives in `nih-roadmap.md`; the agent-team addendum for
 every row: (1) evidence is script-generated with a `generated_by` header;
@@ -170,6 +188,12 @@ For each resource category, one apply wrapper + one verify script:
 | Seeds           | `scripts/infra/jira-seeds-apply.mjs`           | `scripts/verify/jira-seeds.mjs`      | VM-JIRA-SEEDS       |
 | Automation      | `scripts/infra/automation-apply.mjs`           | `scripts/verify/automation-audit.mjs`| VM-AUTOMATION-*     |
 | Rovo derivation | `scripts/infra/rovo-derive.mjs`                | `scripts/verify/rovo-agents.mjs`     | VM-ROVO-*           |
+
+Every Phase-5 row touches an Atlassian surface, so each `T-R-P5-<resource>` task
+carries the skill + ctx7 tag from [`_CONVENTIONS.md`](../_CONVENTIONS.md) §7
+(Jira rows → `jira-acli` / `jira-cloud-rest`; Automation/Rovo rows →
+`rovo-studio-agents` / `forge-rovo-eng` skills) and is not ready to claim
+without it.
 
 One `T-R-P5-<resource>` task per row, owned by `jira-native-eng` (Jira rows) or
 `forge-rovo-eng` (Rovo/Forge rows), with `script-eng` as reviewer. Each is

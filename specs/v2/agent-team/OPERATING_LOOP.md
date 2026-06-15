@@ -22,28 +22,36 @@ through native owners (ACLI, golden-template clone, Forge) — the `infra/` scri
 │               updates the shared task list (unblocks, assigns,    │
 │               splits, closes). Names the native owner per task.   │
 │                                                                   │
-│  3. BUILD   → owners claim unblocked tasks and produce native     │
+│  3. TOOL-UP → before touching ANY Atlassian surface, the owner    │
+│               loads the matching skill under `skills/` and        │
+│               verifies the API/CLI/GraphQL/manifest specifics      │
+│               against current docs via Context7 (ctx7). Never      │
+│               code Atlassian details from memory. The skill +      │
+│               ctx7 topic named on the task (per _CONVENTIONS §7)   │
+│               are loaded before the first line is written.         │
+│                                                                   │
+│  4. BUILD   → owners claim unblocked tasks and produce native     │
 │               wrappers, golden-template definitions, audit/verify │
 │               scripts, tests, and docs. No hand-written evidence. │
 │                                                                   │
-│  4. APPLY   → mutations route through the native owner: ACLI      │
+│  5. APPLY   → mutations route through the native owner: ACLI      │
 │               (`jira project/workitem/field/filter/dashboard`),   │
 │               golden-template clone, Forge deploy/install, or     │
 │               native Jira Automation import. Idempotency tested   │
 │               immediately by re-running and asserting no delta.   │
 │                                                                   │
-│  5. VERIFY  → `npm run infra:verify` (read-only audit harness)    │
+│  6. VERIFY  → `npm run infra:verify` (read-only audit harness)    │
 │               diffs native output against declared/golden state   │
 │               and produces JSON; the owning teammate reads it.    │
 │                                                                   │
-│  6. REVIEW  → safety-tester + native-architect cross-check the    │
+│  7. REVIEW  → safety-tester + native-architect cross-check the    │
 │               diff. File findings as new tasks.                   │
 │                                                                   │
-│  7. LEARN   → lead updates STATUS.md. Decides whether to spawn    │
+│  8. LEARN   → lead updates STATUS.md. Decides whether to spawn    │
 │               a specialist (acli-spike / jira-rest-spike) or      │
 │               rebalance.                                          │
 │                                                                   │
-│  8. LOOP    → next tick.                                          │
+│  9. LOOP    → next tick.                                          │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -62,6 +70,14 @@ Before starting the next tick the lead confirms:
 
 ## Convergence rules
 
+- **Skill + ctx7 before code.** No owner writes an Atlassian REST path, CLI flag, GraphQL query,
+  or manifest key from memory. The TOOL-UP step is mandatory and load-bearing: load the matching
+  skill under `skills/` and confirm the specifics against current docs via Context7 (`ctx7`)
+  before BUILD. The surface→skill→ctx7 mapping is the canonical table in
+  [`_CONVENTIONS.md`](../_CONVENTIONS.md) §7; the per-task skill + ctx7 topic is named on the task
+  (TASK_BOARD / `nih-roadmap.md`). A task that touches an Atlassian surface with no skill + ctx7
+  provenance recorded is rejected by the `TaskCompleted` gate G-SKILL-CTX7
+  ([`QUALITY_GATES.md`](QUALITY_GATES.md)).
 - **Native owner first.** For every Jira concern, the apply step uses the native owner from the
   Native Tool Fit Matrix (ACLI command, golden-template clone, Forge, native Automation
   import). Custom code is added only for a documented gap (`_CONVENTIONS.md` §1). "We already

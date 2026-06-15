@@ -30,6 +30,9 @@ and `specs/nih-review-2026-06-15.md`:
   entrypoint must give it exactly one T-NIH-07 label (native wrapper /
   documented API gap / Twin-specific logic) bound to a native owner or
   documented endpoint (TaskCompleted + CI scan).
+- **G-SKILL-CTX7** — a change that hardcodes an Atlassian REST path, CLI flag,
+  GraphQL query, or manifest key must record its skill + ctx7 provenance
+  (`_CONVENTIONS.md §7`); otherwise rejected (TaskCompleted + CI scan).
 
 The safety contract (`_CONVENTIONS.md §5`) is unchanged and never weakened.
 
@@ -150,7 +153,49 @@ while IFS= read -r s; do
   fi
 done <<< "$changed_scripts"
 
-# 7. Safety escalations: if title hints at enabling automation or broadening
+# 7. G-SKILL-CTX7: a change that hardcodes an Atlassian REST path, CLI flag,
+#    GraphQL query, or manifest key must record skill + ctx7 provenance
+#    (_CONVENTIONS.md S7). Scan files changed by this task; if any introduces an
+#    Atlassian surface detail, the diff (or an evidence file referencing the
+#    task) must name a skills/ skill AND a ctx7 verification. Provenance lives
+#    either inline near the code (a `# skill: ...` / `# ctx7: ...` note) or in
+#    the task's evidence JSON (`.tooling.skill` + `.tooling.ctx7`).
+atlassian_detail_re='/rest/api/3|/rest/api/2|servicedeskapi|jsm/assets/workspace|/wiki/api/v2|gateway/api/graphql|acli +jira|forge:|rovo:agent|manifest\.yml|@forge/|@atlaskit/adf-utils|atlassian/atlassian-operations'
+changed=$(git diff --name-only HEAD~1 2>/dev/null || true)
+hardcodes_atlassian=""
+while IFS= read -r f; do
+  [[ -z "$f" ]] && continue
+  case "$f" in evidence/*|specs/*|*.md) continue ;; esac
+  if grep -Eiq "$atlassian_detail_re" "$f" 2>/dev/null; then
+    hardcodes_atlassian="$f"
+    # Inline provenance: skill + ctx7 noted in or beside the file.
+    if grep -Eiq 'skill:[[:space:]]*skills/' "$f" 2>/dev/null \
+       && grep -Eiq 'ctx7' "$f" 2>/dev/null; then
+      hardcodes_atlassian=""
+    fi
+  fi
+  [[ -n "$hardcodes_atlassian" ]] && break
+done <<< "$changed"
+if [[ -n "$hardcodes_atlassian" ]]; then
+  # Fall back to evidence-file provenance keyed to the task id.
+  prov_ok=""
+  while IFS= read -r ef; do
+    [[ "$ef" == *.json ]] || continue
+    if jq -e '.tooling.skill and .tooling.ctx7' "$ef" >/dev/null 2>&1; then
+      prov_ok="yes"; break
+    fi
+  done <<< "$matches"
+  if [[ -z "$prov_ok" ]]; then
+    echo "REJECT: $hardcodes_atlassian hardcodes an Atlassian REST/CLI/GraphQL/" >&2
+    echo "manifest detail with no skill + ctx7 provenance. Load the matching" >&2
+    echo "skills/ skill, verify the specifics via ctx7, and record both inline" >&2
+    echo "(skill: skills/<name> + ctx7) or in evidence JSON (.tooling.skill +" >&2
+    echo ".tooling.ctx7). See _CONVENTIONS.md S7." >&2
+    exit 2
+  fi
+fi
+
+# 8. Safety escalations: if title hints at enabling automation or broadening
 #    scopes, require explicit safety-tester sign-off in JSON.
 if echo "$title" | grep -Eiq 'enable.*rule|broaden.*scope|approve.*claim|launch'; then
   if ! jq -es '.[] | select(.safety_tester=="approved")' \
@@ -271,6 +316,10 @@ The lead rejects a plan when any of these hold; otherwise approves:
 - **NIH-7:** adds or edits a supported `scripts/*` entrypoint without exactly one
   T-NIH-07 label, or labels a script `documented-api-gap` while it binds a
   private endpoint on a supported path.
+- **G-SKILL-CTX7:** touches an Atlassian surface, or hardcodes an Atlassian REST
+  path / CLI flag / GraphQL / manifest key, without naming the matching `skills/`
+  skill and ctx7 topic (`_CONVENTIONS.md §7`) — on the task, inline, or in
+  evidence JSON (`.tooling.skill` + `.tooling.ctx7`).
 - Builds a per-resource converge engine before T-NIH-03 (ACLI inventory) and
   T-NIH-04 (golden-template validation) are green.
 - Destructive without `AIGO_DESTRUCTIVE=1` + `AIGO_CONFIRM` (and, for
@@ -283,6 +332,8 @@ The lead rejects a plan when any of these hold; otherwise approves:
 reject images under `evidence/`, require `generated_by:` on all evidence files,
 scan the supported path for internal/private endpoints and keychain auth, fail
 if any `evidence/*` claims native Automation/Rovo proof from webtrigger output,
-and fail if any supported `scripts/*` entrypoint lacks its single T-NIH-07
-label. This keeps manual artefacts and NIH regressions out via CI as well as
+fail if any supported `scripts/*` entrypoint lacks its single T-NIH-07 label,
+and fail (G-SKILL-CTX7) if a changed file hardcodes an Atlassian REST/CLI/
+GraphQL/manifest detail with no skill + ctx7 provenance (inline or in evidence
+JSON). This keeps manual artefacts and NIH regressions out via CI as well as
 locally.

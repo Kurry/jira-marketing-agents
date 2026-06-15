@@ -110,7 +110,64 @@ To prevent the count drift that exists today (issue types 13/14/18, fields
 - Preserve every real requirement/task from the v1 doc you are rewriting; this
   is a re-alignment, not a scope cut. Where you drop or merge something, note it.
 
-## 7. v2 ownership map (who writes what — keep scopes disjoint)
+## 7. Required tooling — Context7 + the Atlassian skills (MANDATORY)
+
+Agents must **not** code Atlassian REST/CLI/GraphQL/manifest details from memory.
+Before touching any Atlassian surface, an agent MUST:
+
+1. **Load the matching skill** under `skills/` and follow it.
+2. **Verify the specifics against current docs via Context7** (`ctx7`, e.g.
+   `npx ctx7@latest library "<Atlassian product>" "<task>"`) — endpoint paths,
+   scopes, CLI flags, manifest keys, and provider resources change; confirm them
+   live before writing code or evidence.
+
+Every task on the board, in `nih-roadmap.md`, and in `refactor-plan.md` must name
+the skill(s) and the ctx7 topic it requires. A task that touches an Atlassian
+surface without a skill + ctx7 reference is not ready to claim. The
+`TaskCompleted` gate (`agent-team/QUALITY_GATES.md`) rejects work that hardcodes
+an Atlassian API/CLI/manifest detail with no skill+ctx7 provenance.
+
+**Canonical surface → skill → ctx7 mapping** (use these exact skill paths):
+
+| Atlassian surface | Skill | ctx7 topic |
+| --- | --- | --- |
+| Jira REST (issues, JQL, fields, transitions, ADF, links, webhooks) | `skills/jira-cloud-rest` | Jira Cloud platform REST v3; `POST /search/jql` |
+| Jira CLI (project/workitem/field/filter/dashboard, bulk) | `skills/jira-acli` | Atlassian CLI `acli jira` |
+| JSM service desk (requests, queues, SLAs, approvals) | `skills/jira-service-management` | JSM `servicedeskapi` |
+| Assets / AQL | `skills/jsm-assets` | JSM Assets API + AQL |
+| Jira Product Discovery (ideas, insights, fields, views) | `skills/jira-product-discovery` | Jira Product Discovery |
+| Confluence (pages, spaces, CQL) | `skills/confluence-cloud-rest` | Confluence Cloud REST v2 / CQL |
+| Goals & projects (Atlas/Home) | `skills/atlassian-goals-atlas` | Atlassian Goals; Teamwork Graph |
+| Forge app/manifest/CLI/storage/scopes | `skills/forge-platform` | Forge manifest reference + CLI |
+| Forge Rovo agents/actions (code) | `skills/forge-rovo-agents` | Forge `rovo:agent` module |
+| Forge workflow validator/condition/post-function | `skills/forge-workflow-modules` | Forge Jira workflow modules |
+| Forge web/scheduled triggers + `@forge/events` | `skills/forge-webtriggers-events` | Forge web-trigger / scheduledTrigger / events |
+| Rovo no-code + Rovo in Automation | `skills/rovo-studio-agents` | Use Rovo in an automation rule |
+| This repo's Jira Automation/Rovo runbook | `skills/jira-automation-rovo-setup`, `skills/jira-automation-browser-edit` | — (repo-grounded) |
+| Compass catalog/scorecards | `skills/compass` | Compass GraphQL |
+| Bitbucket Cloud | `skills/bitbucket-cloud-rest` | Bitbucket Cloud REST 2.0 |
+| Atlassian Analytics / Data Lake | `skills/atlassian-analytics-data-lake` | Atlassian Data Lake SQL |
+| Cloud admin (org, users, SCIM, audit) | `skills/atlassian-admin-cloud` | Atlassian admin REST |
+| Terraform (JSM/Compass Operations only) | `skills/atlassian-terraform` | `atlassian/atlassian-operations` provider |
+| Teamwork Graph / cross-product reads | `skills/twg` (+ `twg-*`) | Teamwork Graph |
+
+**Per-task tooling** (each T-NIH task must use at least these):
+
+| Task | Skills | ctx7 |
+| --- | --- | --- |
+| T-NIH-03 ACLI inventory | `jira-acli` | `acli jira` command reference |
+| T-NIH-04 golden template | `jira-cloud-rest`, `jira-acli` | Jira REST project/config; ACLI clone |
+| T-NIH-08 internal-endpoint purge + native import + token auth | `rovo-studio-agents`, `jira-automation-rovo-setup`, `jira-cloud-rest`, `jira-acli` | Jira Automation export/import; Use Rovo in automation; `ATLASSIAN_TOKEN` auth |
+| T-NIH-10 infra audit harness | `forge-platform`, `jira-cloud-rest`, `jira-acli` | `forge … --json`; documented Jira REST GETs |
+| T-NIH-11 Assets/JPD migration | `jsm-assets`, `jira-product-discovery` | Assets schema/AQL; JPD fields |
+| T-NIH-12 ADF + duplicates + prioritization | `forge-platform`, `jira-cloud-rest`, `jira-product-discovery` | `@atlaskit/adf-utils`; JQL relevance + native "Duplicate" link; JPD prioritization |
+| T-NIH-13 forge `--json` parsing | `forge-platform` | Forge CLI `--json` output |
+| Rovo agent/runtime/workflow/trigger work | `forge-rovo-agents`, `forge-workflow-modules`, `forge-webtriggers-events`, `rovo-studio-agents` | matching Forge module refs |
+| Terraform / Operations | `atlassian-terraform` | `atlassian-operations` provider docs |
+
+(T-NIH-14 doc-count reconcile touches no Atlassian surface — no skill/ctx7 needed.)
+
+## 8. v2 ownership map (who writes what — keep scopes disjoint)
 
 | Scope | Files (under `specs/v2/`) |
 | --- | --- |

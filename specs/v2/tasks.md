@@ -12,6 +12,11 @@ into that board. Canonical entity counts/names live only in
 [issue-types.md](issue-types.md), [custom-fields.md](custom-fields.md), and
 [workflows.md](workflows.md) — referenced here, never restated.
 
+**Before coding any Atlassian surface, load the matching skill and verify via
+ctx7 — see [_CONVENTIONS.md](_CONVENTIONS.md) §7.** Each phase and outcome
+workstream below carries a `Tooling:` line naming the required skill(s) and ctx7
+topic, consistent with the §7 surface→skill→ctx7 map.
+
 ## Status key
 
 - `[x]` Done / validated in this repo.
@@ -34,6 +39,7 @@ modules), and **Acceptance**. The decision rule ([_CONVENTIONS.md](_CONVENTIONS.
 
 Native owner: Forge `rovo:agent`/`action`/`function` runtime.
 Touches: `manifest.yml`, `index.ts`, `src/**`, `tests/**`, `tsconfig.json`.
+Tooling: `skills/forge-platform` + `skills/forge-rovo-agents` + ctx7 Forge manifest reference + CLI; Forge `rovo:agent` module.
 
 - `[x]` Forge/Rovo-only repo scope (MCP/Cowork removed; app id registered; root
   `index.ts`; unique function keys; action input descriptions; stable Rovo action
@@ -51,6 +57,7 @@ Native owner: Forge install + Rovo (Agent runtime row). Per T-NIH-01, keep
 "manifest/install check" and "Jira UI visibility" as **separate** evidence rows.
 Touches: `scripts/check-rovo-visibility.cjs`, `docs/MVP_RUNBOOK.md`,
 `evidence/rovo/visibility.md`.
+Tooling: `skills/forge-platform` + `skills/forge-rovo-agents` + `skills/rovo-studio-agents` + ctx7 Forge CLI install; Forge `rovo:agent` module; Rovo in Jira/UI.
 
 - `[x]` Deploy to Forge `development`; install to `myhealthcaresite.atlassian.net`;
   `forge install list` shows Jira `Up-to-date`; `AIGO_REQUIRE_FORGE_INSTALL=1
@@ -78,6 +85,7 @@ Native owner: Golden company-managed template project + ACLI
 Touches: `scripts/provision-jira.cjs`, `scripts/provision-instance.cjs`,
 `scripts/provision-seeds.cjs`, `scripts/render-seed.cjs`,
 `scripts/aigo-project-readiness.cjs`, `instances/*.json`.
+Tooling: `skills/jira-acli` + `skills/jira-cloud-rest` + ctx7 `acli jira` command reference; Jira REST project/config + ACLI clone (T-NIH-03 ACLI inventory, T-NIH-04 golden template).
 
 - `[x]` Confirm `AIGO` exists; import/verify the `aigo-seed` issues; add portable
   instance config + seed rendering for non-`AIGO` keys; add a repeatable
@@ -107,6 +115,7 @@ env auth (Automation import row).
 Touches: `scripts/provision-automation.cjs`, `scripts/fix-automation-triggers.cjs`,
 `scripts/verify/automation-audit.mjs`, `scripts/audit/jira-snapshot.mjs`,
 `scripts/provision-jira.cjs`, `scripts/lib/jira.mjs`.
+Tooling: `skills/rovo-studio-agents` + `skills/jira-automation-rovo-setup` + `skills/jira-cloud-rest` + `skills/jira-acli` + ctx7 Jira Automation export/import; Use Rovo in automation; `ATLASSIAN_TOKEN` auth (T-NIH-08).
 
 - `[x]` **T-NIH-02**: retire the Forge importer; remove `fn-import-automation` and
   `manage:jira-configuration`; mark the internal import fallback experimental/
@@ -129,6 +138,7 @@ Native owner: ACLI / golden template / Forge own mutations; `infra/` only diffs
 (Jira admin configuration + Readouts/dashboards rows). Defensible custom pieces:
 read-only diff and the staging additive-only safety gate.
 Touches: `scripts/infra/plan.mjs`, `scripts/infra/apply.mjs`, `infra/**`.
+Tooling: `skills/forge-platform` + `skills/jira-cloud-rest` + `skills/jira-acli` + ctx7 `forge … --json`; documented Jira REST GETs (T-NIH-10).
 
 - `[ ]` **GATE — T-NIH-10**: reframe `infra:plan/apply/verify` as a read-only audit
   harness over native output; route every mutation through ACLI / golden template /
@@ -146,6 +156,7 @@ Native owner: Native Jira Automation UI/export/import (Automation import row);
 "Use Rovo agent" action (Agent event triggers row).
 Touches: `automation/rules/*.json`, `scripts/render-automation-rules.cjs`,
 `scripts/provision-automation.cjs`, `scripts/verify/automation-audit.mjs`.
+Tooling: `skills/jira-automation-rovo-setup` + `skills/rovo-studio-agents` + `skills/jira-cloud-rest` + ctx7 Jira Automation export/import; Use Rovo in an automation rule; Jira REST.
 
 - `[x]` Import/rebuild the MVP rules; per-instance placeholder replacement (project
   key/id, actor account id, agent keys) with fail-on-placeholder; Automation
@@ -168,6 +179,7 @@ claims/safety/experiment/audience/campaign logic **stays custom**.
 Touches: `src/utils/adf.ts`, `src/utils/text.ts`, `src/duplicates.ts`,
 `src/backlog.ts`, `scripts/lib/forge.mjs`, `scripts/check-rovo-visibility.cjs`,
 `scripts/verify/forge-install.mjs`.
+Tooling: `skills/forge-platform` + `skills/jira-cloud-rest` + `skills/jira-product-discovery` + ctx7 `@atlaskit/adf-utils`; JQL relevance + native "Duplicate" link; JPD prioritization; Forge CLI `--json` (T-NIH-12, T-NIH-13). T-NIH-14 count reconcile needs none (no Atlassian surface).
 
 - `[ ]` **GATE — T-NIH-12** (behavior change; needs tests + review): adopt
   `@atlaskit/adf-utils` for ADF build+traversal (replaces hand-built node schema +
@@ -192,6 +204,7 @@ matrix). No product enters the critical path without licensing, admin path, and
 rollback documented.
 Touches: `specs/custom-fields.md`, `specs/issue-types.md`, `src/audience.ts`,
 prompt/policy files.
+Tooling: `skills/jsm-assets` + `skills/jira-product-discovery` + `skills/confluence-cloud-rest` + (spike) `skills/atlassian-analytics-data-lake` + `skills/atlassian-goals-atlas` + ctx7 Assets schema/AQL; JPD fields; Confluence Cloud REST v2; Data Lake SQL; Atlassian Goals (T-NIH-05, T-NIH-11).
 
 - `[x]` **T-NIH-05 spike** — see [atlassian-product-adoption-spike.md](atlassian-product-adoption-spike.md);
   product subtasks T-NIH-05A..F in `specs/outcome-roadmap.md`.
@@ -210,6 +223,7 @@ agents a read-only lookup path with no sensitive mutation absent human approval.
 Native owner: repo docs + Confluence (Knowledge & SOPs row).
 Touches: `docs/INTEGRATION.md`, `docs/MVP_RUNBOOK.md`, `docs/PORTABILITY.md`,
 `docs/script-label-inventory.md`, `README.md`.
+Tooling: `skills/confluence-cloud-rest` + ctx7 Confluence Cloud REST v2 / CQL (only when knowledge moves to Confluence). Repo-doc work and T-NIH-07 script-label inventory touch no Atlassian surface — none.
 
 - `[x]` Registered-app install docs; smoke docs requiring Forge install visibility;
   MVP runbook (deploy/install/seed/Rovo UI check/Automation validation/logs/
@@ -234,27 +248,34 @@ remains for the development-site MVP.
 These carry forward from `specs/tasks.md` unchanged in scope; native owners and the
 canonical data model apply. They proceed in parallel with the phases above. Behavior
 that mutates Jira fields/transitions or product audiences stays **GATE**ed and
-draft/comment-only for MVP.
+draft/comment-only for MVP. Each workstream's `Tooling:` line names the skill(s)
++ ctx7 topic for its Atlassian surface, per [_CONVENTIONS.md](_CONVENTIONS.md) §7;
+the pure-Twin agent logic (`src/*` claims/safety/experiment/audience/campaign)
+needs no skill.
 
 - **O1 Intake & Triage** — `[x]` triage/requirements/acceptance/duplicate agents,
   comment-only output, canonical intake types/statuses. `[~]` manual seed runs +
   Intake Triage Automation audit-log. `src/triage.ts`, `requirements.ts`,
   `duplicates.ts` (duplicates → T-NIH-12 JQL/native-link delegation).
+  Tooling: `skills/forge-rovo-agents` + `skills/jira-automation-rovo-setup` + `skills/jira-cloud-rest` (duplicates: + `skills/jira-product-discovery`) + ctx7 Forge `rovo:agent`; Use Rovo in automation; JQL relevance + native "Duplicate" link.
 - **O2 Segmentation & Targeting** — `[x]` Audience Builder read-style action,
   `mutatesProductionAudience:false`. `[ ]` dedicated segmentation/targeting agents
   or documented compatibility mapping; expanded readiness; tests (unknown signals,
   missing sources, consent/suppression, clinical-targeting language, no invented
   reach); manual run. `src/audience.ts`. Segment fields → Assets (T-NIH-11).
+  Tooling: `skills/forge-rovo-agents` + `skills/jsm-assets` + ctx7 Forge `rovo:agent`; Assets schema/AQL (segment entities). Twin targeting/privacy logic stays custom.
 - **O3 Personalization Journey** — `[~]` partial journey logic + draft issue
   type/fields. `[ ]` full journey module/spec; journey/personalization/claims-prep
   agents or mappings; tests (missing variables, consent/frequency caps, no PHI,
   claims-safe copy, tracking, fallback, not-ready); Automation decision.
   `src/audience.ts` (or new journey module). See [issue-types.md](issue-types.md).
+  Tooling: `skills/forge-rovo-agents` + `skills/jira-cloud-rest` + ctx7 Forge `rovo:agent`; Jira REST issue type/fields. Twin journey/claims logic stays custom.
 - **O4 Creative Production** — `[x]` creative-gen + claims-review agents, draft-only,
   no send/approve. `[ ]` coded Variant IDs + Hook Type tags; factory/claims-prep/
   variant-id agents or mappings; tighten Creative Claims routing (Risky/Prohibited/
   Requires-Human-Review → Claims Review, **no approval**); winning-creative→SOP only
   (test); manual validation. `src/creativeGen.ts`, `creativeClaims.ts`.
+  Tooling: `skills/forge-rovo-agents` + `skills/jira-automation-rovo-setup` + ctx7 Forge `rovo:agent`; Use Rovo in automation (Claims Review routing). Twin claims-risk logic stays custom — never approves.
 - **O5 Experimentation** — `[x]` Experiment Design + backlog behavior. `[ ]` tighten
   readiness gate; evidence-based readout (Scale/Kill/Iterate/Extend/Needs-Review
   only with data); readout/backlog-prioritization agents or mappings; Forge workflow
@@ -262,6 +283,7 @@ draft/comment-only for MVP.
   tests (inconclusive, guardrail failure, missing data, no invented significance);
   manual validation. `src/experiments.ts`, `backlog.ts` (prioritization → JPD,
   T-NIH-12). **GATE** for the workflow validator (manifest).
+  Tooling: `skills/forge-rovo-agents` + `skills/forge-workflow-modules` + `skills/jira-product-discovery` + ctx7 Forge `rovo:agent`; Forge Jira workflow validator; JPD prioritization (backlog half → T-NIH-12). Twin experiment/readout logic stays custom.
 - **O6 Research & Objection Mining** — `[~]` triage recognizes research; readouts
   summarize. `[ ]` Research Brief type/fields/seeds; `src/objections.ts` (theme
   clustering, frequency, segment/employer/funnel mapping, de-identified quotes,
@@ -269,23 +291,27 @@ draft/comment-only for MVP.
   competitor/messaging agents; JQL or key-list multi-issue input; tests (clustering,
   evidence quotes, PHI redaction, competitor hypotheses, claims routing, follow-up
   tickets); extend weekly readout with top objection themes.
+  Tooling: `skills/forge-rovo-agents` + `skills/jira-cloud-rest` + ctx7 Forge `rovo:agent`; Jira REST JQL/multi-issue search (`POST /search/jql`). Twin objection-mining/PHI-redaction logic stays custom.
 - **O7 Campaign & Employer Launch** — `[x]` Employer Launch + Campaign agents,
   readiness scoring/blockers/phases/QA, draft-only campaign plan, disabled Employer
   Launch Automation, launch-readiness agent. `[~]` Campaign issue type/fields;
   manual Employer Launch validation. `[ ]` manual Campaign Planner validation;
   optional post-MVP readiness/subtask writeback behind explicit allowlist (**GATE**).
   `src/employerLaunch.ts`, `campaign.ts`.
+  Tooling: `skills/forge-rovo-agents` + `skills/jira-automation-rovo-setup` + `skills/jira-cloud-rest` + ctx7 Forge `rovo:agent`; Use Rovo in automation (Employer Launch); Jira REST issue type/fields. Twin launch/campaign logic stays custom, draft-only (no send).
 - **O8 Conversion Optimization** — `[x]` Funnel Friction agent, step detection,
   evidence extraction, impact/QA, Signup Funnel dashboard category. `[ ]` product-
   ticket/regression-check agents or mappings; analytics/session-replay source or
   required linked-evidence fields before impact sizing; acceptance coverage for
   high-priority funnel issues. `[~]` manual validation. `src/funnel.ts`.
+  Tooling: `skills/forge-rovo-agents` + `skills/jira-cloud-rest` + ctx7 Forge `rovo:agent`; Jira REST dashboard/field reads (analytics source → T-NIH-05). Twin funnel/impact logic stays custom.
 - **O9 Analytics & Decision Support** — `[x]` Weekly Readout agent, weekly buckets,
   disabled scheduled Readout Automation → Decision Memo, dashboard spec, anomaly/
   decision agents or mappings. `[~]` manual Readout validation + enable Automation
   with audit-log. `[ ]` evidence-aware decision support via custom fields / linked
   analytics (not only status/type/label); dashboard URL linking + notification path.
   `src/readout.ts`, `dashboards.ts`. Analytics/Data Lake → T-NIH-05 (deferred).
+  Tooling: `skills/forge-rovo-agents` + `skills/jira-automation-rovo-setup` + `skills/atlassian-analytics-data-lake` (deferred) + ctx7 Forge `rovo:agent`; Use Rovo in automation (scheduled Readout); Atlassian Data Lake SQL. Twin decision-memo logic stays custom.
 - **O10 Positioning & Messaging** — `[~]` partial coverage across creative/campaign/
   landing/audience/claims; draft Positioning Update type. `[ ]` `src/positioning.ts`
   (AI capability, member/employer value props, proof requirements, differentiators,
@@ -295,6 +321,7 @@ draft/comment-only for MVP.
   `employer-launch`, `growth-readout`); tests (no invented outcomes/proof, all copy
   claims-scanned, missing proof flagged, varies by segment/channel); document
   approved-positioning→creative/campaign flow without bypassing human approval.
+  Tooling: `skills/forge-rovo-agents` + ctx7 Forge `rovo:agent` (positioning agent wiring only). Twin positioning/value-prop/claims logic and reusable knowledge assets stay custom.
 
 ## Cross-cutting platform tasks
 
@@ -306,6 +333,8 @@ draft/comment-only for MVP.
   before declaring template the source; T-NIH-05 before replacing Jira surfaces with
   JPD/Assets/Confluence/Analytics/Goals; T-NIH-07 before promoting any custom script
   into the long-term supported path. (All tracked in [nih-roadmap.md](nih-roadmap.md).)
+
+Tooling (cross-cutting): per-instance Automation rendering uses `skills/jira-automation-rovo-setup` + `skills/rovo-studio-agents`; readiness/verify checks use `skills/jira-acli` + `skills/jira-cloud-rest` (+ `skills/forge-platform` for Rovo/install checks) + ctx7 the matching `acli jira` / Jira REST / Forge CLI refs — see [_CONVENTIONS.md](_CONVENTIONS.md) §7.
 
 ## Post-MVP backlog (deferred, mostly GATE)
 

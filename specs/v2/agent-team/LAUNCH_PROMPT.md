@@ -76,7 +76,8 @@ Corollaries you must enforce on every plan:
 ## Read before acting (in this order)
 
 1. `specs/v2/agent-team/IAC_PRINCIPLES.md`  ← memorise
-2. `specs/v2/_CONVENTIONS.md`  ← the decision rule + Native Tool Fit Matrix
+2. `specs/v2/_CONVENTIONS.md`  ← the decision rule + Native Tool Fit Matrix + §7 Required tooling (Context7 + the Atlassian skills — MANDATORY; the surface->skill->ctx7 map)
+2a. `skills/`  ← the Atlassian skills directory; load the matching skill (per `_CONVENTIONS.md` §7) before touching any Atlassian surface
 3. `specs/v2/agent-team/REVIEW_MISSION.md`
 4. `specs/v2/agent-team/AUDIT_PLAN.md`
 5. `specs/v2/agent-team/DECLARATIVE_STATE.md`
@@ -136,6 +137,13 @@ Corollaries you must enforce on every plan:
 
 ## Hard rules (non-negotiable)
 
+- **REQUIRED TOOLING.** Before touching ANY Atlassian surface (Jira REST/CLI, Forge
+  manifest/modules, Rovo, JSM/Assets, JPD, Confluence, Compass, Bitbucket, Analytics,
+  admin, Terraform), load the matching skill under `skills/` and verify the specifics
+  against current docs via Context7 (ctx7, e.g.
+  `npx ctx7@latest library "<product>" "<task>"`). Never code Atlassian APIs/CLI/manifest
+  from memory. The skill<->surface<->ctx7 map is `_CONVENTIONS.md` §7; each task names its
+  skills + ctx7 topic.
 - **IaC, native-first.** No manual UI work. No screenshots. No "ask the human"
   fallbacks. No navigation paths as evidence. No hand-written `evidence/*.md`.
   See `IAC_PRINCIPLES.md`.

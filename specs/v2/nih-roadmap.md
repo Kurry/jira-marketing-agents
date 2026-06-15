@@ -13,6 +13,10 @@ definitions live in [issue-types.md](issue-types.md), [custom-fields.md](custom-
 and [workflows.md](workflows.md) — this board references them and never restates
 counts.
 
+**Before coding any Atlassian surface, load the matching skill and verify via
+ctx7 — see [_CONVENTIONS.md](_CONVENTIONS.md) §7.** Each task's required skill(s)
+and ctx7 topic are named in the "Required tooling per task" section below.
+
 ## Decision rule
 
 Per [_CONVENTIONS.md](_CONVENTIONS.md) §1: use Atlassian-native capabilities
@@ -48,6 +52,27 @@ names a native owner from the Fit Matrix and an evidence artifact.
 
 (`T-NIH-06` was never issued; the original board skipped from 05 to 07. The gap
 is intentional — do not reuse the number.)
+
+## Required tooling per task
+
+Per [_CONVENTIONS.md](_CONVENTIONS.md) §7, no Atlassian surface is coded from
+memory: load the named skill under `skills/` and confirm the specifics via ctx7
+before writing code or evidence. A task that touches an Atlassian surface without
+a skill + ctx7 reference is not ready to claim.
+
+- **T-NIH-01** Rovo visibility & evidence wording — Tooling: `skills/forge-rovo-agents` + `skills/rovo-studio-agents` + ctx7 `Forge rovo:agent module` / `Use Rovo in an automation rule`.
+- **T-NIH-02** Supported Automation import path cleanup — Tooling: `skills/rovo-studio-agents` + `skills/jira-automation-rovo-setup` + `skills/forge-platform` + ctx7 Jira Automation export/import; Forge manifest reference.
+- **T-NIH-03** ACLI capability inventory — Tooling: `skills/jira-acli` + ctx7 `acli jira` command reference.
+- **T-NIH-04** Golden template clone validation — Tooling: `skills/jira-cloud-rest` + `skills/jira-acli` + ctx7 Jira REST project/config; ACLI clone.
+- **T-NIH-05** Atlassian product adoption spike — Tooling: `skills/jira-product-discovery` + `skills/jsm-assets` + `skills/confluence-cloud-rest` + `skills/atlassian-analytics-data-lake` + `skills/atlassian-goals-atlas` + ctx7 JPD / Assets+AQL / Confluence REST / Data Lake SQL / Atlassian Goals.
+- **T-NIH-07** Custom script label inventory — Tooling: none (no Atlassian surface; labels repo scripts only).
+- **T-NIH-08** Purge internal/private endpoints + native import + token auth — Tooling: `skills/rovo-studio-agents` + `skills/jira-automation-rovo-setup` + `skills/jira-cloud-rest` + `skills/jira-acli` + ctx7 Jira Automation export/import; Use Rovo in automation; `ATLASSIAN_TOKEN` auth.
+- **T-NIH-09** Golden template as source of truth; demote provisioners to clone-diff — Tooling: `skills/jira-cloud-rest` + `skills/jira-acli` + ctx7 Jira REST project/config; ACLI clone.
+- **T-NIH-10** Reframe `infra/` as read-only audit harness — Tooling: `skills/forge-platform` + `skills/jira-cloud-rest` + `skills/jira-acli` + ctx7 `forge … --json`; documented Jira REST GETs.
+- **T-NIH-11** Move Segment/partner/service fields to Assets; Confidence/Lift/discovery to JPD — Tooling: `skills/jsm-assets` + `skills/jira-product-discovery` + ctx7 Assets schema/AQL; JPD fields.
+- **T-NIH-12** Adopt `@atlaskit/adf-utils`; JQL+native links for duplicates; JPD prioritization — Tooling: `skills/forge-platform` + `skills/jira-cloud-rest` + `skills/jira-product-discovery` + ctx7 `@atlaskit/adf-utils`; JQL relevance + native "Duplicate" link; JPD prioritization.
+- **T-NIH-13** Forge-CLI `--json` output; de-dup parser — Tooling: `skills/forge-platform` + ctx7 Forge CLI `--json` output.
+- **T-NIH-14** Reconcile counts via doc generator — Tooling: none (no Atlassian surface; re-derives from the canonical data model).
 
 ## Five themes → task mapping
 
