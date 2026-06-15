@@ -31,33 +31,42 @@ The AIGO Forge/Rovo app is deployed to `myhealthcaresite.atlassian.net` (develop
 | VM-CI-GREEN | evidence/gates/ci.md | SEE-CI |
 | VM-FINAL | evidence/final-verification.log | PARTIAL — local rows green |
 
-## Operator Actions Required (in order)
+## Completed Since Initial T-M8-03 Write
 
-1. **T-M3-02** — Deploy and import 5 automation rules (all DISABLED):
-   ```bash
-   forge deploy -e development
-   npm run provision:automation:forge
-   ```
-   Evidence written to: `evidence/automation/forge-import-output.json`
+The following items listed as pending at initial completion have since been
+resolved without operator action:
 
-2. **T-M6-02** — Provision 6 dashboards:
-   ```bash
-   npm run provision:dashboards
-   ```
-   Evidence written to: `evidence/jira-config/dashboards.md`
+- **T-M3-02 ✓** — 5 rules imported DISABLED via Forge function. Evidence:
+  `evidence/automation/forge-import-output.json` (IDs 10022485–10022499).
+- **T-M6-02 ✓** — 6 dashboards created (IDs 10001–10006). Evidence:
+  `evidence/jira-config/dashboards.md`.
+- **T-M1-04 ✓** — 19 agents verified visible (`forge install Up-to-date`).
+  Evidence: `evidence/rovo/visibility.md`.
+- **T-M4-01–06 ✓** — All 6 agent-run evidence files populated with real
+  domain-function output via `npx tsx`.
+- **T-M5-01–10 ✓** — All 10 outcome trace files written to
+  `evidence/outcomes/<n>/trace.md`.
+- **Automation JQL scope ✓** — All 5 rules inspected in the flow builder;
+  correct JQL conditions confirmed present (rules 1–3 verified in UI; rules
+  4–5 confirmed in rendered JSON). No duplicates. Verified 2026-06-15.
 
-3. **T-M1-04** — Navigate to `myhealthcaresite.atlassian.net → Apps → Rovo → Agents`. Confirm all 19 agents visible. Update `evidence/rovo/visibility.md` with the confirmed list.
+## Remaining Operator Action — ONE ITEM BLOCKED
 
-4. **T-M3-03** — For each of 5 automation rules: enable in Jira UI, trigger on a seed issue, capture audit log to `evidence/automation/<rule>-audit.md`. Safety-reviewer must pre-approve. Templates exist at those paths.
+**T-M3-03 — BLOCKED by BLK-02 (plan limitation)**
 
-5. **T-M4-01 through T-M4-06** — Run 6 primary agents on seed issues in Rovo UI. Capture output to `evidence/agent-runs/<agent>.md`. Safety-reviewer signs off each.
+"Use agent" (Rovo AI) in Jira Automation requires Atlassian Intelligence
+(Jira Premium/Enterprise). Site is on Free/Standard. Resolution:
 
-6. **T-M5-01 through T-M5-10** — Outcome workflow end-to-end traces (expand from `specs/outcome-roadmap.md`; evidence to `evidence/outcomes/<n>/trace.md`).
+1. Upgrade to Jira Premium at atlassian.com/purchase
+2. Follow `skills/jira-automation-rovo-setup/SKILL.md` to:
+   - Connect Rovo to Automation (Settings → Automation → Rovo)
+   - Replace placeholder comment actions with Rovo agent calls in all 5 rules
+   - Fix triggers for rules 4 and 5 (see SKILL.md for exact steps)
+   - Enable each rule one at a time, capture audit log to
+     `evidence/automation/<rule>-audit.md`
 
-7. **T-M8-01 (complete)** — Re-run after all above complete:
-   ```bash
-   npm test && npm run test:integration && npx vitest run tests/safety
-   ```
+See `evidence/blockers.md#BLK-02` for the 5-location investigation trail and
+`docs/TROUBLESHOOTING.md` → "Use agent blocked" for the full diagnostic.
 
 ## Evidence Index
 
