@@ -210,6 +210,16 @@ is imported via the Forge function `fn-import-automation` using
 operator enables them one at a time after reviewing the audit log (see T-M3-03).
 This requires the `manage:jira-configuration` scope to be accepted at `forge install`.
 
+> **Jira Premium required for activation (BLK-02):** The "Use agent" (Rovo AI)
+> step in Automation requires Atlassian Intelligence, which is a
+> Premium/Enterprise feature. On Free/Standard plans the rules import and hold
+> their JQL scope conditions, but the Rovo agent action cannot fire. Upgrade at
+> atlassian.com/purchase, then follow
+> [`skills/jira-automation-rovo-setup/SKILL.md`](skills/jira-automation-rovo-setup/SKILL.md)
+> to wire Rovo into all five rules and enable them.
+> Use [`skills/jira-automation-browser-edit/SKILL.md`](skills/jira-automation-browser-edit/SKILL.md)
+> for browser-based flow inspection (Claude in Chrome).
+
 ## 8. Custom fields guidance
 
 Custom field IDs are **instance-specific** and are not hard-coded. For the MVP,
