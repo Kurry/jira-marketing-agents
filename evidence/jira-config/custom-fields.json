@@ -1,0 +1,25 @@
+{
+  "Segment":        "customfield_10043",
+  "Primary Metric": "customfield_10044",
+  "Claims Risk":    "customfield_10045",
+  "Experiment ID":  "customfield_10046",
+  "Workflow Area":  "customfield_10047",
+  "Priority Score": "customfield_10048",
+
+  "_forge_variables": {
+    "SEGMENT_FIELD_ID":        "customfield_10043",
+    "PRIMARY_METRIC_FIELD_ID": "customfield_10044",
+    "CLAIMS_RISK_FIELD_ID":    "customfield_10045",
+    "EXPERIMENT_ID_FIELD_ID":  "customfield_10046",
+    "WORKFLOW_AREA_FIELD_ID":  "customfield_10047",
+    "PRIORITY_SCORE_FIELD_ID": "customfield_10048"
+  },
+
+  "_meta": {
+    "created": "2026-06-15T04:12Z",
+    "environment": "development",
+    "site": "myhealthcaresite.atlassian.net",
+    "cloud_id": "76683cc1-6501-400f-8b59-01eaad4418d2",
+    "forge_app_version": "2.3.0"
+  }
+}

@@ -11,7 +11,7 @@ _Updated: 2026-06-15T00:44Z — operator macOS machine session. BLK-01 RESOLVED.
 | `npm` | present | 10.9.x | OK |
 | `git` | present | branch `main`, 1 commit ahead of origin | OK |
 | `forge` | installed + `forge login` active | **12.22.0 · logged in as Kurry Tran** | ✓ |
-| `acli`/`jira` CLI | installed | not verified yet | TBD T-M2-03 |
+| `acli`/`jira` CLI | installed | **1.3.19-stable** at `/opt/homebrew/bin/acli` | ✓ (verified 2026-06-15T04:08Z, T-M2-03) |
 | `gh` | optional | not verified | TBD |
 
 ## Forge identity
@@ -64,7 +64,7 @@ Full log: `evidence/gates/local-2026-06-15T0044Z.log`
 ## Known risks
 
 - **R-01:** Node v26.0.0 — Forge CLI says "unsupported" (22.x / 24.x). Forge commands work but may break on future forge CLI updates. Low immediate risk; noted for operator.
-- **R-02:** `acli` not yet verified — required for T-M2-07 seed re-import.
+- **R-02:** ~~`acli` not yet verified~~ RESOLVED: acli 1.3.19-stable verified 2026-06-15T04:08Z.
 - **R-03:** Rovo UI visibility (VM-ROVO-VISIBILITY) requires human confirmation in browser; CLI alone cannot prove all 19 agents visible.
 
 ## BLK-01 — RESOLVED
@@ -77,3 +77,6 @@ T-M0-06: CLAUDE.md updated 2026-06-15T03:53Z
 T-M2-01: specs/issue-types.md created 2026-06-15T03:55Z
 T-M2-02: specs/custom-fields.md created 2026-06-15T03:55Z
 T-M2-06: specs/workflows.md created 2026-06-15T03:55Z
+T-M2-03: 14 AIGO issue types created (global; IDs 10017, 10020–10032) 2026-06-15T04:11Z
+T-M2-04: 6 MVP custom fields created + Forge vars set + forge deploy v2.3.0 2026-06-15T04:14Z
+T-M2-05: plan-workflows.md drafted 2026-06-15T04:15Z — AWAITING LEAD APPROVAL
