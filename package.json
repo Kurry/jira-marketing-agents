@@ -28,6 +28,8 @@
     "infra:apply": "node scripts/infra/apply.mjs",
     "infra:verify": "node scripts/verify/run-all.mjs",
     "infra:render": "node scripts/infra/render-all.mjs",
+    "docs:generate": "node scripts/docs/generate.mjs",
+    "docs:check": "node scripts/docs/generate.mjs --check",
     "test:safety": "vitest run tests/safety",
     "rovo:invoke-all": "node scripts/invoke/run-all.mjs",
     "forge:deploy": "forge deploy -e development",
