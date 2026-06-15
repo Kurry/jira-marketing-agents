@@ -20,13 +20,13 @@
 
 ## Validation run — Forge webtrigger (CLI)
 
-**Method:** Forge webtrigger HTTP endpoint  
-**Invocation:** `curl -X POST $WEBTRIGGER_URL -d '{"issueKey":"AIGO-3","agentType":"claims"}'`  
-**Seed issue key:** AIGO-3  
-**Seed issue summary:** `[Creative Request] Email and SMS creative: guaranteed diabetes reversal`  
-**Run timestamp (UTC):** 2026-06-15T13:52Z  
-**HTTP response code:** 200 OK  
-**Comment ID posted:** 10007  
+**Method:** Forge webtrigger HTTP endpoint
+**Invocation:** `curl -X POST $WEBTRIGGER_URL -d '{"issueKey":"AIGO-3","agentType":"claims"}'`
+**Seed issue key:** AIGO-3
+**Seed issue summary:** `[Creative Request] Email and SMS creative: guaranteed diabetes reversal`
+**Run timestamp (UTC):** 2026-06-15T13:52Z
+**HTTP response code:** 200 OK
+**Comment ID posted:** 10007
 
 ### Response summary
 ```json

@@ -20,13 +20,13 @@
 
 ## Validation run — Forge webtrigger (CLI)
 
-**Method:** Forge webtrigger HTTP endpoint (`fn-agent-webtrigger`)  
-**Invocation:** `curl -X POST $WEBTRIGGER_URL -d '{"issueKey":"AIGO-1","agentType":"triage"}'`  
-**Seed issue key:** AIGO-1  
-**Seed issue summary:** `[Growth Task] Q3 employer acquisition push`  
-**Run timestamp (UTC):** 2026-06-15T13:51Z  
-**HTTP response code:** 200 OK  
-**Comment ID posted:** 10004  
+**Method:** Forge webtrigger HTTP endpoint (`fn-agent-webtrigger`)
+**Invocation:** `curl -X POST $WEBTRIGGER_URL -d '{"issueKey":"AIGO-1","agentType":"triage"}'`
+**Seed issue key:** AIGO-1
+**Seed issue summary:** `[Growth Task] Q3 employer acquisition push`
+**Run timestamp (UTC):** 2026-06-15T13:51Z
+**HTTP response code:** 200 OK
+**Comment ID posted:** 10004
 
 ### Forge logs excerpt
 ```

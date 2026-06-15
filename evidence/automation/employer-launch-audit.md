@@ -20,13 +20,13 @@
 
 ## Validation run — Forge webtrigger (CLI)
 
-**Method:** Forge webtrigger HTTP endpoint  
-**Invocation:** `curl -X POST $WEBTRIGGER_URL -d '{"issueKey":"AIGO-4","agentType":"employerLaunch"}'`  
-**Seed issue key:** AIGO-4  
-**Seed issue summary:** `[Employer Launch] Employer launch for Acme Corp on June 20`  
-**Run timestamp (UTC):** 2026-06-15T13:52Z  
-**HTTP response code:** 200 OK  
-**Comment ID posted:** 10005  
+**Method:** Forge webtrigger HTTP endpoint
+**Invocation:** `curl -X POST $WEBTRIGGER_URL -d '{"issueKey":"AIGO-4","agentType":"employerLaunch"}'`
+**Seed issue key:** AIGO-4
+**Seed issue summary:** `[Employer Launch] Employer launch for Acme Corp on June 20`
+**Run timestamp (UTC):** 2026-06-15T13:52Z
+**HTTP response code:** 200 OK
+**Comment ID posted:** 10005
 
 ### Response summary
 ```json

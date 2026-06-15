@@ -20,13 +20,13 @@
 
 ## Validation run — Forge webtrigger (CLI)
 
-**Method:** Forge webtrigger HTTP endpoint (JQL-based, no issueKey required)  
-**Invocation:** `curl -X POST $WEBTRIGGER_URL -d '{"agentType":"weeklyReadout"}'`  
-**JQL:** DEFAULT_WEEKLY_JQL (last 7 days of AIGO issues)  
-**Comment posted on:** AIGO-3 (first matching issue from JQL)  
-**Run timestamp (UTC):** 2026-06-15T13:52Z  
-**HTTP response code:** 200 OK  
-**Comment ID posted:** 10008  
+**Method:** Forge webtrigger HTTP endpoint (JQL-based, no issueKey required)
+**Invocation:** `curl -X POST $WEBTRIGGER_URL -d '{"agentType":"weeklyReadout"}'`
+**JQL:** DEFAULT_WEEKLY_JQL (last 7 days of AIGO issues)
+**Comment posted on:** AIGO-3 (first matching issue from JQL)
+**Run timestamp (UTC):** 2026-06-15T13:52Z
+**HTTP response code:** 200 OK
+**Comment ID posted:** 10008
 
 ### Response summary
 ```json

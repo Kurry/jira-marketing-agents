@@ -20,13 +20,13 @@
 
 ## Validation run — Forge webtrigger (CLI)
 
-**Method:** Forge webtrigger HTTP endpoint  
-**Invocation:** `curl -X POST $WEBTRIGGER_URL -d '{"issueKey":"AIGO-2","agentType":"experiment"}'`  
-**Seed issue key:** AIGO-2  
-**Seed issue summary:** `[Experiment] Email subject line test to lift signup conversion rate`  
-**Run timestamp (UTC):** 2026-06-15T13:52Z  
-**HTTP response code:** 200 OK  
-**Comment ID posted:** 10006  
+**Method:** Forge webtrigger HTTP endpoint
+**Invocation:** `curl -X POST $WEBTRIGGER_URL -d '{"issueKey":"AIGO-2","agentType":"experiment"}'`
+**Seed issue key:** AIGO-2
+**Seed issue summary:** `[Experiment] Email subject line test to lift signup conversion rate`
+**Run timestamp (UTC):** 2026-06-15T13:52Z
+**HTTP response code:** 200 OK
+**Comment ID posted:** 10006
 
 ### Response summary
 ```json
