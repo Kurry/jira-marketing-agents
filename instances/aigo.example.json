@@ -27,7 +27,7 @@
       {"name": "Claims Review", "description": "A health/clinical claims review item. Human Compliance reviewer required; AI may flag but never approves.", "type": "standard"},
       {"name": "Decision Memo", "description": "A decision-support artifact tying a recommendation to evidence and a required decision.", "type": "standard"},
       {"name": "Positioning Update", "description": "A product positioning/messaging update: value propositions, proof requirements, differentiators, objection matrix.", "type": "standard"},
-      {"name": "Bug / Tracking Issue", "description": "An engineering/tracking defect — including analytics/tracking instrumentation gaps.", "type": "standard"}
+      {"name": "Bug", "description": "An engineering/tracking defect — including analytics/tracking instrumentation gaps.", "type": "standard"}
     ],
     "customFields": [
       {"name": "Segment", "type": "com.atlassian.jira.plugin.system.customfieldtypes:select", "searcherKey": "com.atlassian.jira.plugin.system.customfieldtypes:multiselectsearcher", "description": "AIGO: Target audience segment for this issue.", "forgeVar": "SEGMENT_FIELD_ID"},

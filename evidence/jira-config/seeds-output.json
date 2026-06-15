@@ -1,0 +1,204 @@
+{
+  "timestamp": "2026-06-15T06:04:10.425Z",
+  "projectKey": "AIGO",
+  "seedLabel": "aigo-seed",
+  "created": [],
+  "retyped": [
+    {
+      "key": "AIGO-1",
+      "oldType": "Task",
+      "newType": "AI Growth Request",
+      "seed": {
+        "summary": "[Growth Task] Q3 employer acquisition push",
+        "issueTypeName": "AI Growth Request",
+        "description": "AIGO seed issue. Intended AIGO type: AI Growth Request. Target status after import: To Do. Signals: employer acquisition; paid social; email; partner webinar; signup and activation metrics. Acceptance criteria: draft channel plan; confirm compliance review; define signup conversion and activation tracking; identify owner for each channel.",
+        "labels": [
+          "aigo-seed"
+        ]
+      }
+    },
+    {
+      "key": "AIGO-2",
+      "oldType": "Task",
+      "newType": "Experiment",
+      "seed": {
+        "summary": "[Experiment] Email subject line test to lift signup conversion rate",
+        "issueTypeName": "Experiment",
+        "description": "AIGO seed issue. Intended AIGO type: Experiment. Target status after import: AI Triage. Audience: eligible employer members who have not registered. Primary metric: signup conversion rate. Guardrails: unsubscribe rate and complaint rate. Decision rule: ship winner only after minimum sample size and human review. Tracking events: email_open; email_click; signup_started; signup_completed.",
+        "labels": [
+          "aigo-seed"
+        ]
+      }
+    },
+    {
+      "key": "AIGO-3",
+      "oldType": "Task",
+      "newType": "Creative Request",
+      "seed": {
+        "summary": "[Creative Request] Email and SMS creative: guaranteed diabetes reversal",
+        "issueTypeName": "Creative Request",
+        "description": "AIGO seed issue. Intended AIGO type: Creative Request. Target status after import: Ready. Creative includes prohibited phrases: Guaranteed reversal of diabetes in 30 days; get off your medication. This is not approved for launch. Human compliance review is required before any send.",
+        "labels": [
+          "aigo-seed"
+        ]
+      }
+    },
+    {
+      "key": "AIGO-4",
+      "oldType": "Task",
+      "newType": "Employer Launch",
+      "seed": {
+        "summary": "[Employer Launch] Employer launch for Acme Corp on June 20",
+        "issueTypeName": "Employer Launch",
+        "description": "AIGO seed issue. Intended AIGO type: Employer Launch. Target status after import: In Progress. Launch date: June 20. Landing page is ready; final employer logo assets are missing; tracking validation is unconfirmed; claims approval is missing. Need go or no-go recommendation and blocker list.",
+        "labels": [
+          "aigo-seed"
+        ]
+      }
+    },
+    {
+      "key": "AIGO-5",
+      "oldType": "Task",
+      "newType": "Dashboard Request",
+      "seed": {
+        "summary": "[Dashboard Request] Channel performance dashboard for CAC and signups",
+        "issueTypeName": "Dashboard Request",
+        "description": "AIGO seed issue. Intended AIGO type: Dashboard Request. Target status after import: To Do. Need dashboard for CAC; signups; conversion rate; spend; channel; week; campaign; employer segment. Daily refresh preferred. Include source system assumptions and metric definitions.",
+        "labels": [
+          "aigo-seed"
+        ]
+      }
+    },
+    {
+      "key": "AIGO-6",
+      "oldType": "Task",
+      "newType": "Signup Funnel Issue",
+      "seed": {
+        "summary": "[Signup Funnel Issue] Signup page broken on mobile Safari",
+        "issueTypeName": "Signup Funnel Issue",
+        "description": "AIGO seed issue. Intended AIGO type: Signup Funnel Issue. Target status after import: Blocked. Mobile Safari users see a 500 error after eligibility verification. Impact appears high for employer members. Blocked on engineering logs and reproducible session details. Treat as p0 funnel risk.",
+        "labels": [
+          "aigo-seed"
+        ]
+      }
+    },
+    {
+      "key": "AIGO-7",
+      "oldType": "Task",
+      "newType": "Bug",
+      "seed": {
+        "summary": "[Bug / Tracking Issue] Signup page broken on mobile Safari for new users",
+        "issueTypeName": "Bug",
+        "description": "AIGO seed issue. Intended AIGO type: Bug. Target status after import: To Do. Possible duplicate of the mobile Safari signup funnel issue. New users fail registration after eligibility verification. Need duplicate detection and linked context recommendation.",
+        "labels": [
+          "aigo-seed"
+        ]
+      }
+    },
+    {
+      "key": "AIGO-8",
+      "oldType": "Task",
+      "newType": "Segmentation Request",
+      "seed": {
+        "summary": "[Segmentation Request] Target lapsed eligible employer members",
+        "issueTypeName": "Segmentation Request",
+        "description": "AIGO seed issue. Intended AIGO type: Segmentation Request. Target status after import: To Do. Segment: eligible employer members who started signup but did not complete registration in the last 30 days. Include consent checks; suppression rules; exclusion of recent unsubscribes; and human approval before activation.",
+        "labels": [
+          "aigo-seed"
+        ]
+      }
+    },
+    {
+      "key": "AIGO-9",
+      "oldType": "Task",
+      "newType": "Campaign",
+      "seed": {
+        "summary": "[Automation Request] Re-engagement campaign to drive signup conversion",
+        "issueTypeName": "Campaign",
+        "description": "AIGO seed issue. Intended AIGO type: Campaign. Target status after import: To Do. Re-engagement workflow across email and SMS. Need trigger logic; suppression; frequency caps; legal review; analytics events; and rollback plan. No campaign should launch automatically.",
+        "labels": [
+          "aigo-seed"
+        ]
+      }
+    },
+    {
+      "key": "AIGO-10",
+      "oldType": "Task",
+      "newType": "Positioning Update",
+      "seed": {
+        "summary": "[Growth Task] Co-branded eligibility landing page for employer members",
+        "issueTypeName": "Positioning Update",
+        "description": "AIGO seed issue. Intended AIGO type: Positioning Update. Target status after import: To Do. Co-branded eligibility landing page update: employer value propositions; proof requirements; differentiators; objection matrix; compliance review; accessibility; and analytics tags.",
+        "labels": [
+          "aigo-seed"
+        ]
+      }
+    },
+    {
+      "key": "AIGO-11",
+      "oldType": "Task",
+      "newType": "Personalization Journey",
+      "seed": {
+        "summary": "[Growth Task] Add post-activation member referral program",
+        "issueTypeName": "Personalization Journey",
+        "description": "AIGO seed issue. Intended AIGO type: Personalization Journey. Target status after import: To Do. Post-activation referral journey: lifecycle stages; channels; behavior triggers; incentive guardrails; fraud prevention; eligibility; legal approval; tracking events; and launch decision criteria.",
+        "labels": [
+          "aigo-seed"
+        ]
+      }
+    },
+    {
+      "key": "AIGO-12",
+      "oldType": "Task",
+      "newType": "AI Growth Request",
+      "seed": {
+        "summary": "[Growth Task] Improve early activation after registration",
+        "issueTypeName": "AI Growth Request",
+        "description": "AIGO seed issue. Intended AIGO type: AI Growth Request. Target status after import: To Do. Improve the first seven days after registration. Signals: onboarding; device setup; first coaching session; activation rate. Need behavioral triggers; measurement plan; and experiment guardrails.",
+        "labels": [
+          "aigo-seed"
+        ]
+      }
+    },
+    {
+      "key": "AIGO-13",
+      "oldType": "Task",
+      "newType": "Claims Review",
+      "seed": {
+        "summary": "[Claims Review] Claims review for SMS copy waiting on compliance",
+        "issueTypeName": "Claims Review",
+        "description": "AIGO seed issue. Intended AIGO type: Claims Review. Target status after import: Blocked. SMS copy mentions medication reduction and guaranteed outcomes. Compliance owner has not approved. Need safer alternatives and explicit human approval before use.",
+        "labels": [
+          "aigo-seed"
+        ]
+      }
+    },
+    {
+      "key": "AIGO-14",
+      "oldType": "Task",
+      "newType": "Decision Memo",
+      "seed": {
+        "summary": "[Decision Memo] Q3 budget decision for paid social test",
+        "issueTypeName": "Decision Memo",
+        "description": "AIGO seed issue. Intended AIGO type: Decision Memo. Target status after import: Decision Needed. Decision: approve or defer Q3 paid social test budget. Inputs: forecast CAC; signup volume; creative risk; measurement plan; and opportunity cost. Need recommendation with assumptions.",
+        "labels": [
+          "aigo-seed"
+        ]
+      }
+    },
+    {
+      "key": "AIGO-15",
+      "oldType": "Task",
+      "newType": "Research Brief",
+      "seed": {
+        "summary": "[Growth Task] Shipped new employer landing page",
+        "issueTypeName": "Research Brief",
+        "description": "AIGO seed issue. Intended AIGO type: Research Brief. Target status after import: Done. Post-launch research synthesis for the new employer landing page: conversion lift observed; segment breakdown by employer tier; objections surfaced in user testing; evidence for future positioning updates; and recommended follow-on experiments.",
+        "labels": [
+          "aigo-seed"
+        ]
+      }
+    }
+  ],
+  "skipped": []
+}

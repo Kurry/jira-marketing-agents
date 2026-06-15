@@ -432,16 +432,18 @@ async function main() {
     process.exit(1);
   }
 
-  const baseUrl = `https://${config.site}`;
+  const baseUrl = config.cloudId
+    ? `https://api.atlassian.com/ex/jira/${config.cloudId}`
+    : `https://${config.site}`;
   console.log(`\nProvisioning seeds in Jira at ${baseUrl} (project: ${projectKey})`);
 
-  // GET all issue types from Jira to build name → id map
+  // GET project-scoped issue types (team-managed projects use /issuetype/project)
   console.log("\nFetching issue types from Jira...");
   const allIssueTypes = await jiraCall({
     method: "GET",
-    url: `${baseUrl}/rest/api/3/issuetype`,
+    url: `${baseUrl}/rest/api/3/issuetype/project?projectId=${config.projectId || projectId}`,
     token,
-    description: "GET /rest/api/3/issuetype",
+    description: "GET /rest/api/3/issuetype/project",
   });
 
   const issueTypeIdByName = new Map(
@@ -450,7 +452,7 @@ async function main() {
 
   // GET existing seed issues
   console.log(`\nFetching existing seed issues (label: ${seedLabel})...`);
-  const searchUrl = `${baseUrl}/rest/api/3/search?jql=${encodeURIComponent(`project = ${projectKey} AND labels = ${seedLabel}`)}&maxResults=50&fields=summary,issuetype`;
+  const searchUrl = `${baseUrl}/rest/api/3/search/jql?jql=${encodeURIComponent(`project = ${projectKey} AND labels = ${seedLabel}`)}&maxResults=50&fields=summary,issuetype`;
   const searchResult = await jiraCall({
     method: "GET",
     url: searchUrl,

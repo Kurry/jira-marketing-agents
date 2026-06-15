@@ -48,7 +48,7 @@ const CANONICAL_ISSUE_TYPES = [
   "Claims Review",
   "Decision Memo",
   "Positioning Update",
-  "Bug / Tracking Issue",
+  "Bug",
 ];
 
 // Provisioned AIGO workflow statuses (T-M2-05)
