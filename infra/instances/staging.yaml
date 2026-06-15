@@ -1,0 +1,9 @@
+schemaVersion: 1
+# Target instance binding. Scripts refuse to run unless these match.
+instance:
+  site: myhealthcaresite.atlassian.net
+  forgeEnv: development
+  projectKey: AIGO
+  projectId: "10000"
+  projectName: AI Growth Ops
+  cloudId: 76683cc1-6501-400f-8b59-01eaad4418d2

@@ -1,0 +1,95 @@
+schemaVersion: 1
+# generated_by: scripts/audit/jira-snapshot.mjs (live), rendered by render-infra-tree.mjs
+# source: getIssueTypesForProject
+# managed: AIGO request types. builtin: next-gen defaults (declared, not created).
+issueTypes:
+  - name: Workstream
+    id: "10001"
+    subtask: false
+    hierarchyLevel: 1
+    managed: false
+  - name: Task
+    id: "10002"
+    subtask: false
+    hierarchyLevel: 0
+    managed: false
+  - name: Sub-task
+    id: "10003"
+    subtask: true
+    hierarchyLevel: -1
+    managed: false
+  - name: AI Growth Request
+    id: "10048"
+    subtask: false
+    hierarchyLevel: 0
+    managed: true
+  - name: Creative Request
+    id: "10049"
+    subtask: false
+    hierarchyLevel: 0
+    managed: true
+  - name: Experiment
+    id: "10050"
+    subtask: false
+    hierarchyLevel: 0
+    managed: true
+  - name: Segmentation Request
+    id: "10051"
+    subtask: false
+    hierarchyLevel: 0
+    managed: true
+  - name: Personalization Journey
+    id: "10052"
+    subtask: false
+    hierarchyLevel: 0
+    managed: true
+  - name: Employer Launch
+    id: "10053"
+    subtask: false
+    hierarchyLevel: 0
+    managed: true
+  - name: Campaign
+    id: "10054"
+    subtask: false
+    hierarchyLevel: 0
+    managed: true
+  - name: Dashboard Request
+    id: "10055"
+    subtask: false
+    hierarchyLevel: 0
+    managed: true
+  - name: Signup Funnel Issue
+    id: "10056"
+    subtask: false
+    hierarchyLevel: 0
+    managed: true
+  - name: Research Brief
+    id: "10057"
+    subtask: false
+    hierarchyLevel: 0
+    managed: true
+  - name: Claims Review
+    id: "10058"
+    subtask: false
+    hierarchyLevel: 0
+    managed: true
+  - name: Decision Memo
+    id: "10059"
+    subtask: false
+    hierarchyLevel: 0
+    managed: true
+  - name: Positioning Update
+    id: "10060"
+    subtask: false
+    hierarchyLevel: 0
+    managed: true
+  - name: Bug
+    id: "10061"
+    subtask: false
+    hierarchyLevel: 0
+    managed: false
+  - name: Story
+    id: "10062"
+    subtask: false
+    hierarchyLevel: 0
+    managed: false

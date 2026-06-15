@@ -1,0 +1,51 @@
+{
+  "generated_by": "scripts/infra/render-infra-tree.mjs",
+  "generated_at": "2026-06-15T14:36:40.635Z",
+  "git_sha": "32bd148b29ea539fcb0cc15fafcfe64b11797f86",
+  "instance": "myhealthcaresite.atlassian.net",
+  "exit_code": 0,
+  "summary": "rendered 14 infra files: 5 populated from live data, 9 schemaVersion:1 stubs",
+  "data": {
+    "files": [
+      "infra/instances/staging.yaml",
+      "infra/jira/automation/creative-claims.yaml",
+      "infra/jira/automation/employer-launch.yaml",
+      "infra/jira/automation/experiment-spec.yaml",
+      "infra/jira/automation/intake-triage.yaml",
+      "infra/jira/automation/weekly-readout.yaml",
+      "infra/jira/dashboards.yaml",
+      "infra/jira/fields.yaml",
+      "infra/jira/filters.yaml",
+      "infra/jira/issue-types.yaml",
+      "infra/jira/screens.yaml",
+      "infra/jira/seeds/matrix.yaml",
+      "infra/jira/workflows/aigo-default.yaml",
+      "infra/rovo/agents.yaml"
+    ],
+    "populated": [
+      "infra/instances/staging.yaml",
+      "infra/jira/fields.yaml",
+      "infra/jira/filters.yaml",
+      "infra/jira/issue-types.yaml",
+      "infra/jira/workflows/aigo-default.yaml"
+    ],
+    "stubs": [
+      "infra/jira/automation/creative-claims.yaml",
+      "infra/jira/automation/employer-launch.yaml",
+      "infra/jira/automation/experiment-spec.yaml",
+      "infra/jira/automation/intake-triage.yaml",
+      "infra/jira/automation/weekly-readout.yaml",
+      "infra/jira/dashboards.yaml",
+      "infra/jira/screens.yaml",
+      "infra/jira/seeds/matrix.yaml",
+      "infra/rovo/agents.yaml"
+    ],
+    "counts": {
+      "total": 14,
+      "issue_types": 18,
+      "custom_fields": 8,
+      "filters": 7,
+      "statuses": 8
+    }
+  }
+}

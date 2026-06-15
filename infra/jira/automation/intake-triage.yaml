@@ -1,0 +1,9 @@
+schemaVersion: 1
+# STUB automation rule: intake-triage.
+# Rules are declared disabled; enabled only after a captured audit-log run.
+rule:
+  name: intake-triage
+  enabled: false
+  trigger: null
+  conditions: []
+  actions: []

@@ -1,0 +1,30 @@
+schemaVersion: 1
+# Default workflow statuses observed live, from evidence/jira-config/statuses.json.
+workflow:
+  name: AIGO Default
+  statuses:
+    - name: Intake
+      id: "10003"
+      category: TODO
+    - name: Triage
+      id: "10004"
+      category: IN_PROGRESS
+    - name: Spec Ready
+      id: "10005"
+      category: IN_PROGRESS
+    - name: In Review
+      id: "10006"
+      category: IN_PROGRESS
+    - name: Claims Review
+      id: "10007"
+      category: IN_PROGRESS
+    - name: Experiment Running
+      id: "10008"
+      category: IN_PROGRESS
+    - name: Decision Needed
+      id: "10009"
+      category: IN_PROGRESS
+    - name: Launch Prep
+      id: "10010"
+      category: IN_PROGRESS
+  transitions: []

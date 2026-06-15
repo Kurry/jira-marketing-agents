@@ -1,0 +1,35 @@
+schemaVersion: 1
+# Custom fields observed live. rendered by render-infra-tree.mjs from jira.json.
+customFields:
+  - id: customfield_10034
+    name: Project
+    type: atlas-project
+    custom: com.atlassian.jira.plugin.system.customfieldtypes:atlas-project
+  - id: customfield_10037
+    name: Design
+    type: array
+    custom: com.atlassian.jira.plugins.jira-development-integration-plugin:designcf
+  - id: customfield_10019
+    name: Rank
+    type: any
+    custom: com.pyxis.greenhopper.jira:gh-lexo-rank
+  - id: customfield_10015
+    name: Start date
+    type: date
+    custom: com.atlassian.jira.plugin.system.customfieldtypes:datepicker
+  - id: customfield_10040
+    name: Category
+    type: option
+    custom: com.atlassian.jira.plugin.system.customfieldtypes:jwm-category
+  - id: customfield_10041
+    name: Budget
+    type: number
+    custom: com.atlassian.jira.plugin.system.customfieldtypes:float
+  - id: customfield_10000
+    name: Development
+    type: any
+    custom: com.atlassian.jira.plugins.jira-development-integration-plugin:devsummarycf
+  - id: customfield_10001
+    name: Team
+    type: team
+    custom: com.atlassian.jira.plugin.system.customfieldtypes:atlassian-team

@@ -1,0 +1,9 @@
+schemaVersion: 1
+# STUB automation rule: employer-launch.
+# Rules are declared disabled; enabled only after a captured audit-log run.
+rule:
+  name: employer-launch
+  enabled: false
+  trigger: null
+  conditions: []
+  actions: []

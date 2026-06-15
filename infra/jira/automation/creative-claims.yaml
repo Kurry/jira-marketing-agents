@@ -1,0 +1,9 @@
+schemaVersion: 1
+# STUB automation rule: creative-claims.
+# Rules are declared disabled; enabled only after a captured audit-log run.
+rule:
+  name: creative-claims
+  enabled: false
+  trigger: null
+  conditions: []
+  actions: []

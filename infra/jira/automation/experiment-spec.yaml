@@ -1,0 +1,9 @@
+schemaVersion: 1
+# STUB automation rule: experiment-spec.
+# Rules are declared disabled; enabled only after a captured audit-log run.
+rule:
+  name: experiment-spec
+  enabled: false
+  trigger: null
+  conditions: []
+  actions: []

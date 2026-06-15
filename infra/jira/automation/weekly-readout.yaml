@@ -1,0 +1,9 @@
+schemaVersion: 1
+# STUB automation rule: weekly-readout.
+# Rules are declared disabled; enabled only after a captured audit-log run.
+rule:
+  name: weekly-readout
+  enabled: false
+  trigger: null
+  conditions: []
+  actions: []

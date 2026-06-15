@@ -1,0 +1,32 @@
+schemaVersion: 1
+# Saved filters observed live. jql is null where the snapshot lacked read scope;
+# T-R-INFRA-05 backfills jql from a scoped fetch.
+filters:
+  - id: "10005"
+    name: AIGO — Blocked
+    jql: null
+    owner: null
+  - id: "10001"
+    name: AIGO — Claims Review
+    jql: null
+    owner: null
+  - id: "10004"
+    name: AIGO — Decision Needed
+    jql: null
+    owner: null
+  - id: "10006"
+    name: AIGO — Experiment Running
+    jql: null
+    owner: null
+  - id: "10000"
+    name: AIGO — Intake
+    jql: null
+    owner: null
+  - id: "10002"
+    name: AIGO — Launch Readiness
+    jql: null
+    owner: null
+  - id: "10003"
+    name: AIGO — Readout Needed
+    jql: null
+    owner: null
