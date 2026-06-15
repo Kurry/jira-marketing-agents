@@ -1,0 +1,38 @@
+{
+  "generated_by": "scripts/verify/rovo-agents.mjs",
+  "generated_at": "2026-06-15T14:37:36.141Z",
+  "git_sha": "f1466048ef9e300da40d8bc6810f58e998f2fce0",
+  "instance": "myhealthcaresite.atlassian.net",
+  "exit_code": 0,
+  "summary": "19 Rovo agents declared; webtrigger reachable (HTTP 400)",
+  "data": {
+    "pass": true,
+    "declared_agent_count": 19,
+    "declared_agents": [
+      "growth-triage-agent",
+      "requirements-gap-agent",
+      "epic-breakdown-agent",
+      "duplicate-detector-agent",
+      "sprint-risk-agent",
+      "acceptance-criteria-agent",
+      "qa-testcase-agent",
+      "experiment-design-agent",
+      "creative-claims-agent",
+      "employer-launch-agent",
+      "dashboard-spec-agent",
+      "funnel-friction-agent",
+      "weekly-readout-agent",
+      "creative-generation-agent",
+      "audience-builder-agent",
+      "campaign-orchestration-agent",
+      "landing-page-agent",
+      "referral-loop-agent",
+      "activation-agent"
+    ],
+    "webtrigger_url_source": "forge-cli",
+    "probe_status": 400,
+    "probe_response": {
+      "error": "agentType must be one of: triage, claims, experiment, employerLaunch, weeklyReadout"
+    }
+  }
+}

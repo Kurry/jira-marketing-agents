@@ -1,0 +1,22 @@
+{
+  "generated_by": "scripts/verify/forge-install.mjs",
+  "generated_at": "2026-06-15T14:37:33.286Z",
+  "git_sha": "f1466048ef9e300da40d8bc6810f58e998f2fce0",
+  "instance": "myhealthcaresite.atlassian.net",
+  "exit_code": 0,
+  "summary": "Forge app Up-to-date on myhealthcaresite.atlassian.net",
+  "data": {
+    "pass": true,
+    "install_status": "Up-to-date",
+    "site": "myhealthcaresite.atlassian.net",
+    "installation": {
+      "installationId": "7e844a39-2e55-418f-93ad-7ae4dc8d9695",
+      "environment": "development",
+      "site": "myhealthcaresite.atlassian.net",
+      "apps": "Jira",
+      "version": "3",
+      "status": "Up-to-date"
+    },
+    "deployed_to_production": false
+  }
+}

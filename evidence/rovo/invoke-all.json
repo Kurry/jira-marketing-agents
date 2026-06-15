@@ -1,0 +1,272 @@
+{
+  "generated_by": "scripts/invoke/run-all.mjs",
+  "generated_at": "2026-06-15T14:37:42.568Z",
+  "git_sha": "f1466048ef9e300da40d8bc6810f58e998f2fce0",
+  "instance": "myhealthcaresite.atlassian.net",
+  "exit_code": 0,
+  "summary": "Invoked 5 agents; no approval/launch fields set — safety invariant holds",
+  "data": {
+    "pass": true,
+    "webtrigger_url_source": "forge-cli",
+    "seed_issue": "AIGO-1",
+    "invocations": [
+      {
+        "agentType": "triage",
+        "status": 200,
+        "response": {
+          "agentType": "triage",
+          "issueKey": "AIGO-1",
+          "commentId": "10014",
+          "result": {
+            "issueKey": "AIGO-1",
+            "cleanSummary": "[Growth Task] Q3 employer acquisition push",
+            "recommendedIssueType": "Segmentation Request",
+            "workflowArea": "Targeting",
+            "priority": "P1",
+            "riskLevel": "Blocked",
+            "claimsRisk": "Risky",
+            "suggestedOwnerGroup": "Growth – Targeting",
+            "missingInformation": [],
+            "recommendedNextStatus": "Needs Human Review",
+            "acceptanceCriteria": [
+              "Goal is met and verified.",
+              "Acceptance criteria are documented and reviewed."
+            ],
+            "suggestedSubtasks": [
+              "Clarify requirements",
+              "Execute",
+              "Review"
+            ],
+            "humanApprovalsRequired": [
+              "Compliance / medical claims review",
+              "Audience / suppression change approval",
+              "Production signup-flow change approval"
+            ]
+          }
+        },
+        "banned_fields": []
+      },
+      {
+        "agentType": "claims",
+        "status": 200,
+        "response": {
+          "agentType": "claims",
+          "issueKey": "AIGO-1",
+          "commentId": "10015",
+          "result": {
+            "issueKey": "AIGO-1",
+            "overallClaimsRisk": "Risky",
+            "flaggedPhrases": [
+              {
+                "phrase": "diagnose",
+                "issue": "Implies the product diagnoses conditions.",
+                "saferRewrite": "Provides information to discuss with a qualified healthcare provider."
+              }
+            ],
+            "channelWarnings": [
+              "SMS: ensure consent and opt-out language; health claims are especially scrutinized.",
+              "Email: include unsubscribe; avoid unsubstantiated health outcomes in subject lines.",
+              "Paid ads: platforms restrict health/medical claims; risky copy may be rejected or penalized."
+            ],
+            "humanReviewRequired": true
+          }
+        },
+        "banned_fields": []
+      },
+      {
+        "agentType": "experiment",
+        "status": 200,
+        "response": {
+          "agentType": "experiment",
+          "issueKey": "AIGO-1",
+          "commentId": "10016",
+          "result": {
+            "issueKey": "AIGO-1",
+            "hypothesis": "We believe that [Growth Task] Q3 employer acquisition push will improve Conversion rate for the target segment. We will know we are right when Conversion rate increases versus control without guardrail regressions.",
+            "audience": "Employer-sourced members",
+            "segment": "definition",
+            "channel": "SMS",
+            "variants": [
+              "Control (current experience)",
+              "Variant A (proposed change)"
+            ],
+            "primaryMetric": "Conversion rate",
+            "secondaryMetrics": [
+              "Downstream activation rate",
+              "Revenue per exposed user"
+            ],
+            "guardrailMetrics": [
+              "Unsubscribe rate",
+              "Spam complaint rate",
+              "CAC (cost per acquisition)",
+              "Claims risk (no new unapproved claims)",
+              "Tracking integrity"
+            ],
+            "sampleSizeNote": "Estimate sample size from the baseline rate and the minimum detectable effect (MDE). Do not start until powered.",
+            "runtimeRecommendation": "Run for at least one to two full business cycles (e.g., 1–2 weeks) and reach the pre-computed sample size before reading results.",
+            "trackingRequirements": [
+              "Exposure/assignment event per variant",
+              "Primary metric conversion event",
+              "Guardrail events (unsubscribe, complaint)",
+              "Tracking validated in staging before launch"
+            ],
+            "decisionRule": "Ship Variant A if it beats Control on Conversion rate with no guardrail regression; otherwise iterate or kill.",
+            "readoutTemplate": [
+              "Hypothesis and what we tested",
+              "Primary metric result (with confidence interval — do not claim significance without data)",
+              "Guardrail check",
+              "Decision: Scale / Iterate / Kill / Extend",
+              "Next steps"
+            ],
+            "approvalsRequired": [
+              "Claims / compliance review (risky language detected)",
+              "Messaging / deliverability review",
+              "Experiment launch approval (human go/no-go)"
+            ],
+            "readyForDesign": true,
+            "notReadyReasons": []
+          }
+        },
+        "banned_fields": []
+      },
+      {
+        "agentType": "employerLaunch",
+        "status": 200,
+        "response": {
+          "agentType": "employerLaunch",
+          "issueKey": "AIGO-1",
+          "commentId": "10017",
+          "result": {
+            "issueKey": "AIGO-1",
+            "readinessScore": 90,
+            "launchPhases": [
+              {
+                "phase": "Setup",
+                "tasks": [
+                  "Confirm employer / partner details",
+                  "Ingest eligibility file",
+                  "Define segments & suppression"
+                ]
+              },
+              {
+                "phase": "Build",
+                "tasks": [
+                  "Build email/SMS assets",
+                  "Build landing page",
+                  "Implement tracking & UTMs"
+                ]
+              },
+              {
+                "phase": "Review",
+                "tasks": [
+                  "Claims / compliance review",
+                  "QA assets & tracking",
+                  "Go/no-go approval"
+                ]
+              },
+              {
+                "phase": "Launch & Monitor",
+                "tasks": [
+                  "Schedule send",
+                  "Monitor deliverability & guardrails",
+                  "Post-launch readout"
+                ]
+              }
+            ],
+            "blockers": [
+              "Missing claims approval.",
+              "Risky claims language detected without documented approval."
+            ],
+            "requiredAssets": [
+              "Documented claims approval"
+            ],
+            "qaChecklist": [
+              "Eligibility file ingested and row counts reconciled.",
+              "Suppression logic verified in staging.",
+              "Assets render on target devices and channels.",
+              "Tracking/UTMs fire and attribute correctly.",
+              "Claims-bearing copy has documented approval."
+            ],
+            "suggestedSubtasks": [
+              {
+                "title": "Ingest & validate eligibility file",
+                "description": "Load census and reconcile counts.",
+                "dueOffsetDays": -14,
+                "ownerGroup": "Growth – Ops"
+              },
+              {
+                "title": "Build segments & suppression",
+                "description": "Define audience and exclusions.",
+                "dueOffsetDays": -12,
+                "ownerGroup": "Growth – Targeting"
+              },
+              {
+                "title": "Create email/SMS assets",
+                "description": "Draft and finalize creative.",
+                "dueOffsetDays": -10,
+                "ownerGroup": "Growth – Creative"
+              },
+              {
+                "title": "Claims / compliance review",
+                "description": "Review all claims-bearing copy.",
+                "dueOffsetDays": -8,
+                "ownerGroup": "Compliance / Medical Review"
+              },
+              {
+                "title": "Implement & QA tracking",
+                "description": "Set up UTMs and validate events.",
+                "dueOffsetDays": -6,
+                "ownerGroup": "Growth – Analytics"
+              },
+              {
+                "title": "Go/no-go review",
+                "description": "Final readiness sign-off.",
+                "dueOffsetDays": -2,
+                "ownerGroup": "Growth – Partnerships"
+              }
+            ]
+          }
+        },
+        "banned_fields": []
+      },
+      {
+        "agentType": "weeklyReadout",
+        "status": 200,
+        "response": {
+          "agentType": "weeklyReadout",
+          "issueKey": "AIGO-1",
+          "commentId": "10018",
+          "result": {
+            "period": "Last 7 day(s)",
+            "completedWork": [
+              "AIGO-15: [Growth Task] Shipped new employer landing page"
+            ],
+            "blockedWork": [],
+            "decisionsNeeded": [
+              "AIGO-14: [Decision Memo] Q3 budget decision for paid social test"
+            ],
+            "claimsBottlenecks": [
+              "AIGO-13: [Claims Review] Claims review for SMS copy waiting on compliance"
+            ],
+            "experimentsToCall": [
+              "AIGO-2: [Experiment] Email subject line test to lift signup conversion rate"
+            ],
+            "employerLaunchRisks": [
+              "AIGO-4: [Employer Launch] Employer launch for Acme Corp on June 20"
+            ],
+            "highImpactFunnelIssues": [
+              "AIGO-6: [Signup Funnel Issue] Signup page broken on mobile Safari"
+            ],
+            "topThreeActions": [
+              "Decide — AIGO-14: [Decision Memo] Q3 budget decision for paid social test",
+              "Clear claims review — AIGO-13: [Claims Review] Claims review for SMS copy waiting on compliance",
+              "Call experiment — AIGO-2: [Experiment] Email subject line test to lift signup conversion rate"
+            ]
+          }
+        },
+        "banned_fields": []
+      }
+    ],
+    "violations": []
+  }
+}
