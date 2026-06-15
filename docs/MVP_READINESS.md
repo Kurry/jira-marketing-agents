@@ -1,8 +1,12 @@
 # MVP Readiness Note
 
-Date: 2026-06-15 (updated tick 38)
+Date: 2026-06-15 (updated after Atlassian-native tooling review)
 
-Status: **ALL TASKS COMPLETE ✓** — T-M3-03 resolved via Forge webtrigger CLI. Site upgraded to Standard (Rovo now included, BLK-02 resolved).
+Status: **CLI fallback validated; native Jira Automation/Rovo proof still pending.**
+The Forge webtrigger path invoked the five MVP agents and posted AI-labeled Jira
+comments. That proves the safe comment-writing fallback, but it is not the same
+as Jira Automation invoking the native "Use Rovo agent" action and producing
+Automation audit-log evidence.
 
 This note records the current evidence, blockers, risks, and decisions for the
 Forge/Rovo-only AI Growth Ops Jira MVP.
@@ -41,7 +45,7 @@ Evidence: `evidence/gates/forge-deploy.log`, `evidence/gates/forge-install.log`
 | Dashboards | 6 (IDs 10001–10006) | ✓ Live |
 | Seed issues | 15 (all 14 canonical types covered) | ✓ Live |
 | Automation rules | 5 imported DISABLED | ✓ Ready to enable |
-| Rovo agents | 19 in manifest, app Up-to-date | ✓ Verified |
+| Rovo agents | 19 in manifest, app Up-to-date | Manifest/install verified; UI confirmation pending |
 
 Evidence: `evidence/jira-config/`, `evidence/rovo/visibility.md`,
 `evidence/automation/rule-import.md`
@@ -83,11 +87,20 @@ Full safety audit signed off 2026-06-15. See `evidence/safety/final-audit.md`.
 
 `forge 12.22.0` authenticated on operator machine. Resolved.
 
-### BLK-02 — Rovo/AI activation eligibility (RESOLVED ✓)
+### BLK-02 — Rovo/AI activation and Automation wiring
 
-**Resolved 2026-06-15:** Operator upgraded `myhealthcaresite.atlassian.net` to Standard. Rovo is now included. T-M3-03 was completed via Forge webtrigger CLI path.
+**Partially resolved 2026-06-15:** Operator upgraded
+`myhealthcaresite.atlassian.net` to Standard. Rovo should be included on the
+paid plan, but the native Jira Automation "Use Rovo agent" path still needs to
+be wired, enabled, triggered, and verified from the Automation audit log.
 
-**Optional next step:** Wire "Use Rovo agent" action in the 5 Jira Automation rules and enable them. With Standard plan, "Use agent" is now available in the Jira Automation flow builder. See `skills/jira-automation-rovo-setup/SKILL.md`.
+The Forge webtrigger CLI path remains available as a fallback and has posted
+comments successfully. It should not be counted as completion of native
+Automation/Rovo wiring.
+
+Next step: Wire "Use Rovo agent" in the five Jira Automation rules, enable them
+only after review, trigger each rule on seed issues, and capture the real audit
+log rows. See `skills/jira-automation-rovo-setup/SKILL.md`.
 
 Evidence: `evidence/blockers.md#BLK-02`, `evidence/automation/*-audit.md`
 
@@ -107,15 +120,16 @@ Evidence: `evidence/blockers.md#BLK-02`, `evidence/automation/*-audit.md`
 | 15 seed issues (all 14 types covered) | ✓ LIVE |
 | 5 automation rules imported DISABLED | ✓ LIVE |
 | JQL scope conditions on all rules | ✓ VERIFIED in flow builder |
-| 19 Rovo agents visible (manifest verified) | ✓ VERIFIED |
+| 19 Rovo agents manifest/install check | ✓ VERIFIED |
+| 19 Rovo agents visible in Jira UI | PENDING UI confirmation |
 | 6 agent domain-function runs evidenced | ✓ DONE |
 | All 10 outcome traces written | ✓ DONE |
 | Safety audit signed off | ✓ PASS |
 | IaC provisioning scripts (idempotent) | ✓ DONE |
 | All docs (INTEGRATION, RUNBOOK, PORTABILITY, TROUBLESHOOTING) | ✓ DONE |
-| **T-M3-03: enable rules + capture audit logs** | **✓ DONE — webtrigger CLI (commentIds 10004-10008)** |
+| **T-M3-03: enable rules + capture audit logs** | **PARTIAL — webtrigger CLI complete; native Automation audit logs pending** |
 | Live agent comment via webtrigger | ✓ DONE — 5 AI-labeled comments posted to Jira |
-| Live audit-log evidence | ✓ DONE — evidence/automation/*-audit.md (all PASS) |
+| Live native Automation audit-log evidence | PENDING — evidence/automation/*-audit.md currently records webtrigger validation |
 
 ---
 
@@ -128,9 +142,10 @@ The MVP is ready when:
 3. ✓ All 19 Rovo agents declared in manifest; app Up-to-date on staging
 4. ✓ Primary agents return structured output on seed issues
 5. ✓ Agent analysis invoked via CLI (Forge webtrigger), AI-labeled comments posted to Jira seed issues (commentIds 10004–10008)
-6. ✓ `evidence/automation/<rule>-audit.md` files populated with live webtrigger run results — all PASS
+6. PENDING: native Jira Automation rules invoke Rovo agents through "Use Rovo agent" and produce audit-log evidence
 
-**All 6 exit criteria are met. MVP is complete.**
+Five exit criteria are met. The native Automation/Rovo audit-log criterion is
+still pending.
 
 ---
 
