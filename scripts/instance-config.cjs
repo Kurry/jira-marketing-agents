@@ -5,6 +5,8 @@ const path = require("node:path");
 
 const DEFAULTS = {
   site: process.env.JIRA_SITE || process.env.AIGO_JIRA_SITE || "",
+  cloudId: process.env.AIGO_CLOUD_ID || "",
+  projectId: process.env.AIGO_PROJECT_ID || "",
   forgeEnvironment: process.env.FORGE_ENV || process.env.AIGO_FORGE_ENV || "development",
   projectKey: process.env.AIGO_PROJECT_KEY || "AIGO",
   projectName: process.env.AIGO_PROJECT_NAME || "AI Growth Ops",

@@ -9,7 +9,7 @@
     "test": "vitest run",
     "test:integration": "vitest run tests/integration",
     "test:integration:mock": "vitest run tests/integration/provision-mock.test.ts",
-    "test:readiness:jira": "node scripts/aigo-project-readiness.cjs",
+    "test:readiness:jira": "AIGO_INSTANCE_CONFIG=instances/aigo.example.json node scripts/aigo-project-readiness.cjs",
     "test:smoke:jira": "bash scripts/live-jira-smoke.sh",
     "test:watch": "vitest",
     "seed:render": "node scripts/render-seed.cjs",
@@ -20,6 +20,7 @@
     "provision:seeds": "node scripts/provision-seeds.cjs",
     "provision:automation": "node scripts/provision-automation.cjs",
     "provision:all": "node scripts/provision-all.cjs",
+    "provision:filters": "node scripts/provision-filters.cjs",
     "check:rovo": "node scripts/check-rovo-visibility.cjs",
     "lint": "tsc --noEmit"
   },
