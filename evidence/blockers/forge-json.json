@@ -1,0 +1,14 @@
+{
+  "generated_by": "scripts/lib/forge.mjs (T-NIH-13)",
+  "task": "T-NIH-13",
+  "row": "VM-FORGE-WEBTRIGGER-JSON",
+  "reason": "`forge webtrigger list` has no --json (or structured-output) flag.",
+  "verified_via": [
+    "ctx7 /websites/developer_atlassian_platform_forge cli-reference/webtrigger-list (options: function key, site, product, environment only)",
+    "local `forge webtrigger list --help` (options: --verbose, -f/--functionKey, -s/--site, -p/--product, -e/--environment; no --json)"
+  ],
+  "missing_surface": "forge webtrigger list --json",
+  "current_workaround": "getWebtriggerUrl() in scripts/lib/forge.mjs scrapes the first https URL out of the box-drawing TABLE output. Marked EXPERIMENTAL.",
+  "candidate_resolution": "Adopt `forge webtrigger list --json` when Forge CLI exposes it, then replace the table scrape with a JSON parse.",
+  "note": "forge install list --json IS supported and is now used (see evidence/nih/forge-json.json)."
+}

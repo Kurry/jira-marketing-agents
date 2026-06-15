@@ -1,0 +1,35 @@
+{
+  "generated_by": "scripts/lib/forge.mjs (T-NIH-13)",
+  "task": "T-NIH-13",
+  "status": "green",
+  "json_flag_supported": true,
+  "source": "ctx7 /websites/developer_atlassian_platform_forge (cli-reference/install-list) + local `forge install list --help`",
+  "install_list": {
+    "json_flag_supported": true,
+    "command": "forge install list --json",
+    "json_shape": "Array<{ id, environment, site, product, majorVersion, appVersion, status }>",
+    "normalized_to": "{ installationId, environment, site, apps, version, status }",
+    "evidence": "live authenticated `forge install list --json` returned the documented JSON array"
+  },
+  "webtrigger_list": {
+    "json_flag_supported": false,
+    "command": "forge webtrigger list -f <fn> -s <site> -p Jira -e development",
+    "reason": "no --json flag; `forge webtrigger list --help` exposes only -f/-s/-p/-e. Box-drawing table scrape retained as the only surface.",
+    "blocker": "evidence/blockers/forge-json.json"
+  },
+  "dedup": {
+    "shared_wrapper": "scripts/lib/forge.mjs",
+    "consumers_routed_through_wrapper": [
+      "scripts/verify/forge-install.mjs",
+      "scripts/audit/forge-snapshot.mjs"
+    ],
+    "cjs_entrypoint_uses_json_directly": "scripts/check-rovo-visibility.cjs (CommonJS; cannot import the ESM lib, but now parses `forge install list --json`)"
+  },
+  "files_changed": [
+    "scripts/lib/forge.mjs",
+    "scripts/audit/forge-snapshot.mjs",
+    "scripts/check-rovo-visibility.cjs",
+    "tests/forge-lib.test.ts",
+    "tests/check-rovo-visibility.test.ts"
+  ]
+}

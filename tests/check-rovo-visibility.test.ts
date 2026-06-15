@@ -3,7 +3,7 @@
  *
  * Unit tests for scripts/check-rovo-visibility.cjs:
  *   - countManifestAgents: parses rovo:agent entries from manifest.yml
- *   - parseForgeInstallStatus: parses `forge install list` stdout for site status
+ *   - parseForgeInstallStatus: parses `forge install list --json` stdout for site status
  *   - CLI output: reports manifest/install proof only, not UI visibility proof
  *
  * No live Forge CLI calls are made.
@@ -103,20 +103,49 @@ describe("countManifestAgents - manifest.yml parsing", () => {
 // Suite 2: parseForgeInstallStatus - output parsing (no live forge call)
 // ---------------------------------------------------------------------------
 
-describe("parseForgeInstallStatus - output parsing", () => {
+describe("parseForgeInstallStatus - --json output parsing", () => {
   it("returns Up-to-date when the target site row is current", () => {
-    const raw = [
-      "| Installation ID | Environment | Site | Product | Version | Status |",
-      "| 7e844a39 | development | myhealthcaresite.atlassian.net | Jira | 2 | Up-to-date |",
-    ].join("\n");
+    const raw = JSON.stringify([
+      {
+        id: "7e844a39",
+        environment: "development",
+        site: "myhealthcaresite.atlassian.net",
+        product: "Jira",
+        majorVersion: "3 (Latest)",
+        appVersion: "3",
+        status: "Up-to-date",
+      },
+    ]);
 
     const result = parseForgeInstallStatus(raw, "myhealthcaresite.atlassian.net");
 
     expect(result).toEqual({ found: true, status: "Up-to-date", raw });
   });
 
+  it("tolerates leading non-JSON noise before the array", () => {
+    const raw =
+      "Warning: Forge CLI supports Node.js 22.x or 24.x.\n" +
+      JSON.stringify([
+        { id: "x", environment: "development", site: "myhealthcaresite.atlassian.net", product: "Jira", appVersion: "3", status: "Up-to-date" },
+      ]);
+
+    const result = parseForgeInstallStatus(raw, "myhealthcaresite.atlassian.net");
+
+    expect(result.found).toBe(true);
+    expect(result.status).toBe("Up-to-date");
+  });
+
   it("returns Out-of-date for a stale target site row", () => {
-    const raw = "| 7e844a39 | development | myhealthcaresite.atlassian.net | Jira | 1 | Out-of-date |";
+    const raw = JSON.stringify([
+      {
+        id: "7e844a39",
+        environment: "development",
+        site: "myhealthcaresite.atlassian.net",
+        product: "Jira",
+        appVersion: "1",
+        status: "Out-of-date",
+      },
+    ]);
 
     const result = parseForgeInstallStatus(raw, "myhealthcaresite.atlassian.net");
 
@@ -125,7 +154,16 @@ describe("parseForgeInstallStatus - output parsing", () => {
   });
 
   it("returns NOT_FOUND when the target site is absent", () => {
-    const raw = "| 7e844a39 | development | other.atlassian.net | Jira | 2 | Up-to-date |";
+    const raw = JSON.stringify([
+      {
+        id: "7e844a39",
+        environment: "development",
+        site: "other.atlassian.net",
+        product: "Jira",
+        appVersion: "2",
+        status: "Up-to-date",
+      },
+    ]);
 
     const result = parseForgeInstallStatus(raw, "myhealthcaresite.atlassian.net");
 
@@ -142,10 +180,13 @@ describe("CLI output contract", () => {
     const site = "myhealthcaresite.atlassian.net";
     const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "fake-forge-"));
     const fakeForge = path.join(tmpDir, "forge");
+    const fakeJson = JSON.stringify([
+      { id: "7e844a39", environment: "development", site, product: "Jira", majorVersion: "3 (Latest)", appVersion: "3", status: "Up-to-date" },
+    ]);
     fs.writeFileSync(fakeForge, [
       "#!/bin/sh",
       "cat <<'EOF'",
-      `| 7e844a39 | development | ${site} | Jira | 2 | Up-to-date |`,
+      fakeJson,
       "EOF",
       "",
     ].join("\n"));

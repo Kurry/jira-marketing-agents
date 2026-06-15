@@ -6,26 +6,30 @@
 // Writes evidence/audit/forge.json. Never deploys, installs, or mutates.
 //
 // T-NIH-07 classification: native-wrapper (audit harness). Native owner
-// (matrix row "Agent runtime" / Forge): the native `forge install list` CLI.
-// Two NIH caveats:
-//   1. parseForgeInstallList() DUPLICATES the box-drawing table parser already
-//      in scripts/lib/forge.mjs and shares its brittleness on human-formatted
-//      CLI output (prefer a --json flag if Forge exposes one; de-dupe onto
-//      lib/forge.mjs as a follow-up).
-//   2. auditManifest() hand-rolls a line-based YAML scanner (indent regexes)
-//      instead of parsing manifest.yml with the `yaml` dependency the repo
-//      already uses elsewhere. This re-implements YAML parsing for a structural
-//      count; switching to parseYaml would be more robust. Both are
-//      audit-only/non-authoritative (manifest contract tests own correctness).
+// (matrix row "Agent runtime" / Forge): the native `forge install list --json`
+// CLI. Install-status discovery is delegated to scripts/lib/forge.mjs
+// (getInstallations / findStagingInstall / classifyStatus / hasProductionInstall)
+// — the single shared Forge CLI wrapper; this script no longer re-implements
+// CLI output parsing.
+// Remaining NIH caveat: auditManifest() hand-rolls a line-based YAML scanner
+//   (indent regexes) instead of parsing manifest.yml with the `yaml` dependency
+//   the repo already uses elsewhere. It is audit-only/non-authoritative
+//   (manifest contract tests own correctness).
 
 import { execSync } from "node:child_process";
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
+import {
+  getInstallations,
+  findStagingInstall,
+  classifyStatus,
+  hasProductionInstall,
+} from "../lib/forge.mjs";
+import { STAGING_SITE, FORGE_ENV } from "../lib/staging.mjs";
 
 const SCRIPT = "scripts/audit/forge-snapshot.mjs";
-const SITE = "myhealthcaresite.atlassian.net";
-const FORGE_ENV = "development";
+const SITE = STAGING_SITE;
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = resolve(__dirname, "..", "..");
@@ -55,61 +59,17 @@ function git(args) {
   }
 }
 
-// Parse `forge install list` table output. Returns the matching staging row or null.
-function parseForgeInstallList(output) {
-  const rows = [];
-  for (const line of output.split("\n")) {
-    // Table data rows are pipe-delimited with box-drawing borders.
-    if (!line.includes("│")) continue;
-    const cells = line
-      .split("│")
-      .map((c) => c.trim())
-      .filter((c) => c.length > 0);
-    if (cells.length < 6) continue;
-    // header row contains the literal column titles
-    if (cells[0] === "Installation ID") continue;
-    const [installationId, environment, site, apps, version, status] = cells;
-    rows.push({ installationId, environment, site, apps, version, status });
-  }
-  return rows;
-}
-
+// Resolve Forge install status via the shared lib/forge.mjs wrapper
+// (`forge install list --json`). getInstallations() exits 3 if the CLI is
+// unauthenticated and 2 on unexpected failure.
 function getForgeInstall() {
-  let output;
-  try {
-    output = execSync("forge install list", {
-      cwd: REPO_ROOT,
-      encoding: "utf8",
-      stdio: ["ignore", "pipe", "pipe"],
-    });
-  } catch (err) {
-    const combined = `${err.stdout || ""}${err.stderr || ""}${err.message || ""}`;
-    if (/log in|not logged in|forge login|unauthenticated|authentication/i.test(combined)) {
-      process.stderr.write(`[${SCRIPT}] forge CLI not authenticated. Run \`forge login\`.\n`);
-      process.exit(3);
-    }
-    process.stderr.write(`[${SCRIPT}] forge install list failed: ${combined.slice(0, 500)}\n`);
-    process.exit(2);
-  }
-
-  const rows = parseForgeInstallList(output);
-  const stagingRows = rows.filter((r) => r.site === SITE);
-  const prodRows = rows.filter((r) => /production/i.test(r.environment));
-  const row = stagingRows.find((r) => r.environment === FORGE_ENV) || stagingRows[0] || null;
-
-  let installStatus;
-  if (!row) {
-    installStatus = "not-installed";
-  } else if (/up-to-date/i.test(row.status)) {
-    installStatus = "Up-to-date";
-  } else {
-    installStatus = "outdated";
-  }
-
+  const rows = getInstallations();
+  const row = findStagingInstall(rows);
+  const installStatus = classifyStatus(row);
   return {
     installStatus,
     row,
-    deployedToProduction: prodRows.length > 0,
+    deployedToProduction: hasProductionInstall(rows),
     allRows: rows,
   };
 }

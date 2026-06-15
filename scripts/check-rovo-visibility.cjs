@@ -7,13 +7,20 @@
 // Strategy:
 //   1. Count rovo:agent keys in manifest.yml (ground truth of what SHOULD be
 //      declared)
-//   2. Run `forge install list` and check the target site shows "Up-to-date"
+//   2. Run `forge install list --json` and check the target site shows
+//      "Up-to-date"
 //   3. Cross-check: if (1) matches expected count AND (2) is Up-to-date, exit 0.
 //      Any mismatch or "Out-of-date" exits 1 with a clear diagnostic.
 //
 // This script does not perform UI inspection or call a public Rovo agent listing
 // API. Passing output means manifest/install are verified; actual Rovo UI/API
 // visibility remains a separate confirmation step.
+//
+// T-NIH-13: install-status discovery uses the DOCUMENTED `forge install list
+// --json` flag. parseForgeInstallStatus consumes that JSON array
+// ({ id, environment, site, product, majorVersion, appVersion, status }) so the
+// box-drawing-table scrape is gone. (This is a .cjs CLI entrypoint; the ESM
+// scripts/lib/forge.mjs is the shared wrapper for the .mjs IaC scripts.)
 //
 // Usage:
 //   node scripts/check-rovo-visibility.cjs [--config <path>] [--site <site>] [--expected <n>]
@@ -115,47 +122,58 @@ function countManifestAgents(manifestPath) {
 // ---------------------------------------------------------------------------
 
 /**
- * Parse `forge install list` output for the target site status.
+ * Parse `forge install list --json` output for the target site status.
+ * The CLI emits a JSON array of objects
+ *   { id, environment, site, product, majorVersion, appVersion, status }.
+ * Tolerates leading non-JSON noise (e.g. the Node-version warning) by slicing
+ * from the first "[".
  * Returns { found: boolean, status: string, raw: string }
  * @param {string} raw
  * @param {string} site
  * @returns {{ found: boolean, status: string, raw: string }}
  */
 function parseForgeInstallStatus(raw, site) {
-  // Look for the site in the output table
-  // Table row format (approximate): | <uuid> | development | <site> | Jira | <version> | <status> |
-  const lines = raw.split("\n");
-  for (const line of lines) {
-    if (line.includes(site)) {
-      // Extract status from the row containing the target site.
-      const statusMatch = line.match(/\b(Up-to-date|Out-of-date|Pending)\b/i);
-      if (statusMatch) {
-        return { found: true, status: statusMatch[0], raw };
-      }
-      // Site found but status not parsed
-      return { found: true, status: "UNKNOWN", raw };
-    }
+  const start = raw.indexOf("[");
+  if (start === -1) {
+    return { found: false, status: "NOT_FOUND", raw };
   }
-
-  return { found: false, status: "NOT_FOUND", raw };
+  let rows;
+  try {
+    rows = JSON.parse(raw.slice(start));
+  } catch {
+    return { found: false, status: "ERROR", raw };
+  }
+  if (!Array.isArray(rows)) {
+    return { found: false, status: "NOT_FOUND", raw };
+  }
+  const match = rows.find((r) => r && r.site === site);
+  if (!match) {
+    return { found: false, status: "NOT_FOUND", raw };
+  }
+  return { found: true, status: match.status || "UNKNOWN", raw };
 }
 
 /**
- * Run `forge install list` and check that the given site is "Up-to-date".
- * Returns { found: boolean, status: string, raw: string }
+ * Run `forge install list --json` and check that the given site is
+ * "Up-to-date". Returns { found: boolean, status: string, raw: string }
  * @param {string} site
  * @returns {{ found: boolean, status: string, raw: string }}
  */
 function checkForgeInstallStatus(site) {
   let raw = "";
   try {
-    const result = spawnSync("forge", ["install", "list"], {
+    const result = spawnSync("forge", ["install", "list", "--json"], {
       encoding: "utf8",
       timeout: 30000,
     });
-    raw = (result.stdout || "") + (result.stderr || "");
+    // --json output is on stdout; the Node-version warning goes to stderr.
+    raw = result.stdout || "";
     if (result.error) {
-      return { found: false, status: "ERROR", raw: raw || String(result.error.message) };
+      const combined = raw + (result.stderr || "");
+      return { found: false, status: "ERROR", raw: combined || String(result.error.message) };
+    }
+    if (!raw.trim()) {
+      raw = result.stderr || "";
     }
   } catch (err) {
     return { found: false, status: "ERROR", raw: String(err.message) };
@@ -168,8 +186,29 @@ function checkForgeInstallStatus(site) {
 // Main
 // ---------------------------------------------------------------------------
 
+function printHelp() {
+  console.log(
+    [
+      "scripts/check-rovo-visibility.cjs",
+      "",
+      "Verifies manifest rovo:agent count and Forge install status",
+      "(`forge install list --json`) for the target site.",
+      "",
+      "Usage:",
+      "  node scripts/check-rovo-visibility.cjs [--config <path>] [--site <site>] [--expected <n>]",
+      "",
+      "Exit codes: 0 checks pass | 1 a check failed",
+    ].join("\n"),
+  );
+}
+
 function main() {
-  const args = parseArgs(process.argv.slice(2));
+  const argv = process.argv.slice(2);
+  if (argv.includes("-h") || argv.includes("--help")) {
+    printHelp();
+    process.exit(0);
+  }
+  const args = parseArgs(argv);
   const repoRoot = path.resolve(__dirname, "..");
   const manifestPath = path.join(repoRoot, "manifest.yml");
 
