@@ -415,20 +415,21 @@ describe("provision-automation — filterNewRules (idempotency)", () => {
 // ---------------------------------------------------------------------------
 
 describe("provision-jira — HTTP: nock scope verification", () => {
-  it("nock can intercept GET /rest/api/3/issuetype and return mock data", async () => {
-    // Set up nock interceptor for the issuetype endpoint
+  it("nock can intercept GET /rest/api/3/issuetype/project and return project-scoped issue types", async () => {
+    // Team-managed projects use project-scoped issue types; the script now calls
+    // /rest/api/3/issuetype/project?projectId=10000 (not the global /issuetype endpoint)
     const scope = nock(BASE_URL)
-      .get("/rest/api/3/issuetype")
+      .get("/rest/api/3/issuetype/project")
+      .query({ projectId: "10000" })
       .reply(200, [
-        { id: "10001", name: "AI Growth Request" },
-        { id: "10002", name: "Experiment" },
+        { id: "10017", name: "AI Growth Request" },
+        { id: "10020", name: "Experiment" },
       ]);
 
-    // Use Node https to verify nock is working
     const https = require("node:https") as typeof import("node:https");
     const result = await new Promise<{ status: number; body: unknown }>((resolve, reject) => {
       const req = https.get(
-        `${BASE_URL}/rest/api/3/issuetype`,
+        `${BASE_URL}/rest/api/3/issuetype/project?projectId=10000`,
         { headers: { Authorization: `Bearer ${TOKEN}` } },
         (res) => {
           let data = "";
@@ -442,7 +443,7 @@ describe("provision-jira — HTTP: nock scope verification", () => {
     expect(result.status).toBe(200);
     expect(Array.isArray(result.body)).toBe(true);
     expect((result.body as { name: string }[]).map((i) => i.name)).toContain("AI Growth Request");
-    scope.done(); // Verifies the interceptor was actually used
+    scope.done();
   });
 
   it("nock can intercept POST /rest/api/3/issuetype and return created issue type", async () => {

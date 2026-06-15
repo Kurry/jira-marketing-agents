@@ -1,16 +1,18 @@
 [
-  { "name": "AI Growth Request",      "id": "10020" },
-  { "name": "Creative Request",       "id": "10021" },
-  { "name": "Experiment",             "id": "10022" },
-  { "name": "Segmentation Request",   "id": "10023" },
-  { "name": "Personalization Journey","id": "10024" },
-  { "name": "Employer Launch",        "id": "10025" },
-  { "name": "Campaign",               "id": "10026" },
-  { "name": "Dashboard Request",      "id": "10027" },
-  { "name": "Signup Funnel Issue",    "id": "10028" },
-  { "name": "Research Brief",         "id": "10029" },
-  { "name": "Claims Review",          "id": "10030" },
-  { "name": "Decision Memo",          "id": "10031" },
-  { "name": "Positioning Update",     "id": "10032" },
-  { "name": "Bug / Tracking Issue",   "id": "10017" }
+  { "name": "AI Growth Request",       "id": null, "status": "MANUAL_REQUIRED" },
+  { "name": "Creative Request",        "id": null, "status": "MANUAL_REQUIRED" },
+  { "name": "Experiment",              "id": null, "status": "MANUAL_REQUIRED" },
+  { "name": "Segmentation Request",    "id": null, "status": "MANUAL_REQUIRED" },
+  { "name": "Personalization Journey", "id": null, "status": "MANUAL_REQUIRED" },
+  { "name": "Employer Launch",         "id": null, "status": "MANUAL_REQUIRED" },
+  { "name": "Campaign",                "id": null, "status": "MANUAL_REQUIRED" },
+  { "name": "Dashboard Request",       "id": null, "status": "MANUAL_REQUIRED" },
+  { "name": "Signup Funnel Issue",     "id": null, "status": "MANUAL_REQUIRED" },
+  { "name": "Research Brief",          "id": null, "status": "MANUAL_REQUIRED" },
+  { "name": "Claims Review",           "id": null, "status": "MANUAL_REQUIRED" },
+  { "name": "Decision Memo",           "id": null, "status": "MANUAL_REQUIRED" },
+  { "name": "Positioning Update",      "id": null, "status": "MANUAL_REQUIRED" },
+  { "name": "Bug / Tracking Issue",    "id": null, "status": "MANUAL_REQUIRED" },
+
+  { "_note": "Team-managed (next-gen) Jira projects do not support custom issue type creation via REST API. POST /rest/api/3/issuetype with scope.PROJECT silently creates global types that are unusable in team-managed projects. These 14 types must be added via Project Settings → Issue Types UI. Once added, update this file with the assigned IDs." }
 ]

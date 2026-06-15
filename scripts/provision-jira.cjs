@@ -227,47 +227,94 @@ async function jiraCall({ method, url, token, body = null, description = "" }) {
 // ---------------------------------------------------------------------------
 
 async function provisionIssueTypes(config, token, baseUrl) {
-  const { projectId, jiraConfig } = config;
+  const { projectId, projectKey, jiraConfig } = config;
   const results = [];
 
   console.log("\n--- Phase 1: Issue Types ---");
 
-  // GET existing
-  const existing = await jiraCall({
+  // Detect project style. Team-managed (next-gen/business) projects do NOT support
+  // custom issue type creation via REST — POST /rest/api/3/issuetype with scope.PROJECT
+  // is silently converted to a global type, and global types are NOT usable in
+  // team-managed projects. Project Settings → Issue Types UI is the only path.
+  const projectMeta = await jiraCall({
     method: "GET",
-    url: `${baseUrl}/rest/api/3/issuetype`,
+    url: `${baseUrl}/rest/api/3/project/${projectKey || projectId}`,
     token,
-    description: "GET /rest/api/3/issuetype",
+    description: `GET /rest/api/3/project/${projectKey || projectId}`,
   });
 
-  // existing is an array of {id, name, ...}
-  const existingByName = new Map(
-    (Array.isArray(existing) ? existing : []).map((it) => [it.name, it])
-  );
+  const isTeamManaged = projectMeta.style === "next-gen" || projectMeta.simplified === true;
 
-  for (const desired of jiraConfig.issueTypes) {
-    if (existingByName.has(desired.name)) {
-      const found = existingByName.get(desired.name);
-      console.log(`  EXISTS  ${desired.name} (id: ${found.id})`);
-      results.push({ phase: "issueTypes", name: desired.name, action: "EXISTS", id: found.id });
-    } else {
-      const created = await jiraCall({
-        method: "POST",
-        url: `${baseUrl}/rest/api/3/issuetype`,
-        token,
-        body: {
-          name: desired.name,
-          description: desired.description,
-          type: desired.type || "standard",
-          scope: {
-            type: "PROJECT",
-            project: { id: projectId },
+  if (isTeamManaged) {
+    // Check which canonical types the project already has (manually added via UI)
+    const projectTypes = await jiraCall({
+      method: "GET",
+      url: `${baseUrl}/rest/api/3/issuetype/project?projectId=${projectId}`,
+      token,
+      description: "GET /rest/api/3/issuetype/project",
+    });
+
+    const existingByName = new Map(
+      (Array.isArray(projectTypes) ? projectTypes : []).map((it) => [it.name, it])
+    );
+
+    for (const desired of jiraConfig.issueTypes) {
+      if (existingByName.has(desired.name)) {
+        const found = existingByName.get(desired.name);
+        console.log(`  EXISTS  ${desired.name} (id: ${found.id})`);
+        results.push({ phase: "issueTypes", name: desired.name, action: "EXISTS", id: found.id });
+      } else {
+        // Cannot create via API — team-managed projects require Project Settings UI.
+        // Proven: POST /rest/api/3/issuetype with scope.PROJECT silently creates a
+        // GLOBAL type that is unusable in team-managed projects (HTTP 400 on issue create).
+        console.log(`  MANUAL  ${desired.name} — add via Project Settings → Issue Types`);
+        results.push({ phase: "issueTypes", name: desired.name, action: "MANUAL_REQUIRED", id: null });
+      }
+    }
+
+    const manualCount = results.filter((r) => r.action === "MANUAL_REQUIRED").length;
+    if (manualCount > 0) {
+      console.log(`\n  ⚠  ${manualCount} issue type(s) require manual addition:`);
+      console.log(`     Go to ${projectMeta.self?.split("/rest")[0] || "https://myhealthcaresite.atlassian.net"}`);
+      console.log(`     → AIGO → Project Settings → Issue Types → Add issue types`);
+    }
+  } else {
+    // Company-managed project: create project-scoped types via REST
+    const projectTypes = await jiraCall({
+      method: "GET",
+      url: `${baseUrl}/rest/api/3/issuetype/project?projectId=${projectId}`,
+      token,
+      description: "GET /rest/api/3/issuetype/project",
+    });
+
+    const existingByName = new Map(
+      (Array.isArray(projectTypes) ? projectTypes : []).map((it) => [it.name, it])
+    );
+
+    for (const desired of jiraConfig.issueTypes) {
+      if (existingByName.has(desired.name)) {
+        const found = existingByName.get(desired.name);
+        console.log(`  EXISTS  ${desired.name} (id: ${found.id})`);
+        results.push({ phase: "issueTypes", name: desired.name, action: "EXISTS", id: found.id });
+      } else {
+        const created = await jiraCall({
+          method: "POST",
+          url: `${baseUrl}/rest/api/3/issuetype`,
+          token,
+          body: {
+            name: desired.name,
+            description: desired.description,
+            type: desired.type || "standard",
+            scope: {
+              type: "PROJECT",
+              project: { id: projectId },
+            },
           },
-        },
-        description: `POST issuetype '${desired.name}'`,
-      });
-      console.log(`  CREATED ${desired.name} (id: ${created.id})`);
-      results.push({ phase: "issueTypes", name: desired.name, action: "CREATED", id: created.id });
+          description: `POST issuetype '${desired.name}'`,
+        });
+        console.log(`  CREATED ${desired.name} (id: ${created.id})`);
+        results.push({ phase: "issueTypes", name: desired.name, action: "CREATED", id: created.id });
+      }
     }
   }
 
@@ -285,16 +332,25 @@ async function provisionCustomFields(config, token, baseUrl) {
 
   console.log("\n--- Phase 2: Custom Fields ---");
 
-  // GET all fields
-  const allFields = await jiraCall({
-    method: "GET",
-    url: `${baseUrl}/rest/api/3/field`,
-    token,
-    description: "GET /rest/api/3/field",
-  });
-
-  const customFields = (Array.isArray(allFields) ? allFields : []).filter((f) => f.custom);
-  const existingByName = new Map(customFields.map((f) => [f.name, f]));
+  // GET all custom fields using the paginated search endpoint.
+  // The flat GET /rest/api/3/field response is not paginated and silently omits
+  // custom fields beyond ~50; /rest/api/3/field/search handles arbitrary counts.
+  const allCustomFields = [];
+  let startAt = 0;
+  const pageSize = 100;
+  while (true) {
+    const page = await jiraCall({
+      method: "GET",
+      url: `${baseUrl}/rest/api/3/field/search?type=custom&maxResults=${pageSize}&startAt=${startAt}`,
+      token,
+      description: `GET /rest/api/3/field/search?startAt=${startAt}`,
+    });
+    const vals = Array.isArray(page) ? page : (page.values || []);
+    allCustomFields.push(...vals);
+    if (page.isLast || vals.length < pageSize) break;
+    startAt += pageSize;
+  }
+  const existingByName = new Map(allCustomFields.map((f) => [f.name, f]));
 
   for (const desired of jiraConfig.customFields) {
     if (existingByName.has(desired.name)) {
@@ -336,20 +392,34 @@ async function provisionWorkflowStatuses(config, token, baseUrl) {
 
   console.log("\n--- Phase 3: Workflow Statuses ---");
 
-  // GET existing statuses
-  const existingResp = await jiraCall({
-    method: "GET",
-    url: `${baseUrl}/rest/api/3/statuses?maxResults=200`,
-    token,
-    description: "GET /rest/api/3/statuses",
-  });
+  // Jira has TWO separate status concerns:
+  //   A) Status RECORDS — the status entity exists in the system (checked via GET /rest/api/3/statuses?id=X)
+  //   B) Status WORKFLOW — the status is wired into the project's board/workflow columns
+  //
+  // GET /rest/api/3/status?projectId=X returns only statuses in the project's ACTIVE workflow (concern B).
+  // Project-scoped status records that were created but not added to the board don't appear there.
+  //
+  // Strategy: scan a range of IDs using the batch lookup to find all status records, then compare by name.
+  // Scan known ID ranges in chunks of 50 (API limit) to find all project-scoped status records.
+  // Project-scoped statuses don't appear in GET /rest/api/3/status (which only returns active
+  // workflow statuses), but are accessible via the batch lookup by ID.
+  const SCAN_START = 10000;
+  const SCAN_END = 10100;
+  const CHUNK_SIZE = 50;
+  const allFoundStatuses = [];
 
-  // Response may be an array or {values: [...]}
-  const existingStatuses = Array.isArray(existingResp)
-    ? existingResp
-    : (existingResp && Array.isArray(existingResp.values) ? existingResp.values : []);
-
-  const existingByName = new Map(existingStatuses.map((s) => [s.name, s]));
+  for (let start = SCAN_START; start <= SCAN_END; start += CHUNK_SIZE) {
+    const end = Math.min(start + CHUNK_SIZE - 1, SCAN_END);
+    const idParams = Array.from({ length: end - start + 1 }, (_, i) => `id=${start + i}`).join("&");
+    const chunk = await jiraCall({
+      method: "GET",
+      url: `${baseUrl}/rest/api/3/statuses?${idParams}`,
+      token,
+      description: `GET /rest/api/3/statuses (scan ids ${start}-${end})`,
+    });
+    if (Array.isArray(chunk)) allFoundStatuses.push(...chunk);
+  }
+  const existingByName = new Map(allFoundStatuses.map((s) => [s.name, s]));
 
   const toCreate = jiraConfig.workflowStatuses.filter((ws) => !existingByName.has(ws.name));
   const alreadyExist = jiraConfig.workflowStatuses.filter((ws) => existingByName.has(ws.name));
@@ -361,23 +431,23 @@ async function provisionWorkflowStatuses(config, token, baseUrl) {
   }
 
   if (toCreate.length > 0) {
-    // Map statusCategory string to Jira category ID
-    const categoryIdMap = { TODO: "2", IN_PROGRESS: "4", DONE: "3" };
-
-    const batchBody = toCreate.map((ws) => ({
-      name: ws.name,
-      statusCategory: ws.statusCategory,
-      scope: {
-        type: "PROJECT",
-        project: { id: projectId },
-      },
-    }));
+    // POST /rest/api/3/statuses body format: { statuses: [{ name, statusCategory, scope }] }
+    const body = {
+      statuses: toCreate.map((ws) => ({
+        name: ws.name,
+        statusCategory: ws.statusCategory,
+        scope: {
+          type: "PROJECT",
+          project: { id: projectId },
+        },
+      })),
+    };
 
     const created = await jiraCall({
       method: "POST",
       url: `${baseUrl}/rest/api/3/statuses`,
       token,
-      body: batchBody,
+      body,
       description: `POST /rest/api/3/statuses (batch ${toCreate.length})`,
     });
 
@@ -620,7 +690,8 @@ async function main() {
     process.exit(1);
   }
 
-  const baseUrl = `https://${config.site}`;
+  // OAuth tokens must target api.atlassian.com (not site.atlassian.net directly)
+  const baseUrl = `https://api.atlassian.com/ex/jira/${config.cloudId}`;
   console.log(`Provisioning Jira at ${baseUrl} (projectId: ${config.projectId})`);
 
   const allResults = [];

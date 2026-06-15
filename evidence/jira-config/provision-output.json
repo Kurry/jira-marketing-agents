@@ -1,0 +1,651 @@
+{
+  "timestamp": "2026-06-15T05:20:30.203Z",
+  "phases": {
+    "issueTypes": [
+      {
+        "phase": "issueTypes",
+        "name": "AI Growth Request",
+        "action": "MANUAL_REQUIRED",
+        "id": null
+      },
+      {
+        "phase": "issueTypes",
+        "name": "Creative Request",
+        "action": "MANUAL_REQUIRED",
+        "id": null
+      },
+      {
+        "phase": "issueTypes",
+        "name": "Experiment",
+        "action": "MANUAL_REQUIRED",
+        "id": null
+      },
+      {
+        "phase": "issueTypes",
+        "name": "Segmentation Request",
+        "action": "MANUAL_REQUIRED",
+        "id": null
+      },
+      {
+        "phase": "issueTypes",
+        "name": "Personalization Journey",
+        "action": "MANUAL_REQUIRED",
+        "id": null
+      },
+      {
+        "phase": "issueTypes",
+        "name": "Employer Launch",
+        "action": "MANUAL_REQUIRED",
+        "id": null
+      },
+      {
+        "phase": "issueTypes",
+        "name": "Campaign",
+        "action": "MANUAL_REQUIRED",
+        "id": null
+      },
+      {
+        "phase": "issueTypes",
+        "name": "Dashboard Request",
+        "action": "MANUAL_REQUIRED",
+        "id": null
+      },
+      {
+        "phase": "issueTypes",
+        "name": "Signup Funnel Issue",
+        "action": "MANUAL_REQUIRED",
+        "id": null
+      },
+      {
+        "phase": "issueTypes",
+        "name": "Research Brief",
+        "action": "MANUAL_REQUIRED",
+        "id": null
+      },
+      {
+        "phase": "issueTypes",
+        "name": "Claims Review",
+        "action": "MANUAL_REQUIRED",
+        "id": null
+      },
+      {
+        "phase": "issueTypes",
+        "name": "Decision Memo",
+        "action": "MANUAL_REQUIRED",
+        "id": null
+      },
+      {
+        "phase": "issueTypes",
+        "name": "Positioning Update",
+        "action": "MANUAL_REQUIRED",
+        "id": null
+      },
+      {
+        "phase": "issueTypes",
+        "name": "Bug / Tracking Issue",
+        "action": "MANUAL_REQUIRED",
+        "id": null
+      }
+    ],
+    "customFields": [
+      {
+        "phase": "customFields",
+        "name": "Segment",
+        "action": "EXISTS",
+        "id": "customfield_10043",
+        "forgeVar": "SEGMENT_FIELD_ID"
+      },
+      {
+        "phase": "customFields",
+        "name": "Primary Metric",
+        "action": "EXISTS",
+        "id": "customfield_10044",
+        "forgeVar": "PRIMARY_METRIC_FIELD_ID"
+      },
+      {
+        "phase": "customFields",
+        "name": "Claims Risk",
+        "action": "EXISTS",
+        "id": "customfield_10045",
+        "forgeVar": "CLAIMS_RISK_FIELD_ID"
+      },
+      {
+        "phase": "customFields",
+        "name": "Experiment ID",
+        "action": "EXISTS",
+        "id": "customfield_10046",
+        "forgeVar": "EXPERIMENT_ID_FIELD_ID"
+      },
+      {
+        "phase": "customFields",
+        "name": "Workflow Area",
+        "action": "EXISTS",
+        "id": "customfield_10047",
+        "forgeVar": "WORKFLOW_AREA_FIELD_ID"
+      },
+      {
+        "phase": "customFields",
+        "name": "Priority Score",
+        "action": "EXISTS",
+        "id": "customfield_10048",
+        "forgeVar": "PRIORITY_SCORE_FIELD_ID"
+      }
+    ],
+    "workflowStatuses": [
+      {
+        "phase": "workflowStatuses",
+        "name": "Intake",
+        "action": "EXISTS",
+        "id": "10003"
+      },
+      {
+        "phase": "workflowStatuses",
+        "name": "Triage",
+        "action": "EXISTS",
+        "id": "10004"
+      },
+      {
+        "phase": "workflowStatuses",
+        "name": "Spec Ready",
+        "action": "EXISTS",
+        "id": "10005"
+      },
+      {
+        "phase": "workflowStatuses",
+        "name": "In Review",
+        "action": "EXISTS",
+        "id": "10006"
+      },
+      {
+        "phase": "workflowStatuses",
+        "name": "Claims Review",
+        "action": "EXISTS",
+        "id": "10007"
+      },
+      {
+        "phase": "workflowStatuses",
+        "name": "Experiment Running",
+        "action": "EXISTS",
+        "id": "10008"
+      },
+      {
+        "phase": "workflowStatuses",
+        "name": "Decision Needed",
+        "action": "EXISTS",
+        "id": "10009"
+      },
+      {
+        "phase": "workflowStatuses",
+        "name": "Launch Prep",
+        "action": "EXISTS",
+        "id": "10010"
+      }
+    ],
+    "fieldOptions": [
+      {
+        "phase": "fieldOptions",
+        "name": "Segment:Employer Members",
+        "action": "EXISTS",
+        "id": "10020"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Segment:Lapsed Members",
+        "action": "EXISTS",
+        "id": "10021"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Segment:Activation Cohort",
+        "action": "EXISTS",
+        "id": "10022"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Segment:High-intent Visitors",
+        "action": "EXISTS",
+        "id": "10023"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Segment:General Audience",
+        "action": "EXISTS",
+        "id": "10024"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Primary Metric:Signups",
+        "action": "EXISTS",
+        "id": "10025"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Primary Metric:CAC",
+        "action": "EXISTS",
+        "id": "10026"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Primary Metric:Activation Rate",
+        "action": "EXISTS",
+        "id": "10027"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Primary Metric:Retention",
+        "action": "EXISTS",
+        "id": "10028"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Primary Metric:MoM Revenue",
+        "action": "EXISTS",
+        "id": "10029"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Primary Metric:Feature Adoption",
+        "action": "EXISTS",
+        "id": "10030"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Primary Metric:NPS",
+        "action": "EXISTS",
+        "id": "10031"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Claims Risk:Low",
+        "action": "EXISTS",
+        "id": "10032"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Claims Risk:Medium",
+        "action": "EXISTS",
+        "id": "10033"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Claims Risk:High",
+        "action": "EXISTS",
+        "id": "10034"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Claims Risk:Prohibited",
+        "action": "EXISTS",
+        "id": "10035"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Workflow Area:Targeting",
+        "action": "EXISTS",
+        "id": "10036"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Workflow Area:Creative",
+        "action": "EXISTS",
+        "id": "10037"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Workflow Area:Experiment",
+        "action": "EXISTS",
+        "id": "10038"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Workflow Area:Employer",
+        "action": "EXISTS",
+        "id": "10039"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Workflow Area:Funnel",
+        "action": "EXISTS",
+        "id": "10040"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Workflow Area:Content",
+        "action": "EXISTS",
+        "id": "10041"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Workflow Area:Research",
+        "action": "EXISTS",
+        "id": "10042"
+      },
+      {
+        "phase": "fieldOptions",
+        "name": "Workflow Area:Platform",
+        "action": "EXISTS",
+        "id": "10043"
+      }
+    ]
+  },
+  "items": [
+    {
+      "phase": "issueTypes",
+      "name": "AI Growth Request",
+      "action": "MANUAL_REQUIRED",
+      "id": null
+    },
+    {
+      "phase": "issueTypes",
+      "name": "Creative Request",
+      "action": "MANUAL_REQUIRED",
+      "id": null
+    },
+    {
+      "phase": "issueTypes",
+      "name": "Experiment",
+      "action": "MANUAL_REQUIRED",
+      "id": null
+    },
+    {
+      "phase": "issueTypes",
+      "name": "Segmentation Request",
+      "action": "MANUAL_REQUIRED",
+      "id": null
+    },
+    {
+      "phase": "issueTypes",
+      "name": "Personalization Journey",
+      "action": "MANUAL_REQUIRED",
+      "id": null
+    },
+    {
+      "phase": "issueTypes",
+      "name": "Employer Launch",
+      "action": "MANUAL_REQUIRED",
+      "id": null
+    },
+    {
+      "phase": "issueTypes",
+      "name": "Campaign",
+      "action": "MANUAL_REQUIRED",
+      "id": null
+    },
+    {
+      "phase": "issueTypes",
+      "name": "Dashboard Request",
+      "action": "MANUAL_REQUIRED",
+      "id": null
+    },
+    {
+      "phase": "issueTypes",
+      "name": "Signup Funnel Issue",
+      "action": "MANUAL_REQUIRED",
+      "id": null
+    },
+    {
+      "phase": "issueTypes",
+      "name": "Research Brief",
+      "action": "MANUAL_REQUIRED",
+      "id": null
+    },
+    {
+      "phase": "issueTypes",
+      "name": "Claims Review",
+      "action": "MANUAL_REQUIRED",
+      "id": null
+    },
+    {
+      "phase": "issueTypes",
+      "name": "Decision Memo",
+      "action": "MANUAL_REQUIRED",
+      "id": null
+    },
+    {
+      "phase": "issueTypes",
+      "name": "Positioning Update",
+      "action": "MANUAL_REQUIRED",
+      "id": null
+    },
+    {
+      "phase": "issueTypes",
+      "name": "Bug / Tracking Issue",
+      "action": "MANUAL_REQUIRED",
+      "id": null
+    },
+    {
+      "phase": "customFields",
+      "name": "Segment",
+      "action": "EXISTS",
+      "id": "customfield_10043",
+      "forgeVar": "SEGMENT_FIELD_ID"
+    },
+    {
+      "phase": "customFields",
+      "name": "Primary Metric",
+      "action": "EXISTS",
+      "id": "customfield_10044",
+      "forgeVar": "PRIMARY_METRIC_FIELD_ID"
+    },
+    {
+      "phase": "customFields",
+      "name": "Claims Risk",
+      "action": "EXISTS",
+      "id": "customfield_10045",
+      "forgeVar": "CLAIMS_RISK_FIELD_ID"
+    },
+    {
+      "phase": "customFields",
+      "name": "Experiment ID",
+      "action": "EXISTS",
+      "id": "customfield_10046",
+      "forgeVar": "EXPERIMENT_ID_FIELD_ID"
+    },
+    {
+      "phase": "customFields",
+      "name": "Workflow Area",
+      "action": "EXISTS",
+      "id": "customfield_10047",
+      "forgeVar": "WORKFLOW_AREA_FIELD_ID"
+    },
+    {
+      "phase": "customFields",
+      "name": "Priority Score",
+      "action": "EXISTS",
+      "id": "customfield_10048",
+      "forgeVar": "PRIORITY_SCORE_FIELD_ID"
+    },
+    {
+      "phase": "workflowStatuses",
+      "name": "Intake",
+      "action": "EXISTS",
+      "id": "10003"
+    },
+    {
+      "phase": "workflowStatuses",
+      "name": "Triage",
+      "action": "EXISTS",
+      "id": "10004"
+    },
+    {
+      "phase": "workflowStatuses",
+      "name": "Spec Ready",
+      "action": "EXISTS",
+      "id": "10005"
+    },
+    {
+      "phase": "workflowStatuses",
+      "name": "In Review",
+      "action": "EXISTS",
+      "id": "10006"
+    },
+    {
+      "phase": "workflowStatuses",
+      "name": "Claims Review",
+      "action": "EXISTS",
+      "id": "10007"
+    },
+    {
+      "phase": "workflowStatuses",
+      "name": "Experiment Running",
+      "action": "EXISTS",
+      "id": "10008"
+    },
+    {
+      "phase": "workflowStatuses",
+      "name": "Decision Needed",
+      "action": "EXISTS",
+      "id": "10009"
+    },
+    {
+      "phase": "workflowStatuses",
+      "name": "Launch Prep",
+      "action": "EXISTS",
+      "id": "10010"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Segment:Employer Members",
+      "action": "EXISTS",
+      "id": "10020"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Segment:Lapsed Members",
+      "action": "EXISTS",
+      "id": "10021"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Segment:Activation Cohort",
+      "action": "EXISTS",
+      "id": "10022"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Segment:High-intent Visitors",
+      "action": "EXISTS",
+      "id": "10023"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Segment:General Audience",
+      "action": "EXISTS",
+      "id": "10024"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Primary Metric:Signups",
+      "action": "EXISTS",
+      "id": "10025"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Primary Metric:CAC",
+      "action": "EXISTS",
+      "id": "10026"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Primary Metric:Activation Rate",
+      "action": "EXISTS",
+      "id": "10027"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Primary Metric:Retention",
+      "action": "EXISTS",
+      "id": "10028"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Primary Metric:MoM Revenue",
+      "action": "EXISTS",
+      "id": "10029"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Primary Metric:Feature Adoption",
+      "action": "EXISTS",
+      "id": "10030"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Primary Metric:NPS",
+      "action": "EXISTS",
+      "id": "10031"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Claims Risk:Low",
+      "action": "EXISTS",
+      "id": "10032"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Claims Risk:Medium",
+      "action": "EXISTS",
+      "id": "10033"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Claims Risk:High",
+      "action": "EXISTS",
+      "id": "10034"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Claims Risk:Prohibited",
+      "action": "EXISTS",
+      "id": "10035"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Workflow Area:Targeting",
+      "action": "EXISTS",
+      "id": "10036"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Workflow Area:Creative",
+      "action": "EXISTS",
+      "id": "10037"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Workflow Area:Experiment",
+      "action": "EXISTS",
+      "id": "10038"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Workflow Area:Employer",
+      "action": "EXISTS",
+      "id": "10039"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Workflow Area:Funnel",
+      "action": "EXISTS",
+      "id": "10040"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Workflow Area:Content",
+      "action": "EXISTS",
+      "id": "10041"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Workflow Area:Research",
+      "action": "EXISTS",
+      "id": "10042"
+    },
+    {
+      "phase": "fieldOptions",
+      "name": "Workflow Area:Platform",
+      "action": "EXISTS",
+      "id": "10043"
+    }
+  ]
+}

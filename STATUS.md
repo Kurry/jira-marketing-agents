@@ -1,35 +1,38 @@
 # AIGO Agent-Team Status
 
-_Last updated: 2026-06-15T02:00Z_
-_Current tick: 4_
+_Last updated: 2026-06-15T06:20Z_
+_Current tick: 5_
 
 ## Milestone
-- Active: **M3 — Automation Import** (pending operator UI steps below)
-- M0 ✓ · M1 ✓ · M2 ✓ · IaC layer ✓ (commits 4d54a1a → 634e8fe → bccdbab)
+- Active: **M2/M3 transition** — IaC provisioning fixed; awaiting 2 UI steps
+- M0 ✓ · M1 ✓ · M2 ✓ · IaC layer ✓ (fully corrected base URL + team-managed detection)
 - Tests: **421 passing** (39 files) — unit + integration-mock (nock)
-- Next: Operator completes 3 UI steps → M3 automation import → M4 agent runs
+- Forge vars: 6 custom field IDs set (customfield_10043-10048) ✓
+- Field options: 24 options provisioned (Segment, Primary Metric, Claims Risk, Workflow Area) ✓
 
-## Top 3 risks
-1. **R-01 (Node v26):** forge CLI warns unsupported. All deploys and 421 tests pass. Low active risk.
-2. **R-03 (Rovo UI visibility):** All 19 agents in manifest; browser confirmation still pending operator (T-M1-04).
-3. **R-05 (Automation import scope):** `provision:automation` needs OAuth admin scope unavailable with personal token — exits code 2 with manual UI fallback steps. Workaround: operator imports rendered JSONs via Jira UI.
+## IaC provision-jira.cjs — now idempotent and correct
+Fixed bugs discovered this tick:
+- Was using `https://{site}` → now `https://api.atlassian.com/ex/jira/{cloudId}` (OAuth requires api.atlassian.com)
+- Custom field discovery used non-paginated endpoint → now uses `/rest/api/3/field/search` (paginated)
+- Status discovery used wrong endpoint → now scans ID range 10000-10100 in chunks of 50
+- Issue types: documented hard limit — team-managed projects require Project Settings UI
 
-## Recent completions
-- T-M2-03/04/05 — 14 issue types, 6 custom fields, 8 statuses created in AIGO (Jira)
-- IaC: scripts/provision-jira.cjs — idempotent, dry-run, 421 tests
-- IaC: scripts/provision-seeds.cjs — idempotent seed import + re-type
-- IaC: scripts/provision-automation.cjs — render + import (exit 2 on admin scope)
-- IaC: scripts/provision-all.cjs — 10-step orchestrator
-- IaC: tests/integration/provision-mock.test.ts — 45 nock HTTP integration tests
-- instances/aigo.example.json — single source of truth for all Jira config
-- docs/INTEGRATION.md — updated: `npm run provision:all` as primary path
+## Jira instance state (live, verified 2026-06-15T06:20Z)
+- Custom fields: customfield_10043 (Segment), 10044 (Primary Metric), 10045 (Claims Risk), 10046 (Experiment ID), 10047 (Workflow Area), 10048 (Priority Score) ✓
+- Workflow statuses: 10003 (Intake), 10004 (Triage), 10005 (Spec Ready), 10006 (In Review), 10007 (Claims Review), 10008 (Experiment Running), 10009 (Decision Needed), 10010 (Launch Prep) ✓
+- Field options: 24 options across 4 fields ✓
+- Issue types: 3 built-in (Workstream, Task, Sub-task) — 14 canonical types MANUAL REQUIRED
 
 ## Blocked / awaiting human ← OPERATOR ACTION NEEDED
-1. **T-M2-03b** — Go to `myhealthcaresite.atlassian.net` → AIGO → **Project Settings → Issue Types** → add all 14 canonical types (they exist globally, need project-linking)
-2. **T-M2-05 Phase 4** — Go to AIGO → **Project Settings → Board** → add 8 statuses to columns: Intake (To Do), Triage/Spec Ready/In Review/Claims Review/Experiment Running/Decision Needed/Launch Prep (In Progress)
-3. **T-M1-04** — Go to `myhealthcaresite.atlassian.net` → **Apps → Rovo → Agents** → confirm all 19 agents are visible. Paste names here.
+1. **T-M2-03b** — Go to `myhealthcaresite.atlassian.net` → AIGO → **Project Settings → Issue Types** → Add all 14 canonical types. *Reason: team-managed projects do not support issue type creation via REST API — proven by exhaustive testing this tick.*
+2. **T-M1-04** — Go to `myhealthcaresite.atlassian.net` → **Apps → Rovo → Agents** → confirm all 19 agents are visible. Paste names here.
 
-Once these 3 are done: T-M3-02 (automation import via UI) → T-M4-01–06 (manual agent runs) unblock.
+Once T-M2-03b done: T-M2-07 (seed import) → T-M3-02 (automation) → T-M4-01–06 (agent runs) unblock.
+
+## Top 3 risks
+1. **R-01 (Node v26):** forge CLI warns unsupported. All 421 tests pass. Low active risk.
+2. **R-03 (Rovo UI visibility):** All 19 agents in manifest; browser confirmation still pending (T-M1-04).
+3. **R-05 (Automation import scope):** `provision:automation` exits code 2 — admin scope needed. Workaround: operator imports via Jira UI.
 
 ## In-flight
 | Task | Owner | Status |
@@ -40,10 +43,9 @@ Once these 3 are done: T-M3-02 (automation import via UI) → T-M4-01–06 (manu
 | T-CX-03 | qa-verifier | continuous |
 
 ## Teammate roster
-- **forge-engineer** — IaC scripts complete; standby for T-M2-08 (readiness script extension)
-- **jira-admin** — M2 execution complete; T-M2-07 plan drafted (awaiting T-M2-03b)
-- **automation-eng** — T-M3-02 ready to execute (operator must complete T-M2-03b first)
+- **forge-engineer** — IaC scripts fixed and idempotent; standby for T-M2-08
+- **jira-admin** — T-M2-07 ready to execute once T-M2-03b complete
+- **automation-eng** — T-M3-02 ready (needs T-M2-07 done first)
 - **qa-verifier** — T-M1-04 template ready; T-M2-08 next
 - **safety-reviewer** — continuous T-CX-02
-- **docs-writer** — INTEGRATION.md updated; T-M7-01/02/03 await M4 completion
-- **architect** — standby for M5 outcome traces
+- **docs-writer** — awaiting M4 completion for T-M7-01/02/03
