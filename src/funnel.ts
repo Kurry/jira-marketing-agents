@@ -1,3 +1,6 @@
+// NIH classification (T-NIH-07): twin-specific-keep. Signup-funnel friction
+// diagnosis (step taxonomy, work-type routing, compliant-fix guidance) is Twin
+// growth-ops analysis, not a generic Atlassian capability. No reduction needed.
 import { IssueContext } from "./types";
 import { normalizeText, uniq } from "./utils/text";
 

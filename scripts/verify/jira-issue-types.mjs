@@ -3,6 +3,12 @@
 // Row VM-JIRA-ISSUE-TYPES. Diffs infra/jira/issue-types.yaml against the
 // issue types live in the AIGO project. Green only when every declared type
 // exists live (extras live are reported but not fatal — Jira ships defaults).
+//
+// T-NIH-07 classification: native-wrapper. Native owner (matrix row
+// "Jira admin configuration"): documented Jira Cloud REST v3
+// GET /rest/api/3/project/{key}?expand=issueTypes (via jira.js
+// projects.getProject). The native call returns the live issue-type set; this
+// script only diffs it against infra/jira/issue-types.yaml.
 
 import { createClient } from '../lib/jira.mjs';
 import { loadInfraYaml, diffSets, finish, guard, EXIT } from '../lib/verify.mjs';

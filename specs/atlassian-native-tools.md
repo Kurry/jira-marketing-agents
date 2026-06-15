@@ -181,7 +181,7 @@ These tasks track the remaining unchecked NIH-reduction work. If another worker
 has already implemented part of a task, keep the task as a reference until the
 evidence is linked; do not mark it complete from this document alone.
 
-- `[ ]` **T-NIH-01: Rovo visibility and evidence wording.**
+- `[x]` **T-NIH-01: Rovo visibility and evidence wording.**
   Replace "guaranteed visible" wording with "manifest/install verified; UI
   confirmation pending" unless a public Rovo listing API is added. Split
   evidence into separate webtrigger fallback and native Jira Automation/Rovo
@@ -195,22 +195,27 @@ evidence is linked; do not mark it complete from this document alone.
   - Webtrigger evidence and native Automation/Rovo audit-log evidence are
     tracked separately.
   - Manual UI/product-gated steps remain visible in setup and readiness docs.
+  - Evidence: `scripts/check-rovo-visibility.cjs`,
+    `tests/check-rovo-visibility.test.ts`, `docs/MVP_RUNBOOK.md`, and
+    `evidence/rovo/visibility.md`.
 
-- `[ ]` **T-NIH-02: Supported Automation import path cleanup.**
+- `[x]` **T-NIH-02: Supported Automation import path cleanup.**
   Remove `gateway/api/automation/internal-api/...` from the supported import
-  path or mark it explicitly experimental and non-default. Remove
-  `fn-import-automation` and `manage:jira-configuration` only if the Forge
-  Automation importer is retired from the supported path; otherwise keep them
-  documented as temporary implementation details tied to the blocker.
+  path or mark it explicitly experimental and non-default. The Forge Automation
+  importer is retired from the supported path; `fn-import-automation` and
+  `manage:jira-configuration` have been removed from the manifest/app layer.
 
   Acceptance:
   - The supported path does not depend on private Atlassian endpoints.
   - Any remaining internal/import fallback is labeled experimental with a
     platform-blocker note and a manual native alternative.
-  - Scope removal is tracked as a follow-up only after no supported command uses
-    the Forge importer.
+  - No supported command uses the Forge importer.
+  - Evidence: `manifest.yml`, `src/index.ts`,
+    `scripts/provision-automation.cjs`, `docs/INTEGRATION.md`,
+    `tests/importAutomation.test.ts`, and
+    `tests/integration/manifest.integration.test.ts`.
 
-- `[ ]` **T-NIH-03: ACLI capability inventory.**
+- `[x]` **T-NIH-03: ACLI capability inventory.**
   Add a portability inventory for ACLI `jira project`, `jira workitem`,
   `jira field`, `jira filter`, and `jira dashboard` commands, including what
   each command can own, where Jira REST or UI/template cloning is still needed,
@@ -221,6 +226,7 @@ evidence is linked; do not mark it complete from this document alone.
     resource.
   - Every ACLI gap has a documented fallback and no private endpoint is named as
     the supported fallback.
+  - Evidence: `docs/PORTABILITY.md`.
 
 - `[ ]` **T-NIH-04: Golden template validation.**
   Validate a clone from a company-managed golden template project into a
@@ -236,8 +242,11 @@ evidence is linked; do not mark it complete from this document alone.
     REST, UI/manual setup, or scripts.
   - Any missing clone coverage becomes a follow-up task rather than a hidden
     script mutation.
+  - Current evidence: `evidence/nih/golden-template-validation.json` records
+    that the current AIGO project is team-managed/next-gen and cannot be the
+    company-managed clone source.
 
-- `[ ]` **T-NIH-05: Atlassian product adoption spike.**
+- `[x]` **T-NIH-05: Atlassian product adoption spike.**
   Run a bounded product-fit spike for Jira Product Discovery, JSM Assets,
   Confluence, Atlassian Analytics/Data Lake, and Atlassian Goals. Evaluate each
   product for the specific Growth Ops surface it could own and whether it
@@ -254,6 +263,7 @@ evidence is linked; do not mark it complete from this document alone.
     covers readouts; Goals covers outcome rollups.
   - No product is adopted into the critical path without tenant licensing,
     admin path, and rollback/manual fallback documented.
+  - Evidence: `specs/atlassian-product-adoption-spike.md`.
 
 - `[ ]` **T-NIH-06: Third-party Terraform disposable-site spike.**
   Keep third-party Terraform providers out of the critical path until they pass
@@ -268,8 +278,11 @@ evidence is linked; do not mark it complete from this document alone.
     provider maturity, and rollback risk.
   - If coverage is incomplete, the supported path remains Forge, ACLI, Jira
     REST documented endpoints, and golden-template cloning.
+  - Current evidence: `specs/terraform-provider-spike.md` and
+    `evidence/nih/terraform-provider-spike.json` keep Terraform out of the MVP
+    path pending live disposable-site tests.
 
-- `[ ]` **T-NIH-07: Custom script label inventory.**
+- `[x]` **T-NIH-07: Custom script label inventory.**
   Label every custom script as one of: native wrapper, documented API gap, or
   Twin-specific logic. The label should explain why the script exists and the
   native owner or documented endpoint it binds to.
@@ -280,6 +293,23 @@ evidence is linked; do not mark it complete from this document alone.
     depend on private endpoints as the supported path.
   - Twin-specific scripts are limited to policy, agent logic, safety, evidence,
     or instance binding behavior.
+  - Evidence: `docs/script-label-inventory.md` and
+    `tests/script-label-inventory.test.ts`.
+
+## Second-Pass Review (2026-06-15)
+
+A 10-agent review of the full repo surfaced ~70 further NIH findings beyond the
+six above, which collapse into five cross-cutting themes: (1) internal/private
+endpoints relied on in four places plus reverse-engineered ACLI keychain auth;
+(2) a hand-built parallel "configured Jira project" product (fields/issue-types/
+filters/dashboards/statuses); (3) the `infra/` reconciler as a Terraform-
+equivalent control plane; (4) custom inference presented as native proof
+(webtrigger/Rovo visibility); (5) generic platform capabilities re-implemented in
+`src/` (ADF build/traversal, duplicate detection, prioritization). Detail and
+proposed tasks **T-NIH-08..T-NIH-14** are in
+[`nih-review-2026-06-15.md`](nih-review-2026-06-15.md). All reductions applied in
+that pass were comment/label/wording only; behavior-changing reductions remain
+approval-gated.
 
 ## Acceptance Criteria
 

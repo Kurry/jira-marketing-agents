@@ -4,6 +4,14 @@
 // Declared fields are matched by name (the customfield_ id is instance-specific
 // and assigned by Jira, so name is the stable key). Green when every declared
 // field exists live.
+//
+// T-NIH-07 classification: native-wrapper. Native owner (matrix rows
+// "Project/work item operations" / "Jira admin configuration"): documented Jira
+// Cloud REST v3 GET /rest/api/3/field (via the jira.js issueFields.getFields
+// SDK call) — equivalently `acli jira field list`. This script does not
+// re-implement field discovery; it diffs the documented native listing against
+// infra/jira/fields.yaml. The diff/declaration logic is the Twin-specific IaC
+// layer the matrix says should stay custom.
 
 import { createClient } from '../lib/jira.mjs';
 import { loadInfraYaml, diffSets, finish, guard } from '../lib/verify.mjs';

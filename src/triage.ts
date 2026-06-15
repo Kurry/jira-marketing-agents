@@ -1,3 +1,13 @@
+// NIH classification (T-NIH-07): predominantly twin-specific-keep, one delegable
+// seam. The claims-risk routing, human-approval gating, and Twin workflow-area
+// taxonomy are Twin-specific safety/growth policy and MUST stay custom. The one
+// generic seam is detectWorkflowArea's keyword scoring: once an issue's area is
+// known it should be written to a Jira/JPD select field so JQL and board views
+// own the classification, rather than re-deriving it from text on every read.
+// Native owner for the stored field: Jira fields / JPD (matrix rows "Project/
+// work item operations" and "Ideas and product discovery"). Severity: low.
+// Reduction: persist workflowArea once, then read the field instead of
+// re-scanning text downstream (requirements.ts/backlog.ts re-call this).
 import { IssueContext, RiskLevel, WorkflowArea, ClaimsRisk, Priority } from "./types";
 import { scorePriority } from "./utils/scoring";
 import { scanClaimsRisk, requiresHumanClaimsReview } from "./utils/risk";

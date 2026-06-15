@@ -1,4 +1,13 @@
 // generated_by: scripts/lib/plan-jira.mjs (T-R-INFRA-02)
+// NIH-CLASSIFICATION (T-NIH-07): documented-API-gap (partial NIH).
+//   Builds a parallel product model of Jira (issue-types/fields/filters) and
+//   diffs declared YAML against live REST getters. This name-based set-diff is
+//   a hand-rolled reconciler; ACLI `jira field|filter` and golden-template
+//   cloning already own create/list of these resources. The read-only diff is
+//   the only legitimate gap (no native "plan" command), but the resource model
+//   should stay a thin wrapper over native primitives — not grow into a Jira
+//   admin replacement. Native owner: ACLI + documented Jira REST getters
+//   (matrix rows "Project/work item operations", "Jira admin configuration").
 // Jira-domain planner: compare declared infra/jira/*.yaml against live Jira and
 // emit a flat change list. Pure read-only — uses Version3Client getters only.
 //

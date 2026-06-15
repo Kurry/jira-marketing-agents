@@ -11,6 +11,20 @@
 // Defaults:
 //   --config   instances/aigo.example.json
 //   --dry-run  validate CSV + issue-type names, no API calls, exit 0
+//
+// T-NIH-07 label: native-wrapper.
+//   Native owner: ACLI `jira workitem create` / bulk-via-CSV (matrix row
+//   "Project/work item operations") over Jira REST `/rest/api/3/issue` and
+//   `/search/jql`. Creating and retyping work items is a native Jira primitive,
+//   and ACLI already accepts CSV bulk import — the same shape this script reads.
+//   The custom logic here (CSV parse, normalize-summary idempotency diff,
+//   issue-type retype) only exists because the script self-owns import rather
+//   than delegating to `acli jira workitem create --from-csv`. Preferred
+//   reduction: seed issues belong to a golden company-managed template project
+//   (T-NIH-04) so a clone carries the canonical-type coverage, or drive bulk
+//   create through ACLI; keep this as a fallback for sites without a template.
+//   The seed *content* (summaries mapped to AIGO issue types) is Twin-specific,
+//   but the create/retype mechanism is Atlassian-native. No private endpoints.
 
 const fs = require("node:fs");
 const path = require("node:path");

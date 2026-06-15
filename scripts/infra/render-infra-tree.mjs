@@ -1,5 +1,15 @@
 #!/usr/bin/env node
 // generated_by: scripts/infra/render-infra-tree.mjs (T-R-INFRA-01)
+// NIH-CLASSIFICATION (T-NIH-07): documented-API-gap (snapshot serializer).
+//   Serializes live Jira audit data into the bespoke infra/ YAML product model.
+//   The serialization itself is a thin export, but it materializes a parallel
+//   model of issue-types/fields/filters/workflow/dashboards that ACLI export +
+//   golden-template cloning already capture natively. NOTE: the cloudId here is
+//   hard-coded (line ~56) — it should come from infra/instances/staging.yaml,
+//   not be duplicated in code. Native owner: ACLI list/export + documented Jira
+//   REST getters (matrix "Jira admin configuration"). Keep custom only as an
+//   audit-snapshot harness, not the authoritative architecture (see finding #4,
+//   "IaC hard reset" reduction).
 // Renders the declarative infra/ tree (schemaVersion: 1). issue-types, fields,
 // and filters are populated from evidence/audit/jira.json; the workflow is
 // populated from evidence/jira-config/statuses.json. Remaining files are

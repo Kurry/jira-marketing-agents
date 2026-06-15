@@ -5,6 +5,14 @@
 // Read-only. Writes evidence/verify/forge-install.json.
 //
 // Exit codes: 0 pass | 2 not Up-to-date / not installed | 3 forge unauthenticated
+//
+// T-NIH-07 classification: native-wrapper. Native owner (matrix row
+// "Agent runtime" / Forge): the native `forge install list` CLI command (via
+// scripts/lib/forge.mjs). This script does not re-derive install state — it
+// asserts the native status string equals "Up-to-date". NOTE: lib/forge.mjs
+// parses the CLI's box-drawing TABLE output; this is a brittle dependency on
+// human-formatted output and should switch to a structured/--json flag if the
+// Forge CLI exposes one (tracked as a thin-wrapper hardening follow-up).
 
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";

@@ -16,6 +16,15 @@ scripts/
   lib/            # shared helpers (jira client, forge client, io)
 ```
 
+> **NIH note.** Per `specs/atlassian-native-tools.md` (T-NIH-07, "custom
+> script label inventory"), every `scripts/infra/*` entrypoint should carry
+> exactly one label — **native wrapper**, **documented API gap**, or
+> **Twin-specific logic** — naming the native owner (ACLI command, Forge CLI
+> verb, golden-template clone step, or documented REST endpoint) it binds
+> to. `scripts/infra/` should be predominantly thin wrappers/diffs over
+> those native surfaces, not a self-contained config engine. No script may
+> name a private/internal Atlassian endpoint as its supported path.
+
 Prefer `.mjs` (plain Node ESM) or `.ts` (compiled via `tsx`/`ts-node`)
 over `.sh` when the script does more than three steps. `.sh` is fine
 for simple pipelines; bash must be `set -euo pipefail`.

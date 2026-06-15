@@ -19,6 +19,15 @@ export async function addAnalysisComment(payload: AddCommentPayload): Promise<{ 
   return addComment(payload.issueKey, body);
 }
 
+// NIH-CLASSIFICATION (T-NIH-07): Twin-specific logic (acceptable).
+//   addAnalysisComment + the AI_MARKER are the intentionally-custom safety
+//   surface called out in CLAUDE.md ("the ONLY mutating action") and
+//   specs/atlassian-native-tools.md "What Should Stay Custom" — keep custom.
+//   renderMarkdownFromResult/humanizeKey/stringifyValue below are a generic
+//   object->Markdown serializer; this is NOT an Atlassian-native capability
+//   (Jira has no "render object to comment" API), so it is not NIH. The
+//   Markdown it produces is later turned into ADF by src/utils/adf.ts — see the
+//   ADF NIH note there for the official-builder recommendation.
 /** Render a generic structured object into a readable Markdown comment. */
 export function renderMarkdownFromResult(title: string, result: Record<string, unknown>): string {
   const lines: string[] = [`# ${title}`, ""];

@@ -1,5 +1,15 @@
 #!/usr/bin/env node
 // generated_by: scripts/infra/plan.mjs (T-R-INFRA-02)
+// NIH-CLASSIFICATION (T-NIH-07): documented-API-gap (partial NIH).
+//   This is a bespoke Terraform-like drift engine layered over documented Jira
+//   REST getters. The drift/converge semantics re-implement what `acli jira
+//   project|field|filter|dashboard` + golden-template cloning already provide;
+//   only the read-only diff against documented REST getters is a legitimate gap
+//   filler. See specs/atlassian-native-tools.md finding #4/#5 and the "IaC hard
+//   reset" reduction — this layer should wrap native primitives, not build a
+//   parallel product model. Native owner: ACLI / documented Jira REST + golden
+//   template project (matrix rows "Project/work item operations" and "Jira admin
+//   configuration").
 // Drift detection: read the declared infra/ tree, compare it against live Jira
 // via scripts/lib/jira.mjs, and report what apply.mjs would change. Read-only —
 // performs NO mutations. Exits 0 with changes:[] when fully converged.

@@ -597,7 +597,9 @@ Forge does not replace integration tests with evals. Use three layers:
 2. **CI-safe integration tests:** manifest, prompt, action, handler, and safety
    contracts (`npm run test:integration`). These do not need Jira credentials.
 3. **Live Forge/Jira smoke tests:** after `forge deploy` and `forge install`,
-   verify Jira auth, Forge install visibility, and seeded `AIGO` issues:
+   verify Jira auth, Forge install state (`forge install list` Up-to-date — a
+   Forge manifest/install check, not Rovo UI visibility), and seeded `AIGO`
+   issues:
 
 ```bash
 npm run test:integration
@@ -618,8 +620,11 @@ agent-output rubric checks, but they should sit on top of these integration
 checks rather than replace deployment/Jira validation.
 
 `test:smoke:jira` verifies Forge auth every time. Set
-`AIGO_REQUIRE_FORGE_INSTALL=1` when validating agent visibility work so the smoke
-test fails unless `forge install list` can see the Jira installation.
+`AIGO_REQUIRE_FORGE_INSTALL=1` when validating agent rollout work so the smoke
+test fails unless `forge install list` can see the Jira installation. This
+proves the Forge install is Up-to-date, not that the agents are visible in the
+Rovo UI — confirm Rovo UI visibility separately per the **UI steps (cannot be
+automated)** section.
 
 **Verify:** `npm run test:integration` passes locally and
 `npm run test:smoke:jira` prints the seeded `AIGO-*` issue keys.

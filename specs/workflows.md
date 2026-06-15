@@ -3,6 +3,25 @@
 Workflow spec for the AI Growth Ops control plane: statuses, per-issue-type
 transition paths, required fields per transition, and human approval gates.
 
+> **Native owner (NIH note, T-NIH-04).** Statuses, workflow schemes, and
+> transition rules are Atlassian-native primitives. Per
+> `specs/atlassian-native-tools.md`:
+> - **Status/workflow ownership:** a golden company-managed template project
+>   owns this status set, transition paths, and board/status mapping (matrix row
+>   "Jira admin configuration"); a clone carries them. The team-managed-project
+>   constraints noted below (REST creates statuses but board/status mapping is
+>   UI-controlled) are exactly why a company-managed template is the scale path
+>   rather than per-site REST status creation.
+> - **Transition gates (section 3) and approval gates (section 4):** the
+>   *enforcement* mechanism is Forge workflow modules — validator / condition /
+>   post-function on company-managed transitions (matrix row "Workflow gates").
+>   Required-field and human-approval rules in this spec should be expressed as
+>   those native modules, not as bespoke gate logic. Only human-gate semantics
+>   that Atlassian modules cannot express stay custom.
+> - The `blocked` / `readout-needed` labels are intentionally labels, not
+>   statuses, and are owned by the native filter/queue model (`specs/...`,
+>   provision-filters), not a custom workflow state.
+
 References: issue types in `specs/issue-types.md`; fields in
 `specs/custom-fields.md`; safety rules in `policies/safe-mutations.md`,
 `policies/claims-risk-policy.md`, and `policies/experiment-policy.md`.

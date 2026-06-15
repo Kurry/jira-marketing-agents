@@ -1,12 +1,22 @@
 #!/usr/bin/env node
 // generated_by: scripts/verify/rovo-agents.mjs (T-R-P5)
 //
-// Verify the Rovo agents declared in manifest.yml are reachable.
+// NIH label (atlassian-native-tools.md T-NIH-07): DOCUMENTED API GAP.
+// Native owner: Rovo / Jira Automation "Use Rovo agent" action. There is no
+// public Rovo "list my agents" REST API, so this script does NOT prove the 19
+// declared rovo:agent entries are visible or individually reachable.
 //
-// There is no public Rovo "list my agents" REST surface, so reachability is
-// confirmed via the agent webtrigger (the operator-controlled invocation path).
-// A 2xx/4xx JSON response proves the function is deployed and routing; only a
-// transport failure (no URL, connection refused, 5xx) counts as unreachable.
+// What this actually verifies: it counts rovo:agent keys in manifest.yml and
+// probes the SINGLE shared agent webtrigger once. A 2xx/4xx response proves only
+// that the agent-webtrigger Forge function is deployed and routing — NOT that
+// any rovo:agent is reachable in the Rovo UI, and NOT that Jira Automation
+// invoked an agent. The webtrigger routes only 5 agentTypes (triage, claims,
+// experiment, employerLaunch, weeklyReadout), not the 19 declared Rovo agents;
+// the "19 agents ... webtrigger reachable" summary must not be read as per-agent
+// Rovo proof. Native Rovo/Automation proof comes from VM-AUTOMATION-AUDIT
+// (audit-log) and manual/UI confirmation (check-rovo-visibility), tracked as a
+// SEPARATE evidence row. Only a transport failure (no URL, connection refused,
+// 5xx) counts as unreachable.
 //
 // Exit codes:
 //   0  all declared agents accounted for and webtrigger reachable

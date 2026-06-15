@@ -4,6 +4,19 @@
 // Read-only audit of the Forge app: install status on the staging site and a
 // structural count of the manifest (agents/actions/functions/webtrigger).
 // Writes evidence/audit/forge.json. Never deploys, installs, or mutates.
+//
+// T-NIH-07 classification: native-wrapper (audit harness). Native owner
+// (matrix row "Agent runtime" / Forge): the native `forge install list` CLI.
+// Two NIH caveats:
+//   1. parseForgeInstallList() DUPLICATES the box-drawing table parser already
+//      in scripts/lib/forge.mjs and shares its brittleness on human-formatted
+//      CLI output (prefer a --json flag if Forge exposes one; de-dupe onto
+//      lib/forge.mjs as a follow-up).
+//   2. auditManifest() hand-rolls a line-based YAML scanner (indent regexes)
+//      instead of parsing manifest.yml with the `yaml` dependency the repo
+//      already uses elsewhere. This re-implements YAML parsing for a structural
+//      count; switching to parseYaml would be more robust. Both are
+//      audit-only/non-authoritative (manifest contract tests own correctness).
 
 import { execSync } from "node:child_process";
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";

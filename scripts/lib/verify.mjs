@@ -2,6 +2,10 @@
 // Shared helpers for scripts/verify/*.mjs: load infra YAML, diff helpers,
 // and a standard finish() that prints the envelope run-all.mjs expects.
 //
+// T-NIH-07 classification: Twin-specific logic (IaC evidence harness). Pure
+// repo-local helpers (YAML load, set diff, evidence envelope/exit) shared by the
+// native-wrapper verify scripts; no Atlassian capability is re-implemented.
+//
 // Status convention (envelope.data.status):
 //   green       — declared state matches live  → exit 0
 //   red         — drift detected               → exit 2

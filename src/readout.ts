@@ -1,3 +1,12 @@
+// NIH classification (T-NIH-07): mixed — bucketing is native-adjacent, the
+// decision memo is twin-specific-keep. The status/type/label classification of
+// issues into completed/blocked/decisions/etc. duplicates what a saved JQL
+// filter, a Jira dashboard gadget, or Atlassian Analytics can group natively.
+// Native owner: Jira filters/dashboards + Atlassian Analytics (matrix row
+// "Weekly readouts and dashboards"). Severity: low. Reduction: drive the
+// buckets from saved JQL filters / Analytics groupings instead of re-bucketing
+// in TS; KEEP the "top three actions" prioritization and the AI decision-memo
+// framing, which are Twin growth-ops logic and the point of the agent.
 import { uniq } from "./utils/text";
 
 export type WeeklyReadout = {

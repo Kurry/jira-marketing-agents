@@ -1,3 +1,8 @@
+// NIH classification (T-NIH-07): twin-specific-keep. Claims-risk review that
+// never approves and always routes risky/prohibited copy to humans is the
+// central Twin safety invariant — explicitly listed under "What Should Stay
+// Custom" in specs/atlassian-native-tools.md. No native Atlassian equivalent;
+// must stay custom and must never become an auto-approver.
 import { IssueContext, ClaimsRisk } from "./types";
 import { scanClaimsRisk, requiresHumanClaimsReview } from "./utils/risk";
 import { containsAny, uniq } from "./utils/text";

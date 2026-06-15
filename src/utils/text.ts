@@ -1,4 +1,18 @@
 // Text utilities for parsing ADF and comparing issue content.
+//
+// NIH-CLASSIFICATION (T-NIH-07): mixed.
+//   - extractPlainTextFromAdf: documented-API-gap (partial NIH). Native owner is
+//     the official ADF traversal/extraction utilities in @atlaskit/adf-utils
+//     (e.g. `traverse`) which know the full node schema (mediaSingle, table,
+//     inlineCard, mention, emoji, etc.); this hand-rolled walker only handles
+//     text/content/paragraph/hardBreak and silently drops the rest.
+//     RECOMMENDATION ONLY (new npm dep, out of scope for comment-only reduction).
+//   - tokenize / normalizeText / jaccardSimilarity: Twin-specific logic that is
+//     ACCEPTABLE as custom code. These power the lightweight duplicate detector
+//     (duplicates.ts). They are NOT an attempt to re-implement Lucene/JQL text
+//     search — that belongs to Jira's native JQL engine (see searchIssues in
+//     src/jira.ts). If full-text relevance ranking is ever needed, prefer a JQL
+//     `text ~ "..."` query over growing this tokenizer into a search engine.
 
 /**
  * Recursively extract plain text from an Atlassian Document Format (ADF) node.

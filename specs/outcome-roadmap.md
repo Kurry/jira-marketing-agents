@@ -114,12 +114,14 @@ or production signup systems.
   manifest agent key, add AI-analysis comment text, stay disabled by default,
   and never approve claims or launch work.
   (Resolved: T-M3-04 — `tests/automation.test.ts` + `tests/integration/automation.test.ts`)
-- `[ ]` Complete T-NIH-03 ACLI capability inventory. Document project,
+- `[x]` Complete T-NIH-03 ACLI capability inventory. Document project,
   workitem, field, filter, and dashboard command coverage before expanding the
-  portable setup path.
+  portable setup path. (Done: `docs/PORTABILITY.md`)
 - `[ ]` Complete T-NIH-04 golden-template validation. A clone should pass
   readiness with the canonical issue types, statuses, screens, fields, board,
   queues, filters, dashboards, seeds, and Automation placeholders.
+  (Blocked: `evidence/nih/golden-template-validation.json` shows current AIGO
+  is team-managed/next-gen and cannot be the company-managed template source.)
 - `[x]` Add transition-path verification to `scripts/aigo-project-readiness.cjs`.
   (Resolved: T-M2-08 — readiness script verifies transition paths)
 - `[~]` Add Rovo UI visibility and Jira Automation audit-log checks to the
@@ -128,9 +130,10 @@ or production signup systems.
 - `[~]` Add repo CI for build, unit tests, integration tests, automation JSON
   validation, seed rendering, and spec/link checks.
   (Partial: CI covers build/test/integration; automation JSON validation and link checks via npm scripts)
-- `[ ]` Complete T-NIH-05 Atlassian product adoption spike before moving
+- `[x]` Complete T-NIH-05 Atlassian product adoption spike before moving
   ideas/insights, employer or segment objects, claims/SOP knowledge, readouts,
   or outcome rollups out of Jira issue/field/dashboard surfaces.
+  (Done: `specs/atlassian-product-adoption-spike.md`)
 - `[ ]` Complete T-NIH-06 Terraform/provider spike after the control plane spec
   is stable. Compare:
   [`gothub97/terraform-provider-atlassian`](https://github.com/gothub97/terraform-provider-atlassian),
@@ -140,14 +143,18 @@ or production signup systems.
   [`Vestmark/terraform-provider-jira`](https://github.com/Vestmark/terraform-provider-jira),
   and
   [`atlassian/terraform-provider-atlassian-operations`](https://github.com/atlassian/terraform-provider-atlassian-operations).
+  (Baseline report: `specs/terraform-provider-spike.md`; live disposable-site
+  provider create/import/plan/drift/destroy evidence still pending.)
 - `[ ]` Do not add production `.tf` resources until the spike proves coverage
   for projects, issue types, custom fields, screens, workflows, workflow
   schemes, boards/filters, Automation, import/drift behavior, and destroy
   safety.
 - `[ ]` If Terraform remains incomplete, keep Jira REST and ACLI fallback scripts
   as the portable implementation path.
-- `[ ]` Complete T-NIH-07 custom-script label inventory before treating any
+- `[x]` Complete T-NIH-07 custom-script label inventory before treating any
   custom script as a long-term portability primitive.
+  (Done: `docs/script-label-inventory.md`, guarded by
+  `tests/script-label-inventory.test.ts`)
 
 Acceptance:
 - Native Atlassian product ownership is explicit before custom code is expanded.
@@ -158,22 +165,23 @@ Acceptance:
 
 ## Atlassian Product Adoption Tasks
 
-- `[ ]` **T-NIH-05A: Jira Product Discovery fit.** Map idea capture, insights,
+- `[x]` **T-NIH-05A: Jira Product Discovery fit.** Map idea capture, insights,
   prioritization, and delivery links from the outcome workflows to JPD.
-- `[ ]` **T-NIH-05B: JSM Assets fit.** Map employers, partners, segments,
+- `[x]` **T-NIH-05B: JSM Assets fit.** Map employers, partners, segments,
   services, and reusable launch objects to Assets schemas if the tenant is
   licensed.
-- `[ ]` **T-NIH-05C: Confluence knowledge fit.** Map claims rules, SOPs,
+- `[x]` **T-NIH-05C: Confluence knowledge fit.** Map claims rules, SOPs,
   approved messaging, research synthesis, and prompt source references to
   Confluence pages, databases, or knowledge sources.
-- `[ ]` **T-NIH-05D: Analytics/Data Lake fit.** Map weekly readouts, dashboard
+- `[x]` **T-NIH-05D: Analytics/Data Lake fit.** Map weekly readouts, dashboard
   metrics, and decision evidence to Atlassian Analytics/Data Lake where
   available, with Jira dashboards as fallback.
-- `[ ]` **T-NIH-05E: Atlassian Goals fit.** Map growth outcomes and rollups to
+- `[x]` **T-NIH-05E: Atlassian Goals fit.** Map growth outcomes and rollups to
   Goals/Projects where available, with Jira links and labels as fallback.
-- `[ ]` **T-NIH-05F: Adoption decision memo.** Summarize product prerequisites,
+- `[x]` **T-NIH-05F: Adoption decision memo.** Summarize product prerequisites,
   custom code reduced, migration cost, blockers, rollback/manual fallback, and
-  final recommendation for each product.
+  final recommendation for each product. (Done:
+  `specs/atlassian-product-adoption-spike.md`)
 
 Acceptance:
 - Each product has a sample object or workflow mapping and a clear adopt,

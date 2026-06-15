@@ -4,6 +4,26 @@ Custom-field catalog for the AI Growth Ops control plane. Source: field list in
 `specs/outcome-roadmap.md`. Issue-type ownership references
 `specs/issue-types.md`.
 
+> **Native owner (NIH note, T-NIH-03/04/05).** Custom fields are an Atlassian-
+> native primitive. The intended owners for this catalog, per
+> `specs/atlassian-native-tools.md`:
+> - **Field creation/config:** a golden company-managed template project that
+>   carries these fields, contexts, and options (matrix row "Jira admin
+>   configuration"), cloned per site; ACLI `jira field` and documented Jira
+>   REST `/rest/api/3/field` only fill template gaps. Field *IDs* stay
+>   instance-specific and env-injected (`src/config.ts`), never hard-coded.
+> - **Discovery/prioritization fields** (e.g. Targeting Confidence, Confidence,
+>   Expected Lift, scoring inputs): evaluate Jira Product Discovery fields
+>   (formula/rating/options) before adding bespoke selects — matrix row "Ideas
+>   and product discovery", spike T-NIH-05.
+> - **Reusable business entities** (Segment, Affected Segment, employer/partner
+>   references): evaluate JSM Assets objects + an Assets object field before
+>   modeling them as free-standing selects — matrix row "Employers, partners,
+>   segments, services", spike T-NIH-05. A select list of segments is a parallel
+>   product model of what an Assets schema would own.
+> The classifier-output helpers (Workflow Area, Priority Score) are
+> Twin-specific agent outputs and stay custom regardless.
+
 **Instance-specific IDs.** Custom field IDs are per-Jira-instance and are never
 hard-coded. They are injected at runtime via environment variables in
 `src/config.ts` (`FIELD_IDS`). For the MVP, agent output is surfaced through

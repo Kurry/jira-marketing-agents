@@ -20,6 +20,12 @@ The script (create it if missing) records:
   `scripts/`, `specs/`, `docs/`, `infra/` (if it exists), `evidence/`.
 - Presence of expected IaC artefacts (see `DECLARATIVE_STATE.md`):
   mark each as `present` / `stub` / `missing`.
+  <!-- NIH note: per specs/atlassian-native-tools.md finding #4, "missing"
+  here is not automatically a gap to fill by building the bespoke infra/
+  reconciler. For each missing artefact, first record whether a native owner
+  (ACLI, golden-template clone, Forge manifest, documented REST) already
+  covers that resource; only flag it as remediation work where no native
+  surface exists. -->
 - For every file produced by v1 (anything added under `evidence/` or
   `specs/agent-team/v1/`), record its path and flag whether it looks
   script-generated (contains `"generated_by"` or `"command"` top-line)

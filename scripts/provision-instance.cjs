@@ -1,6 +1,14 @@
 #!/usr/bin/env node
 "use strict";
 
+// scripts/provision-instance.cjs
+// NIH classification (T-NIH-07): native-wrapper.
+// Per-instance provisioner that wraps Atlassian-native commands: ACLI
+// (`jira project view`, `jira project create`, including `--from-project`
+// golden-template cloning) and the Forge CLI (lint/deploy/install). Seed and
+// readiness steps delegate to repo scripts. This wraps native primitives and
+// must not grow into a parallel project model. See specs/atlassian-native-tools.md.
+
 const { spawnSync } = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");

@@ -47,8 +47,8 @@ forge lint             # must exit 0 with only the addAnalysisComment warning
 - [ ] Every agentKey matches a rovo:agent key in manifest.yml
 - [ ] Rule is imported DISABLED
 - [ ] Safety-reviewer pre-approved the rule (no approve step, no autonomous mutation)
-- [ ] Audit-log validation captured in evidence/automation/<rule>-audit.md
-- [ ] Rule enabled only AFTER successful audit-log run captured
+- [ ] Native Jira Automation audit-log validation captured in evidence/automation/<rule>-audit.md (a green "Use Rovo agent" row from the native rule — Forge webtrigger fallback evidence does not satisfy this)
+- [ ] Rule enabled only AFTER a successful native Automation audit-log run is captured
 
 ---
 

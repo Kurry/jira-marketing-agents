@@ -2,6 +2,24 @@
 
 Canonical issue-type catalog for the Jira-native AI Growth Ops control plane.
 
+> **Native owner (NIH note, T-NIH-04/05).** Issue types are an Atlassian-native
+> primitive; this catalog should not be re-created field-by-field per site.
+> Per `specs/atlassian-native-tools.md`:
+> - **Type creation/attachment:** a golden company-managed template project owns
+>   these 14 types, their screens, and field associations (matrix row "Jira
+>   admin configuration"); a clone carries them. Project Settings is the
+>   documented UI fallback because team-managed projects expose no reliable REST
+>   path for project-scoped type attachment — that is a documented platform gap,
+>   not a reason to keep a custom provisioner as the primary owner.
+> - **Discovery vs execution split (T-NIH-05):** types whose work is *discovery*
+>   rather than execution — Research Brief, Positioning Update, Decision Memo,
+>   and arguably AI Growth Request intake — should be evaluated as Jira Product
+>   Discovery ideas + insights (matrix row "Ideas and product discovery") before
+>   being kept as execution issue types. JPD would own idea capture,
+>   prioritization, and delivery links; only types that truly need an execution
+>   workflow stay as Jira Software issue types. Keeping all 14 as execution types
+>   risks a parallel product model of what JPD already provides.
+
 **Current vs target state.** The live AIGO development project now has all 14
 canonical issue types available in the team-managed project. They were added via
 Jira Project Settings because team-managed projects do not expose a reliable

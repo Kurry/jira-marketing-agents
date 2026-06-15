@@ -7,6 +7,15 @@
 // by first checking what already exists (GET by name) and only POSTing what
 // is missing. Running twice against the same instance is a no-op.
 //
+// NIH classification (T-NIH-07): documented-API-gap.
+// This script binds to the documented Jira Cloud REST API v3. The
+// Atlassian-native first-choice owners are ACLI (`jira field`, `jira project`)
+// and a golden company-managed template project (see the Native Tool Fit
+// Matrix in specs/atlassian-native-tools.md). REST is used here only where
+// ACLI/template cloning do not yet cover the operation (e.g. project-scoped
+// status records, paginated field search). Keep these REST calls thin and
+// tied to documented endpoints; do not depend on private Atlassian endpoints.
+//
 // Usage:
 //   node scripts/provision-jira.cjs [--config <path>] [--dry-run]
 //
@@ -122,11 +131,17 @@ function diffItems(existing, desired, keyFn) {
 // ---------------------------------------------------------------------------
 
 function resolveToken() {
+  // Supported path: ATLASSIAN_TOKEN env var (documented Atlassian API token / OAuth bearer).
   // 1. Try env var
   if (process.env.ATLASSIAN_TOKEN) {
     return process.env.ATLASSIAN_TOKEN.trim();
   }
 
+  // 2. EXPERIMENTAL / non-default fallback: read ACLI's stored credential out of the
+  //    macOS keychain. This depends on ACLI's PRIVATE, undocumented credential storage
+  //    format (go-keyring base64 + gzip + JSON access_token) and is OS-specific and
+  //    fragile — Atlassian may change it without notice. Do not treat it as the
+  //    supported portability path; prefer ATLASSIAN_TOKEN above.
   // 2. On darwin, try keychain via acli stored credential
   if (process.platform === "darwin") {
     try {
@@ -403,6 +418,11 @@ async function provisionWorkflowStatuses(config, token, baseUrl) {
   // Scan known ID ranges in chunks of 50 (API limit) to find all project-scoped status records.
   // Project-scoped statuses don't appear in GET /rest/api/3/status (which only returns active
   // workflow statuses), but are accessible via the batch lookup by ID.
+  //
+  // NIH note (documented-API-gap): the ID-range scan below is a workaround for a
+  // documented Jira REST gap — there is no public endpoint that lists project-scoped
+  // status RECORDS that have not yet been wired into a workflow. The fixed range is a
+  // heuristic, not a stable contract; treat it as gap-compensation, not a native primitive.
   const SCAN_START = 10000;
   const SCAN_END = 10100;
   const CHUNK_SIZE = 50;

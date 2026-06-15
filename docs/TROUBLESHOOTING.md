@@ -60,9 +60,12 @@ interface backed by this Forge app.
 
 The connection is the **Use Rovo agent** Automation action: an Automation rule
 can call a Rovo agent and capture its response in `{{agentResponse}}`, which a
-subsequent **Add comment** step posts to the issue. This is the wiring used by
-all five MVP Automation rules (Intake Triage, Creative Claims, Experiment Spec,
-Employer Launch, Weekly Readout).
+subsequent **Add comment** step posts to the issue. This is the wiring declared
+for all five MVP Automation rules (Intake Triage, Creative Claims, Experiment
+Spec, Employer Launch, Weekly Readout). Note: the native **Use Rovo agent**
+wiring is not yet proven live — current evidence is the Forge webtrigger
+fallback; native Automation audit-log proof is still pending (see
+[`MVP_READINESS.md`](MVP_READINESS.md)).
 
 Rovo agents are **not** Automation rules and do not appear in the Automation
 rules list. Automation rules do not appear in the Rovo agents tab.

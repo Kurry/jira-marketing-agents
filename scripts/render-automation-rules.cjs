@@ -9,6 +9,17 @@
 // NOTE: {{...}} tokens (e.g. {{issue.key}}, {{agentResponse}}) are Jira Automation
 // smart values evaluated at runtime by Jira — this script must NOT replace them.
 //
+// NIH classification (T-NIH-07): native-wrapper.
+// This script does NOT implement an automation engine. It only instance-binds
+// the rule JSON templates (project key/id, actor account id, Rovo agent keys)
+// for the native Jira Automation importer. The Atlassian-native owners are the
+// native Jira Automation UI/export-import and the Studio "Use Rovo agent"
+// action; the rendered JSON in automation/rules/rendered/ is intended to be
+// uploaded through that native import path (see specs/atlassian-native-tools.md
+// Native Tool Fit Matrix → "Automation import"). The triggers/conditions/actions
+// themselves stay in the rule templates and execute inside native Jira
+// Automation — this wrapper never evaluates or dispatches them.
+//
 // Usage:
 //   node scripts/render-automation-rules.cjs [--config <path>] [--rules-dir <path>]
 //

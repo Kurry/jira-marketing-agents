@@ -22,7 +22,7 @@
     "provision:all": "node scripts/provision-all.cjs",
     "provision:filters": "node scripts/provision-filters.cjs",
     "provision:dashboards": "node scripts/provision-dashboards.cjs",
-    "check:rovo": "node scripts/check-rovo-visibility.cjs",
+    "check:rovo": "AIGO_INSTANCE_YAML_CONFIG=infra/instances/staging.yaml node scripts/check-rovo-visibility.cjs",
     "audit": "node scripts/audit/run-all.mjs",
     "infra:plan": "node scripts/infra/plan.mjs",
     "infra:apply": "node scripts/infra/apply.mjs",

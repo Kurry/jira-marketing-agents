@@ -8,6 +8,17 @@
 // token (returns 401/403). When the API is unavailable this row reports
 // `unsupported` with a blocker file path rather than failing the whole verify
 // run — see evidence/blockers/automation-api.json.
+//
+// T-NIH-07 classification: documented-API-gap.
+//   Native owner (matrix row "Automation import"): native Jira Automation
+//   UI export/import, or a documented public Automation API if one exists.
+//   This row reads native automation state, but does so via
+//   /rest/cb-automation/latest/... which is an INTERNAL / undocumented endpoint
+//   (the same private surface flagged by plan finding #1 and T-NIH-02). It is
+//   therefore EXPERIMENTAL and must not be the long-term portability foundation:
+//   if Atlassian exposes no public read API, the supported proof is the native
+//   audit-log export, and this row degrades to `unsupported` with the blocker
+//   rather than becoming the authoritative check.
 
 import { existsSync, readdirSync, writeFileSync, mkdirSync } from 'node:fs';
 import { createClient, CLOUD_API_HOST, resolveAuth } from '../lib/jira.mjs';
@@ -85,6 +96,11 @@ guard(GENERATED_BY, ROW, async () => {
     host = 'https://myhealthcaresite.atlassian.net';
   }
 
+  // EXPERIMENTAL: /rest/cb-automation/latest/... is an internal/undocumented
+  // Atlassian endpoint, not a documented public API. Treated as a non-default,
+  // best-effort read; a 401/403 degrades this row to `unsupported` + blocker
+  // rather than asserting drift. Do not promote this path to the supported
+  // portability foundation (see T-NIH-02 / plan finding #1).
   const url = `${host}/rest/cb-automation/latest/project/${PROJECT_ID}/rule`;
   const res = await fetch(url, { headers });
 

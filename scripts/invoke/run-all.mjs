@@ -1,9 +1,20 @@
 #!/usr/bin/env node
 // generated_by: scripts/invoke/run-all.mjs (T-R-P5)
 //
+// NIH label (atlassian-native-tools.md T-NIH-07): TWIN-SPECIFIC LOGIC (safety).
+// Its value is the safety assertion (no approved:true / launchNow:true), which
+// is repo-owned policy, not a native capability.
+//
 // Invoke each agent via the deployed webtrigger and capture JSON responses as
 // evidence. Asserts the safety invariant: no response may contain
 // approved:true or launchNow:true (the AI never approves or launches).
+//
+// SCOPE NOTE: this invokes the 5 agentTypes the agent-webtrigger FALLBACK routes
+// (triage, claims, experiment, employerLaunch, weeklyReadout) — NOT the 19
+// rovo:agent entries declared in manifest.yml, and NOT the native Rovo invocation
+// path. Despite mapping to VM-ROVO-INVOKE ("for each Rovo agent"), these are
+// webtrigger-fallback invocations; native per-agent Rovo proof must come from
+// Jira Automation audit-log evidence and be recorded in a separate evidence row.
 //
 // Webtrigger URL: WEBTRIGGER_URL env var, else `forge webtrigger` (see forge.mjs).
 //

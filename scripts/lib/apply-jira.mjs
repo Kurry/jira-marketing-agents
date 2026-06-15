@@ -1,4 +1,13 @@
 // generated_by: scripts/lib/apply-jira.mjs (T-R-INFRA-03)
+// NIH-CLASSIFICATION (T-NIH-07): native-wrapper (should wrap ACLI, not SDK).
+//   Creates issue-types/fields/filters directly via the jira.js SDK. ACLI
+//   (`acli jira field create`, `acli jira filter create`, work-item commands)
+//   and golden-template cloning are the native owners of these create paths
+//   (matrix row "Project/work item operations"). Re-implementing create via the
+//   SDK duplicates ACLI; field/filter creates are even left "(not yet wired)"
+//   — exactly the work ACLI already does. Reduction: delegate creates to ACLI
+//   commands or template clone; keep custom code only for the additive-only
+//   safety gate. See specs/atlassian-native-tools.md finding #5.
 // Apply a single ADDITIVE Jira change (create only) via the jira.js SDK.
 // Called by scripts/infra/apply.mjs for each plan delta entry.
 //

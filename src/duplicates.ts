@@ -1,3 +1,14 @@
+// NIH classification (T-NIH-07): native-wrapper / candidate-to-delegate.
+// This module re-implements duplicate detection (Jaccard text overlap +
+// label/component overlap) that Jira partly owns natively: JQL/Lucene text
+// search for candidate retrieval, and the native "Duplicate" issue-link type
+// for recording confirmed duplicates. Native owner: Jira (matrix rows
+// "Project/work item operations" via ACLI/REST + issue links). Severity: medium.
+// Reduction: have the handler retrieve candidates via JQL `text ~`/`summary ~`
+// (Lucene relevance) instead of scoring all issues here, and surface confirmed
+// duplicates as `is duplicated by` issue links rather than a custom score.
+// The Twin-specific part worth keeping is the label/component weighting and the
+// human-review framing; the generic text-similarity ranking is the NIH part.
 import { IssueContext, SimilarIssue } from "./types";
 import { jaccardSimilarity, uniq } from "./utils/text";
 

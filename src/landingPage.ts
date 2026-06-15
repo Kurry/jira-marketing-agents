@@ -1,3 +1,7 @@
+// NIH classification (T-NIH-07): twin-specific-keep. Landing-page spec with
+// claims-scanned draft copy and conversion structure is Twin growth + claims-
+// safety logic. Spec-only (does not deploy a page). No native Atlassian
+// equivalent; stays custom.
 import { IssueContext } from "./types";
 import { scanClaimsRisk } from "./utils/risk";
 import { normalizeText, uniq } from "./utils/text";

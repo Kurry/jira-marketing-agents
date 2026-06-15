@@ -1,3 +1,7 @@
+// NIH classification (T-NIH-07): twin-specific-keep. Referral-loop design with
+// anti-kickback/inducement compliance flags and fraud guardrails is Twin
+// regulated-health policy with no native Atlassian equivalent. Design-only, no
+// mutation. No reduction needed.
 import { IssueContext } from "./types";
 import { normalizeText, uniq } from "./utils/text";
 

@@ -5,6 +5,16 @@
 // reachable in the AIGO project. Team-managed projects don't expose a named
 // workflow scheme via REST, so we verify the status set via
 // /project/{key}/statuses (statuses grouped per issue type) and union them.
+//
+// T-NIH-07 classification: documented-API-gap (thin). Native owner (matrix row
+// "Jira admin configuration"): documented Jira Cloud REST v3
+// GET /rest/api/3/project/{key}/statuses (via jira.js
+// projects.getAllStatuses). The documented endpoint that would return a named
+// workflow scheme is not available for team-managed projects, so this script
+// verifies the reachable status SET (union per issue type) as the documented
+// fallback rather than the full transition graph. The key→title-case name
+// derivation is a local convenience for declarations that omit an explicit
+// name; it is not a re-implementation of any Atlassian status API.
 
 import { createClient } from '../lib/jira.mjs';
 import { loadInfraYaml, diffSets, finish, guard } from '../lib/verify.mjs';

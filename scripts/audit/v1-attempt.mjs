@@ -3,6 +3,10 @@
 // Audits the v1 (pre-IaC) attempt: classifies every evidence/ file as
 // script-produced vs manual-artefact (by presence of a "generated_by:" header),
 // and every scripts/ file as iac-compliant vs legacy. Read-only; no mutation.
+//
+// T-NIH-07 classification: Twin-specific logic (IaC audit harness). Classifies
+// the repo's own files against the evidence contract — no Atlassian capability
+// is re-implemented.
 
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';

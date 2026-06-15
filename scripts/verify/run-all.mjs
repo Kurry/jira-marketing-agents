@@ -10,6 +10,11 @@
 //   "red"         — check failed (no blocker) → overall fail
 //   "unsupported" — platform can't support it; requires a blocker file path
 //                   in envelope.data.blocker, else treated as red.
+//
+// T-NIH-07 classification: Twin-specific logic (IaC evidence harness). This is
+// the repo's own verify aggregator/evidence generator — sanctioned by the
+// matrix ("Instance config and evidence generation"). It does not re-implement
+// any Atlassian capability; it orchestrates the per-row native-wrapper scripts.
 
 import { existsSync, readdirSync, rmSync } from 'node:fs';
 import { join, basename } from 'node:path';

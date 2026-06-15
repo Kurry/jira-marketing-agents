@@ -1,6 +1,13 @@
 import { Priority } from "../types";
 import { normalizeText } from "./text";
 
+// NIH-CLASSIFICATION (T-NIH-07): Twin-specific logic (acceptable, not NIH).
+//   This is a heuristic growth/safety triage scorer over issue text+labels; it
+//   maps to a Twin Priority taxonomy and is not an Atlassian capability. Jira's
+//   native `priority` field is operator-set, not computed — so this does not
+//   duplicate a platform feature. Keep custom (specs/atlassian-native-tools.md
+//   "Pure TypeScript domain modules ... should stay custom").
+
 // Phrase banks for the priority heuristic. These are intentionally explicit so
 // that the scoring is auditable and unit-testable.
 const P0_TERMS = [

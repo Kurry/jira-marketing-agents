@@ -1,3 +1,10 @@
 schemaVersion: 1
+# NIH-CLASSIFICATION (T-NIH-07): native-wrapper / NIH duplicate.
+#   This file mirrors manifest.yml rovo:agent entries. manifest.yml IS the
+#   native, authoritative declaration of Rovo agents (Forge owns it). A second
+#   YAML copy of the agent list is a parallel product model that can drift from
+#   the manifest. Native owner: Forge manifest.yml rovo:agent module (matrix row
+#   "Agent runtime"). Reduction: derive agent inventory from manifest.yml at
+#   verify time rather than maintaining a separate infra/rovo declaration.
 # STUB. Mirror of manifest.yml rovo:agent entries; reconciled by verify/rovo-agents.mjs.
 agents: []

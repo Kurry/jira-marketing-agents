@@ -1,4 +1,11 @@
 schemaVersion: 1
+# NIH-CLASSIFICATION (T-NIH-07): documented-API-gap / native-wrapper.
+#   A bespoke YAML model of a Jira Automation rule. Native owner is Jira
+#   Automation export/import or Studio "Use Rovo agent" action (matrix rows
+#   "Agent event triggers" / "Automation import"). A hand-rolled rule schema
+#   risks re-implementing Automation's own rule format; the reduction is to keep
+#   the NATIVE Automation export JSON (importable, disabled) as the source of
+#   truth rather than a parallel schema. No private internal-API path here.
 # STUB automation rule: intake-triage.
 # Rules are declared disabled; enabled only after a captured audit-log run.
 rule:

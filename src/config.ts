@@ -5,6 +5,19 @@
 // custom field writes. If/when field writes are enabled (see policies and the
 // README "Future Extensions"), wire the field IDs here via environment
 // variables and gate writes behind an explicit allowlist.
+//
+// NIH-CLASSIFICATION (T-NIH-07): native-wrapper / instance-binding (acceptable,
+// with a caveat).
+//   The FIELD_IDS env-var indirection is the correct portability seam: the
+//   field-ID -> meaning mapping should be OWNED by the golden company-managed
+//   template project + ACLI `jira field` (matrix rows "Jira admin configuration"
+//   and "Project/work item operations"), and merely READ here at runtime. That
+//   is legitimate glue, not NIH. CAVEAT: OWNER_GROUPS and DEFAULT_WEEKLY_JQL
+//   below are advisory routing/query defaults baked into code — these duplicate
+//   what Jira components/assignee-rules and saved Jira filters (ACLI `jira
+//   filter`) own natively. Keep them as fallbacks only; the native owners are a
+//   saved filter (for the readout JQL) and component/group routing (for owners),
+//   not this file. RECOMMENDATION ONLY — no behavior change here.
 
 export const FIELD_IDS: Record<string, string | undefined> = {
   workflowArea: process.env.WORKFLOW_AREA_FIELD_ID ?? undefined,

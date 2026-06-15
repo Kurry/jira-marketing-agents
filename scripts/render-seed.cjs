@@ -1,6 +1,19 @@
 #!/usr/bin/env node
 "use strict";
 
+// scripts/render-seed.cjs
+// Renders the canonical seed CSV for a specific instance by stamping the
+// configured projectKey/seedLabel into each row. Pure file transform; no API.
+//
+// T-NIH-07 label: twin-specific-keep (instance binding).
+//   This script does not call any Atlassian surface — it produces the per-site
+//   input CSV that the native importer consumes. The downstream owner is the
+//   same as provision-seeds: ACLI `jira workitem` bulk-CSV import (matrix row
+//   "Project/work item operations"). This rendering step is instance config
+//   binding (projectKey/seedLabel substitution), which is exactly the kind of
+//   thin per-instance glue the matrix keeps custom. If seeds move to a golden
+//   template clone (T-NIH-04), this renderer is no longer on the critical path.
+
 const fs = require("node:fs");
 const path = require("node:path");
 const { loadInstanceConfig } = require("./instance-config.cjs");

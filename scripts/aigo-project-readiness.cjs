@@ -13,6 +13,24 @@
  *
  * Set AIGO_READINESS_WARN_ONLY=1 to report without failing (exit 0).
  * Set ATLASSIAN_TOKEN or ensure acli is logged in for REST checks.
+ *
+ * T-NIH-07 label: twin-specific-keep (evidence/verification harness).
+ *   This script reads native surfaces but mutates nothing — it asserts that a
+ *   project carries the AIGO issue types, statuses, custom fields, seeds, Rovo
+ *   agents, and automation rules. It binds many Atlassian-native owners:
+ *   ACLI `jira project view` / `jira workitem search` (matrix "Project/work
+ *   item operations") for issue types and seeds; Jira REST `/statuses` and
+ *   `/field/search` (matrix "Jira admin configuration") for statuses and custom
+ *   fields; manifest.yml for Rovo agent count. NIH-relevant observation: the
+ *   six hard-coded REQUIRED_CUSTOM_FIELDS and the 10000-10050 status-ID scan
+ *   are this repo's own model of "what a configured project looks like." A
+ *   golden company-managed template (T-NIH-04) would make this readiness check
+ *   a clone-diff instead of a re-implemented config inventory. Custom fields
+ *   like Segment/Workflow Area also overlap with what JPD fields or JSM Assets
+ *   could own (T-NIH-05); see specs/custom-fields.md native-owner notes. Keep
+ *   the verification harness (it is evidence generation), but treat its field/
+ *   status/type lists as the spec for the template, not a parallel product
+ *   model. No private endpoints are used.
  */
 
 "use strict";

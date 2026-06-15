@@ -3,6 +3,17 @@
  * T-M6-01: Create AIGO JQL filters/queues via Jira REST API.
  * Idempotent — skips filters that already exist by name.
  * Usage: node scripts/provision-filters.cjs
+ *
+ * T-NIH-07 label: native-wrapper.
+ *   Native owner: ACLI `jira filter` commands (matrix row "Project/work item
+ *   operations") over Jira REST `/rest/api/3/filter`. Saved filters are a
+ *   first-class Jira primitive; this script only wraps creation so the seven
+ *   AIGO JQL queues are reproducible. The JQL strings themselves are
+ *   Twin-specific (status/label names), but the filter resource is Atlassian-
+ *   native. Preferred reduction: ship these filters inside a golden company-
+ *   managed template project (T-NIH-04) and clone, or drive via `acli jira
+ *   filter create`, so this script becomes a thin fallback rather than the
+ *   primary owner. No private endpoints are used.
  */
 
 "use strict";

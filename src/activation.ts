@@ -1,3 +1,6 @@
+// NIH classification (T-NIH-07): twin-specific-keep. Early-activation plan
+// (member milestones, consent/claims-safe nudges, guardrails) is Twin product/
+// safety logic with no native Atlassian equivalent. No reduction needed.
 import { IssueContext } from "./types";
 import { normalizeText, uniq } from "./utils/text";
 

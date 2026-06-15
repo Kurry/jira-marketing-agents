@@ -8,6 +8,11 @@
 //   - prompts/*.md free of banned phrases
 //   - src/ write surface limited to the allowlisted mutations
 //
+// T-NIH-07 classification: Twin-specific logic (safety/evidence harness).
+// Enforces the repo's own safety contract (policies, banned phrases, allowlisted
+// mutations) — explicitly the kind of custom code the matrix says should stay
+// custom. No Atlassian capability is re-implemented.
+//
 // Exit codes:
 //   0  all checks pass
 //   1  usage / unexpected error

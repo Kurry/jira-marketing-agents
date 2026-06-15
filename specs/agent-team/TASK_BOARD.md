@@ -88,6 +88,17 @@ scripted verb.
 
 ## Phase 4 — Declarative state scaffolding
 
+> **NIH note (audit proposal).** Phases 4–5 build a bespoke `infra/`
+> reconciler with per-resource apply scripts. Per
+> `specs/atlassian-native-tools.md` finding #4 ("IaC hard reset" reduction),
+> do **not** treat these as committed work: run T-NIH-03 (ACLI inventory)
+> and T-NIH-04 (golden-template clone validation) **first**, and reframe
+> each `*-apply.mjs` below as a thin wrapper/diff over its native owner
+> (ACLI command, golden-template clone, Forge manifest, documented REST) —
+> not a from-scratch convergence engine duplicating Terraform/ACLI. Where a
+> resource is fully covered by a template clone or ACLI, the apply task is a
+> wrapper, and the corresponding verify task is the real deliverable.
+
 - **T-R-INFRA-01** [owner:iac-architect] [deps:T-A-07]
   Create `infra/` tree per `DECLARATIVE_STATE.md`:
   `instances/staging.yaml`, and empty `schemaVersion: 1` stubs for
@@ -127,6 +138,16 @@ scripted verb.
   default.yaml` with 12 statuses + transition matrix.
 
 ## Phase 5 — Per-resource apply + verify (all depend on Phase 4)
+
+> **NIH note.** Before authoring each apply script below, confirm via
+> T-NIH-03 whether ACLI (`jira project`/`workitem`/`field`/`filter`/
+> `dashboard`) or a golden-template clone (T-NIH-04) already owns the
+> resource. Issue types, fields, filters, dashboards, and seeds map to ACLI
+> + REST; screens/workflow/screen-schemes map to golden-template cloning;
+> Rovo derivation must read `manifest.yml` (no second catalog). Each
+> `*-apply.mjs` should label itself per T-NIH-07 (native wrapper /
+> documented API gap / Twin-specific) and bind to a documented endpoint —
+> never an internal Atlassian API.
 
 For each resource category, one apply script + one verify script:
 

@@ -16,10 +16,11 @@
 // visibility remains a separate confirmation step.
 //
 // Usage:
-//   node scripts/check-rovo-visibility.cjs [--site <site>] [--expected <n>]
+//   node scripts/check-rovo-visibility.cjs [--config <path>] [--site <site>] [--expected <n>]
 //
 // Defaults:
-//   --site       myhealthcaresite.atlassian.net (or JIRA_SITE env var)
+//   --config     optional JSON instance config
+//   --site       config.site (or JIRA_SITE/AIGO_JIRA_SITE env var)
 //   --expected   19 (AIGO manifest agent count)
 //
 // Exit codes:
@@ -29,24 +30,34 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const { loadInstanceConfig } = require("./instance-config.cjs");
 
 // ---------------------------------------------------------------------------
 // Argument parsing
 // ---------------------------------------------------------------------------
 
 function parseArgs(argv) {
+  const repoRoot = path.resolve(__dirname, "..");
   const args = {
-    site: process.env.JIRA_SITE || "myhealthcaresite.atlassian.net",
+    config: process.env.AIGO_INSTANCE_CONFIG || "",
+    site: process.env.JIRA_SITE || process.env.AIGO_JIRA_SITE || "",
     expected: 19,
   };
   for (let i = 0; i < argv.length; i++) {
-    if (argv[i] === "--site" && argv[i + 1]) {
+    if (argv[i] === "--config" && argv[i + 1]) {
+      args.config = argv[i + 1];
+      i++;
+    } else if (argv[i] === "--site" && argv[i + 1]) {
       args.site = argv[i + 1];
       i++;
     } else if (argv[i] === "--expected" && argv[i + 1]) {
       args.expected = parseInt(argv[i + 1], 10);
       i++;
     }
+  }
+  if (!args.site) {
+    const config = loadInstanceConfig(args.config || undefined);
+    args.site = config.site;
   }
   return args;
 }
@@ -161,6 +172,11 @@ function main() {
   const args = parseArgs(process.argv.slice(2));
   const repoRoot = path.resolve(__dirname, "..");
   const manifestPath = path.join(repoRoot, "manifest.yml");
+
+  if (!args.site) {
+    console.error("ERROR: No Jira site configured. Pass --site <site> or set site in --config.");
+    process.exit(1);
+  }
 
   console.log("=== Rovo Manifest/Install Check ===");
   console.log(`Manifest:  ${manifestPath}`);

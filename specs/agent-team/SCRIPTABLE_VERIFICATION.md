@@ -1,5 +1,14 @@
 # Scriptable Verification Matrix
 
+> **NIH note.** This matrix is sound framed as an **audit harness over
+> native output** (per `specs/atlassian-native-tools.md` finding #4): each
+> verifier should diff/assert against what ACLI, Forge CLI, Jira REST, or a
+> golden-template clone reports. The risk is verifiers that presuppose the
+> bespoke `infra:apply` engine exists. Where a row asserts shape (issue
+> types, fields, workflow, filters, dashboards), it can run equally well
+> against a template clone or ACLI output — keep the assertion, stay
+> agnostic about whether a hand-rolled reconciler produced the state.
+
 Every verification is a command that writes JSON and exits 0 on green,
 2 on red, 5 if the platform doesn't support it. No manual steps, no
 screenshots, no navigation paths, no "ask the operator".
@@ -64,6 +73,15 @@ exits 0 only if every row is green.
   verifier as a whole still passes, **but** a file
   `evidence/blockers/rovo-catalog.json` is written to drive a human
   decision.
+
+> **NIH note.** A Forge-function round-trip proves the action handler
+> works; it does **not** prove Rovo **UI visibility**. Per
+> `specs/atlassian-native-tools.md` finding #2 and T-NIH-01, this row must
+> report "manifest/install verified; UI/API confirmation pending" unless a
+> public Rovo agent **listing** API exists — do not let the round-trip be
+> relabeled as a guarantee of visibility. The agent catalog itself is owned
+> by `manifest.yml`; this verifier should diff against it, not maintain a
+> second catalog.
 
 ## VM-JIRA-PROJECT — Project shape matches declaration
 

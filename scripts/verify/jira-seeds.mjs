@@ -4,6 +4,15 @@
 // infra/jira/seeds/matrix.yaml has at least one live seed issue carrying the
 // seed label (default aigo-seed). Green when every declared seed issue type is
 // represented by a labelled live issue.
+//
+// T-NIH-07 classification: native-wrapper. Native owner (matrix row
+// "Project/work item operations"): documented Jira Cloud REST v3 enhanced JQL
+// search POST /rest/api/3/search/jql (via jira.js
+// issueSearch.searchForIssuesUsingJqlEnhancedSearchPost) — equivalently
+// `acli jira workitem search --jql`. NOTE: the legacy GET/POST /search
+// endpoints return 410 on this Cloud tenant, so the enhanced-search POST is the
+// documented successor, not a workaround. The seed-coverage assertion over the
+// returned issues is the Twin-specific IaC layer.
 
 import { createClient } from '../lib/jira.mjs';
 import { loadInfraYaml, finish, guard } from '../lib/verify.mjs';

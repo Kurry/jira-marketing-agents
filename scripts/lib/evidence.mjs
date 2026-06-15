@@ -1,5 +1,9 @@
 // generated_by: scripts/lib/evidence.mjs (T-B-02)
 // Standard evidence envelope + writer used by all IaC scripts.
+//
+// T-NIH-07 classification: Twin-specific logic (IaC evidence harness). Defines
+// the repo's machine-readable evidence envelope/writer — sanctioned custom
+// layer per the matrix; no Atlassian capability is re-implemented.
 
 import { execSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';

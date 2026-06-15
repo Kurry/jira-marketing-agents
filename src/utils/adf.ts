@@ -3,6 +3,20 @@
 // This is intentionally small: it supports paragraphs, blank-line separation,
 // bullet lists ("- " / "* ") and headings ("# ".."### "). Anything else is
 // emitted as a plain paragraph. ADF is required for the Jira comment API.
+//
+// NIH-CLASSIFICATION (T-NIH-07): documented-API-gap (partial NIH).
+//   Native owner: the official ADF builder/utilities (@atlaskit/adf-utils
+//   `doc`/`p`/`h`/`ul`/`li` builders, or a Markdown->ADF transformer such as
+//   @atlaskit/editor-markdown-transformer). @forge/api 7.2.2 ships requestJira
+//   but NO ADF helper, so some local construction is a real platform gap.
+//   However, the hand-rolled node factories (textNode/paragraph/heading/
+//   bulletList) and the regex Markdown parser below re-implement the official
+//   ADF node schema and a Markdown reader by hand — that part is NIH. Per
+//   CLAUDE.md "src/comments.ts and ADF rendering ... is meant to stay custom"
+//   the AI-labeled rendering intent is legitimate, but the node-shape +
+//   Markdown-parse mechanics should adopt @atlaskit/adf-utils builders to stay
+//   schema-correct. RECOMMENDATION ONLY: adding @atlaskit/adf-utils is a new
+//   npm dependency and is out of scope for a comment-only reduction.
 
 type AdfNode = Record<string, unknown>;
 

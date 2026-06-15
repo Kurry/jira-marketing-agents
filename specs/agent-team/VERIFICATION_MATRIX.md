@@ -54,6 +54,15 @@ All paths are relative to the repo root unless prefixed `jira:`.
 
 ## VM-ROVO-VISIBILITY — All 19 Rovo agents visible in Jira UI
 
+> **NIH note.** This row honestly reflects that Rovo **UI visibility** has
+> no guaranteed public listing API (per `specs/atlassian-native-tools.md`
+> finding #2 / T-NIH-01). That is the native reality, not an IaC failure:
+> the agent catalog is owned by `manifest.yml` + `forge install`, and
+> `check:rovo` should report "manifest/install verified; UI confirmation
+> pending" rather than claim guaranteed visibility. Keep manifest/install
+> checks separate from the manual UI confirmation; do not "fix" this by
+> inventing a bespoke visibility tracker.
+
 - Preferred: enumerate via Forge Rovo agent listing API (as far as
   available to the account); record navigation path in the UI.
 - Fallback: the lead asks the human operator in-chat to paste a screenshot

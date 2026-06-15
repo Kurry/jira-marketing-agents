@@ -1,5 +1,19 @@
 # AIGO Agent-Team Specs — v2 (Review + IaC Remediation)
 
+> **NIH note (read alongside this bundle).** Per
+> `specs/atlassian-native-tools.md` finding #4 and its "IaC hard reset"
+> reduction, treat this entire v2 bundle — especially the bespoke `infra/`
+> reconciler and the `infra:plan`/`apply`/`verify` three-command contract —
+> as an **audit proposal**, not the repo's authoritative architecture. The
+> native owners of the control plane are Forge CLI + `manifest.yml`, ACLI,
+> documented Jira REST, a golden company-managed template project, and (for
+> JSM/Compass only) the official Atlassian Operations Terraform provider.
+> Do not build a full from-scratch convergence engine until each native
+> surface has been evaluated and the gap documented (T-NIH-03..07 in
+> `specs/tasks.md` / `specs/outcome-roadmap.md`). Frame the reconciler as an
+> **audit harness over native command output**, not a replacement for those
+> tools.
+
 The first run (specs in `v1/`) confused the agent team because several
 tasks implied manual UI work, human pasted screenshots, and "ask the
 operator" fallbacks. This v2 bundle is a hard reset around a single

@@ -8,6 +8,17 @@
 // If all auth fails, falls back to known state from evidence/jira-config/ and
 // writes evidence/blockers/jira-auth.json with instructions.
 //
+// T-NIH-07 classification: native-wrapper (read-only audit harness).
+//   Native owner: documented Jira Cloud REST v3 (GET /rest/api/3/field,
+//   /rest/api/3/filter/search, project + issue-type endpoints) via the jira.js
+//   SDK. This script wraps those documented GETs to capture a snapshot — that
+//   part is a legitimate native wrapper. EXCEPTION: the automation read below
+//   uses /rest/cb-automation/latest/..., an internal/undocumented endpoint
+//   (same private surface as T-NIH-02 / plan finding #1) and is best-effort
+//   only — a 401/403 is recorded as api_unavailable, never as authoritative
+//   state. The cached evidence/jira-config/ fallback is for offline audit, not
+//   a substitute for live verification.
+//
 // Exit codes:
 //   0  success (live data or cached fallback)
 //   2  unexpected fatal error
@@ -113,6 +124,10 @@ async function tryLiveFetch(auth) {
   } else { failures.push({ endpoint: "filters", error: `HTTP ${filtersRes.status}` }); }
 
   let automation = null, automationOnlyFailure = false;
+  // EXPERIMENTAL: cb-automation is an internal/undocumented endpoint (not a
+  // documented public Jira API). Best-effort read only; 401/403 → api_unavailable.
+  // See T-NIH-02 / plan finding #1 — do not treat as the supported automation
+  // proof surface.
   const autoRes = await rawGet(`/rest/cb-automation/latest/project/${PROJECT_KEY}/rule`);
   if (autoRes.ok) {
     const rules = Array.isArray(autoRes.body?.rules) ? autoRes.body.rules : Array.isArray(autoRes.body) ? autoRes.body : [];

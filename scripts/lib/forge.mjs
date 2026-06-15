@@ -10,6 +10,17 @@
 //
 // Read-only: never deploys, installs, or mutates. Mutation happens only through
 // the deploy/install npm scripts and the addAnalysisComment Forge action.
+//
+// T-NIH-07 classification: native-wrapper. Native owner (matrix row
+// "Agent runtime" / Forge): the native `forge install list` and
+// `forge webtrigger list` CLI commands. This module wraps those native
+// commands; it does not re-implement install/webtrigger discovery.
+// EXPERIMENTAL / brittle dependency: parseInstallList and getWebtriggerUrl
+// parse the CLI's box-drawing TABLE output (split on "│"), which is
+// human-formatted and may change between Forge CLI releases. Prefer a
+// structured/JSON output flag if/when the Forge CLI exposes one; until then
+// this string-parsing is the only available surface and is treated as a thin,
+// version-sensitive wrapper rather than a stable contract.
 
 import { execSync } from "node:child_process";
 import { STAGING_SITE, FORGE_ENV } from "./staging.mjs";

@@ -1,3 +1,8 @@
+// NIH classification (T-NIH-07): twin-specific-keep. Experiment design rigor
+// (guardrails, claims gating, decision rule, regulated-health approvals) is
+// Twin growth/safety policy with no Atlassian-native equivalent. No reduction:
+// this is exactly the agent logic that should stay custom per "What Should Stay
+// Custom" in specs/atlassian-native-tools.md.
 import { IssueContext } from "./types";
 import { normalizeText, uniq, containsAny } from "./utils/text";
 import { scanClaimsRisk, requiresHumanClaimsReview } from "./utils/risk";

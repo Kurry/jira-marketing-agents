@@ -1,5 +1,14 @@
 #!/usr/bin/env node
 // generated_by: scripts/infra/jira-backfill.mjs (T-R-INFRA-05)
+// NIH-CLASSIFICATION (T-NIH-07): documented-API-gap (read-only export).
+//   Reads live Jira via documented REST getters (getFilter, getAllDashboards)
+//   and rewrites the bespoke infra/ YAML model. Read-only GETs over documented
+//   endpoints are fine, but the destination is the parallel product model; ACLI
+//   `jira filter|dashboard` list/export covers the same data natively. NOTE:
+//   PROJECT_KEY is hard-coded 'AIGO' (line ~33) and dashboard filtering is a
+//   name-prefix 'AIGO' heuristic — both should come from the instance binding.
+//   Native owner: ACLI export + documented Jira REST (matrix "Jira admin
+//   configuration"). Keep custom only as a snapshot harness.
 // Backfills CONTENT into the infra/jira YAML files that the render stub left
 // empty/null, sourcing from live Jira + evidence/jira-config. Idempotent and
 // re-runnable: it rewrites these three files from authoritative sources only.

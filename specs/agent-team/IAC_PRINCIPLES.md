@@ -1,5 +1,21 @@
 # Infrastructure-as-Code Principles (read first)
 
+> **NIH note (audit proposal, not authoritative architecture).** Per
+> `specs/atlassian-native-tools.md` finding #4 and its "IaC hard reset"
+> reduction, treat the `specs/agent-team/` v2 bundle — including the
+> bespoke `infra/` reconciler and the three-command `infra:plan` /
+> `infra:apply` / `infra:verify` contract below — as an **audit proposal**,
+> not the repo's authoritative control plane. The native owners of Jira
+> declarative state are **ACLI** (`jira project`/`workitem`/`field`/`filter`/
+> `dashboard`), the **golden company-managed template project**, **Forge
+> CLI + `manifest.yml`** (already IaC for Rovo/agents), documented **Jira
+> REST**, and the **official Atlassian Operations Terraform provider** for
+> JSM/Compass. Do not build a full from-scratch plan/apply/drift engine that
+> re-implements Terraform or ACLI until each native surface has been
+> evaluated and the gap is documented (see T-NIH-03..07). The reconciler is
+> valuable framed as an **audit harness over native command output**, not as
+> a replacement for those tools. `llms.txt` / source-of-truth wins on facts.
+
 This repository is **Infrastructure as Code**. If a change to Jira, Forge,
 Rovo, or the repo itself cannot be reproduced end-to-end by running a
 script checked into the repo on a clean clone, **the change did not happen**.
@@ -68,6 +84,16 @@ read that declaration and converge Jira to match. Scripts never read
 Jira, hand-copy values into commit messages, and call it a day; they
 compare against the declaration and either apply the delta or fail.
 
+> **NIH note.** The "converge Jira to match a YAML declaration" loop
+> described here re-implements the native Terraform-provider /
+> golden-template-clone pattern. Before authoring per-resource converge
+> code, check the Native Tool Fit Matrix in
+> `specs/atlassian-native-tools.md`: most of these resources have an ACLI
+> command, a golden-template clone path, or a documented REST endpoint that
+> should be wrapped rather than reproduced. Keep the `infra/` apply scripts
+> as **thin wrappers** that diff native command output; do not build a
+> standalone configuration engine that duplicates ACLI or Terraform.
+
 Forge is already IaC via `manifest.yml`. Do not add drift around it.
 The repo's job is to make the *Jira side* equally declarative.
 
@@ -118,6 +144,14 @@ Every `scripts/infra/*-apply.ts` must be **idempotent**:
 
 `scripts/infra/plan.ts` computes and prints the delta without applying.
 This is the Terraform-equivalent behaviour for Jira configuration.
+
+> **NIH note.** "Terraform-equivalent behaviour for Jira" is precisely what
+> the official/third-party Atlassian Terraform providers and ACLI already
+> provide. Building a hand-rolled equivalent is the central NIH risk in this
+> bundle. The reduction (per `specs/atlassian-native-tools.md` and
+> `specs/design.md` "Terraform Provider Strategy") is to run the bounded
+> provider/ACLI spike first and only own the slim gaps those tools cannot
+> cover — not to ship a parallel convergence engine.
 
 ## Failure is visible
 

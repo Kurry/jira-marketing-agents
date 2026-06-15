@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 // generated_by: scripts/infra/cleanup-v1-evidence.mjs (T-D-01)
+// NIH-CLASSIFICATION (T-NIH-07): Twin-specific logic (repo evidence hygiene).
+//   Operates only on this repo's own evidence/ artefacts (delete superseded v1
+//   files, preserve live-state snapshots). No Atlassian product capability is
+//   re-implemented — this is repo bookkeeping for the evidence harness, which is
+//   legitimately custom. Not NIH. Native owner: n/a (repo-local).
 // Deletes superseded manual v1 evidence artefacts (no generated_by header),
 // preserving live-state data snapshots that have no regeneration script yet.
 // The preserve/delete decision is encoded here, not performed by hand.

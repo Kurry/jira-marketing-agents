@@ -1,3 +1,7 @@
+// NIH classification (T-NIH-07): twin-specific-keep. Compliant creative
+// generation with per-variant claims scanning and human-review gating is core
+// Twin claims-safety + brand-voice logic. Draft-only, never sends. No native
+// Atlassian equivalent; stays custom.
 import { IssueContext, ClaimsRisk } from "./types";
 import { scanClaimsRisk, requiresHumanClaimsReview } from "./utils/risk";
 import { normalizeText, uniq } from "./utils/text";

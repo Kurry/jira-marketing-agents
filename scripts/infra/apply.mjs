@@ -1,5 +1,13 @@
 #!/usr/bin/env node
 // generated_by: scripts/infra/apply.mjs (T-R-INFRA-03)
+// NIH-CLASSIFICATION (T-NIH-07): documented-API-gap (partial NIH).
+//   Bespoke "converge"/idempotency engine over the Jira SDK. The apply/re-plan
+//   idempotency loop re-implements Terraform-style reconciliation that ACLI's
+//   create-if-absent commands and golden-template cloning provide natively.
+//   Native owner: ACLI `jira project|field|filter` + golden template project
+//   (matrix rows "Project/work item operations", "Jira admin configuration").
+//   See specs/atlassian-native-tools.md finding #4/#5 and "IaC hard reset".
+//   Keep custom only for: staging-guard + additive-only safety enforcement.
 // Idempotent converge: build the plan, apply ONLY the delta to live Jira, then
 // re-plan to confirm convergence. A second run must report applied:[] (idempotent).
 //

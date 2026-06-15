@@ -1,3 +1,13 @@
+// NIH classification (T-NIH-07): twin-specific-keep (spec generator), but the
+// downstream artifact should delegate to a native surface, not custom modeling.
+// This module emits a dashboard *specification* (business question, metrics,
+// dimensions, charts) — that planning logic is Twin-specific and stays. It does
+// NOT build a live dashboard, and it must not grow into a custom dashboard/
+// charting engine. Native owner: Atlassian Analytics / Data Lake where licensed,
+// otherwise Jira dashboards + filters (matrix row "Weekly readouts and
+// dashboards"). Severity: low. Reduction: keep this as spec-only; render the
+// actual dashboard via Atlassian Analytics or Jira dashboard gadgets/filters
+// rather than re-implementing metric storage or chart rendering in-repo.
 import { IssueContext } from "./types";
 import { normalizeText, uniq } from "./utils/text";
 

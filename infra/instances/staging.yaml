@@ -1,4 +1,9 @@
 schemaVersion: 1
+# NIH-CLASSIFICATION (T-NIH-07): Twin-specific-keep (instance binding).
+#   Per-tenant binding (site/cloudId/project/forgeEnv) used as a staging guard.
+#   This is legitimate instance config, not a re-implementation of a native
+#   product — it should be the SINGLE source for site/cloudId so scripts stop
+#   hard-coding them (see render-infra-tree.mjs / jira-backfill.mjs notes).
 # Target instance binding. Scripts refuse to run unless these match.
 instance:
   site: myhealthcaresite.atlassian.net

@@ -3,6 +3,20 @@ import { IssueContext, SimilarIssue } from "./types";
 import { extractPlainTextFromAdf, uniq } from "./utils/text";
 import { toAdf } from "./utils/adf";
 
+// NIH-CLASSIFICATION (T-NIH-07): native-wrapper (legitimate) with one
+// documented-API-gap detail.
+//   Native owner: @forge/api `api.asApp().requestJira(route\`...\`)` is the
+//   correct Forge runtime client for Jira REST inside the sandbox — jira.js
+//   (used by scripts/lib/jira.mjs for the Node CLI side) does NOT run in the
+//   Forge sandbox, so this module is NOT a hand-rolled REST client and is the
+//   right native binding. The thin getter/search/comment functions are a
+//   legitimate wrapper. Two notes for reviewers:
+//   (1) `ensureOk` re-types the @forge/api Response shape locally instead of
+//       importing the exported `APIResponse`/`Response` type from @forge/api —
+//       minor duplication, harmless.
+//   (2) The endpoints used (/rest/api/3/issue, /comment, /search/jql) are all
+//       documented Jira Cloud REST v3 surfaces — see searchIssues below.
+
 // Fields we request from the Jira issue API. Custom fields are intentionally
 // not requested by ID here (IDs are instance-specific); use config.ts if needed.
 const ISSUE_FIELDS = [
@@ -57,6 +71,10 @@ export async function getIssueComments(issueKey: string): Promise<string[]> {
     .filter((s) => s && s.trim().length > 0);
 }
 
+// NIH note (T-NIH-07): native-wrapper. Uses the documented enhanced-search
+// endpoint POST /rest/api/3/search/jql (the supported replacement for the
+// removed GET/POST /search). JQL itself is the native Jira query language —
+// see src/utils/text.ts for tokenization that should NOT try to re-derive JQL.
 /** Run a JQL search and return the raw issues array. */
 export async function searchIssues(jql: string, maxResults = 50): Promise<any[]> {
   const res = await api.asApp().requestJira(route`/rest/api/3/search/jql`, {

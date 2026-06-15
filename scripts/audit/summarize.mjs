@@ -5,6 +5,10 @@
 // Reads: repo.json, forge.json, jira.json, v1.json, safety.json
 // Writes: evidence/audit/summary.json
 //
+// T-NIH-07 classification: Twin-specific logic (IaC evidence harness). Pure
+// aggregation of the repo's own audit JSON into a summary/recommendation set —
+// no Atlassian capability is involved or re-implemented.
+//
 // Exit codes:
 //   0  success
 //   1  one or more input files missing (listed in output)

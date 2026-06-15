@@ -3,6 +3,11 @@
 // Snapshot of the IaC-relevant repo surface: files under scripts/, evidence/,
 // tests/, infra/; npm scripts present in package.json; verify scripts present.
 // Read-only. Writes evidence/audit/repo.json with the standard envelope.
+//
+// T-NIH-07 classification: Twin-specific logic (IaC audit harness). Inspects the
+// repo's own filesystem/package.json — no Atlassian capability is involved or
+// re-implemented. Sanctioned by the matrix ("Instance config and evidence
+// generation").
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';

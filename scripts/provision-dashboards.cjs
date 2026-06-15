@@ -10,6 +10,19 @@
  *   0 — success (or dry-run)
  *   1 — fatal error
  *   2 — auth error
+ *
+ * T-NIH-07 label: native-wrapper.
+ *   Native owner: ACLI `jira dashboard` commands (matrix row "Project/work item
+ *   operations") over Jira REST `/rest/api/3/dashboard` and the gadget endpoint.
+ *   Dashboards + filter-results gadgets are native Jira reporting primitives;
+ *   this script only wraps their creation. Note the parallel-product risk: these
+ *   six dashboards re-implement reporting that Atlassian Analytics / Data Lake
+ *   (matrix row "Weekly readouts and dashboards") could own where licensed, and
+ *   the gadgets simply re-bind the T-M6-01 saved filters. Preferred reduction:
+ *   ship dashboards inside the golden company-managed template (T-NIH-04) and
+ *   clone, prefer Analytics for cross-cut readouts, and keep this script as a
+ *   thin fallback. The gadget API already degrades to a manual-UI note when it
+ *   returns non-2xx — that is an Atlassian-UI-owned step, not a custom model.
  */
 
 "use strict";

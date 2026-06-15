@@ -1,3 +1,7 @@
+// NIH classification (T-NIH-07): twin-specific-keep. Multi-touch outreach
+// planning with TCPA/CAN-SPAM, consent, suppression, and claims guardrails is
+// Twin marketing-safety policy. The plan is draft-only and never sends, which
+// is a safety invariant that must stay in repo-owned code. No reduction needed.
 import { IssueContext } from "./types";
 import { normalizeText, uniq, containsAny } from "./utils/text";
 import { scanClaimsRisk, requiresHumanClaimsReview } from "./utils/risk";

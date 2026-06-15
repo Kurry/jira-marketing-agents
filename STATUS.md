@@ -16,6 +16,13 @@ with a blocker file). Safety contract unchanged.
 
 **Status: DONE** — `evidence/DONE.json` written with 7 green rows + 1 blocked.
 
+> Scope note: "DONE" here means the scripted infra-reconcile harness is complete
+> and its VM rows are green. It does not assert native Rovo UI visibility or
+> native Jira Automation "Use Rovo agent" audit-log proof; those remain pending
+> product-side checks (VM-ROVO-CATALOG is satisfied by manifest/install +
+> webtrigger fallback only, and VM-AUTOMATION-AUDIT is blocked). See
+> `docs/MVP_READINESS.md` for the native-proof status.
+
 ## Team
 
 | Teammate | Role | Status |
@@ -53,7 +60,7 @@ VM-JIRA-FIELDS      GREEN  (8 declared, 8 live; 0 missing)
 VM-JIRA-FILTERS     GREEN  (7 declared, 7 live AIGO filters; 0 missing)
 VM-JIRA-SEEDS       GREEN  (15 live aigo-seed issues; 14 declared types, 0 unrepresented)
 VM-JIRA-WORKFLOW    GREEN  (3 declared, 3 live; team-managed standard statuses)
-VM-ROVO-CATALOG     GREEN  (19 Rovo agents declared; webtrigger reachable)
+VM-ROVO-CATALOG     GREEN  (19 Rovo agents declared in manifest; Forge install Up-to-date; webtrigger fallback reachable. Native Rovo UI visibility and native Jira Automation "Use Rovo agent" audit proof still pending — see MVP_READINESS.md.)
 VM-AUTOMATION-AUDIT BLOCKED (cb-automation API returns 401/403; platform API unavailable)
 VM-DONE             GREEN  (evidence/DONE.json written — 7 green + 1 blocked)
 ```

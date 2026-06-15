@@ -1,3 +1,9 @@
+// NIH classification (T-NIH-07): twin-specific-keep. Audience/segment proposals
+// and personalization rules encode Twin targeting + privacy/suppression policy
+// and explicitly never mutate a production audience. No native Atlassian
+// equivalent; this is core agent logic that stays custom. (If reusable business
+// entities like employers/segments are ever modeled as data, JSM Assets is the
+// native owner per the matrix — but the proposal logic itself stays here.)
 import { IssueContext } from "./types";
 import { normalizeText, uniq, containsAny } from "./utils/text";
 

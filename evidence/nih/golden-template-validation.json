@@ -1,0 +1,28 @@
+{
+  "generated_by": "manual CLI audit",
+  "generated_at": "2026-06-15T14:58:00.000Z",
+  "task": "T-NIH-04",
+  "status": "blocked_pending_company_managed_template",
+  "commands": [
+    "acli jira project create --help",
+    "acli jira project view --key AIGO --json"
+  ],
+  "findings": {
+    "acli_clone_support": "acli jira project create --from-project can clone only company-managed projects",
+    "current_aigo_project": {
+      "key": "AIGO",
+      "id": "10000",
+      "simplified": true,
+      "style": "next-gen",
+      "projectTypeKey": "business"
+    },
+    "result": "The current AIGO project cannot serve as the golden clone source because it is team-managed/next-gen, not company-managed."
+  },
+  "required_to_complete": [
+    "Create or identify a company-managed golden AIGO template project.",
+    "Set templateProjectKey in a disposable instance config.",
+    "Run AIGO_INSTANCE_CONFIG=instances/<disposable>.json npm run provision:instance -- --project.",
+    "Run readiness and compare clone mutations against fresh provisioning.",
+    "Archive/delete the disposable clone after evidence is captured."
+  ]
+}

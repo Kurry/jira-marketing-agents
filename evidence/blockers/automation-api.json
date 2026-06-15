@@ -1,6 +1,6 @@
 {
   "generated_by": "scripts/verify/automation-audit.mjs",
-  "generated_at": "2026-06-15T14:48:47.836Z",
+  "generated_at": "2026-06-15T15:02:20.429Z",
   "row": "VM-AUTOMATION-AUDIT",
   "reason": "cb-automation REST API unavailable with current token",
   "http_status": 401,

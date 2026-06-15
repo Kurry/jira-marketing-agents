@@ -1,5 +1,19 @@
 // scripts/lib/jira.mjs — shared Jira client using jira.js SDK
 //
+// NIH-CLASSIFICATION (T-NIH-07): native-wrapper / documented-API-gap.
+//   A thin auth+client factory over the jira.js SDK against documented Jira
+//   Cloud REST (api.atlassian.com/ex/jira/<cloudId>). The SDK client itself is a
+//   reasonable wrapper, but auth-resolution path #2 below pries the ACLI OAuth
+//   access_token out of the macOS keychain by decoding go-keyring's internal
+//   base64/gzip/JSON credential blob. That format is INTERNAL/UNDOCUMENTED and
+//   is NOT a portable native surface — treat it as EXPERIMENTAL, non-default,
+//   macOS-only. The supported path is ATLASSIAN_TOKEN or JIRA_API_TOKEN +
+//   JIRA_USER_EMAIL (documented). Reduction: prefer shelling to authenticated
+//   `acli` for token-bearing calls instead of reverse-engineering its keychain
+//   storage. Native owner: ACLI auth + documented REST (matrix "Jira admin
+//   configuration"). See specs/atlassian-native-tools.md (no private endpoint as
+//   the supported path).
+//
 // Auth resolution order:
 //   1. ATLASSIAN_TOKEN env var  →  OAuth2 Bearer  →  api.atlassian.com/ex/jira/<cloudId>
 //   2. macOS keychain (acli)    →  OAuth2 Bearer  →  api.atlassian.com/ex/jira/<cloudId>
@@ -48,6 +62,10 @@ export function resolveAuth() {
   if (envToken) return { type: "bearer", token: envToken.trim(), method: "ATLASSIAN_TOKEN" };
 
   // 2. macOS keychain via acli stored credential
+  // EXPERIMENTAL / non-default (T-NIH-07): reads ACLI's INTERNAL go-keyring
+  // credential blob (base64 -> gunzip -> JSON) — undocumented storage format,
+  // macOS-only. Not a supported portable surface; prefer documented env-var
+  // auth (#1/#3) or invoking authenticated `acli` directly.
   if (process.platform === "darwin") {
     try {
       const raw = execSync(

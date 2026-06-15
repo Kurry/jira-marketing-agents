@@ -1,5 +1,20 @@
 # Declarative State (`infra/` tree)
 
+> **NIH note (audit proposal).** This entire `infra/` tree and its
+> per-resource converge scripts describe a bespoke declarative-state engine.
+> Per `specs/atlassian-native-tools.md` finding #4 ("IaC hard reset"
+> reduction), treat it as a **proposal pending evaluation**, not committed
+> architecture: do not build the full reconciler until each resource below
+> has been checked against its native owner. Native owners (see the Native
+> Tool Fit Matrix): issue-types/fields/filters/dashboards/work items →
+> **ACLI** + documented Jira REST; screens/workflows/screen-schemes →
+> **golden company-managed template project** clone (hard to express via
+> public APIs); automation rules → **native Jira Automation import/export**
+> (no internal API as the supported path); rovo agents → **Forge
+> `manifest.yml`** (already IaC — the derived view must not duplicate it).
+> Where a native owner exists, the matching `infra/*.yaml` + apply script
+> should be a thin wrapper/diff over that tool, not a reimplementation.
+
 All Jira / Forge / Rovo configuration that is not already in
 `manifest.yml` lives under `infra/` as version-controlled YAML or JSON.
 Scripts under `scripts/infra/` converge the live site to match. Nothing
@@ -105,6 +120,13 @@ fields:
 
 ## Screens / screen schemes
 
+> **NIH note.** Screens, screen schemes, and workflow schemes are the Jira
+> objects least well-served by public REST/ACLI and best served by cloning a
+> **golden company-managed template project** (see `specs/design.md` and
+> T-NIH-04). Prefer expressing these as "clone the template, then assert
+> shape" rather than building converge scripts that recreate screens field
+> by field.
+
 ```yaml
 # screens.yaml
 schemaVersion: 1
@@ -152,6 +174,15 @@ Transition matrix is the source of truth for what the workflow
 validator (optional Forge module) will enforce.
 
 ## Automation rules (`infra/jira/automation/*.yaml`)
+
+> **NIH note.** The supported import/apply path must be **native Jira
+> Automation import/export or a documented public API** — never the
+> `gateway/api/automation/internal-api/...` internal endpoint (see
+> `specs/atlassian-native-tools.md` findings #1 and T-NIH-02). The
+> `use-rovo-agent` action shown below is the **native** "Use Rovo agent"
+> automation action; keep it, but do not reimplement Automation rule storage
+> or evaluation. If no public import API exists, mark it a platform blocker
+> rather than hiding it behind an internal fallback.
 
 Each rule is the YAML source; `scripts/infra/automation-render.mjs`
 compiles it to the JSON shape Jira Automation Import expects, resolving

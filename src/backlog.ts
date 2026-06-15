@@ -254,6 +254,16 @@ export type PrioritizedBacklogItem = BacklogItem & {
   reasons: string[];
 };
 
+// NIH classification (T-NIH-07): native-wrapper / candidate-to-delegate.
+// prioritizeBacklog re-implements generic backlog ordering that JQL `ORDER BY`,
+// a Jira board's rank, or JPD prioritization fields (formula/weighted score)
+// own natively. Native owner: Jira / Jira Product Discovery (matrix rows
+// "Ideas and product discovery" and "Project/work item operations").
+// Severity: medium. Reduction: keep scorePriority's Twin-specific signal banks
+// (claims/launch urgency), but persist the result into a JPD numeric/formula
+// field or a Priority field and let JPD/board views do the sorting, rather than
+// re-sorting a candidate list in TypeScript. The assessSprintRisk / epic-
+// breakdown / QA-case logic above is Twin-specific-keep.
 /** Score and order backlog items by priority. Pure and testable. */
 export function prioritizeBacklog(items: BacklogItem[]): PrioritizedBacklogItem[] {
   const rank: Record<Priority, number> = { P0: 0, P1: 1, P2: 2, P3: 3 };

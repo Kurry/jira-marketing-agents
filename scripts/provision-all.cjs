@@ -5,6 +5,13 @@
 // Top-level orchestrator: provisions a full AIGO Jira instance in one shot.
 // Each step calls a subscript or external command as a child process.
 //
+// NIH classification (T-NIH-07): native-wrapper.
+// This entrypoint orchestrates Atlassian-native commands — Forge CLI
+// (lint/deploy/install/variables set), ACLI/REST subscripts, and native
+// Jira Automation import gates. It is a sequencing wrapper, NOT a parallel
+// provisioning product model; it must keep delegating to native primitives
+// rather than re-implementing them. See specs/atlassian-native-tools.md.
+//
 // Usage:
 //   node scripts/provision-all.cjs [--config <path>] [--dry-run] [--env <forge-env>] [--site <site>]
 //
@@ -190,6 +197,9 @@ function runForgeInstall(site, forgeEnv, repoRoot, env = process.env) {
 
 /**
  * Source the generated forge-vars.sh and run each `forge variables set` command.
+ * NIH note (native-wrapper): this is a thin re-exec of the native
+ * `forge variables set` CLI surface — it parses generated command lines and
+ * runs them; it does not re-implement Forge variable storage.
  * Returns { ok: boolean }
  */
 function applyForgeVars(forgeVarsPath, repoRoot, env = process.env) {

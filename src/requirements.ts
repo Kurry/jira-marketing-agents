@@ -1,3 +1,12 @@
+// NIH classification (T-NIH-07): twin-specific-keep. The "is each required field
+// present" check duplicates the idea of Jira required-field validation, but the
+// checklist here is content-based (scanning free text for goal/metric/segment/
+// approval language), which Jira's field-level validators cannot express, and
+// the checklist itself encodes Twin growth-ops requirements. Native owner for
+// true field presence: Jira create/transition screens + workflow validators
+// (Forge workflow modules). Severity: low. Keep custom; consider promoting the
+// most-structured checks (Owner, Due date) to required Jira fields so this
+// module only validates the free-text/policy gaps native screens cannot.
 import { IssueContext } from "./types";
 import { detectWorkflowArea, detectMissingInfo } from "./triage";
 import { normalizeText, uniq } from "./utils/text";

@@ -46,6 +46,16 @@ export type DecisionRecommendation =
 
 export type Priority = "P0" | "P1" | "P2" | "P3";
 
+// NIH-CLASSIFICATION (T-NIH-07): native-wrapper / DTO (acceptable).
+//   IssueContext is a flattened projection of Jira's native issue model
+//   (api.asApp().requestJira -> /rest/api/3/issue). It is NOT a re-implementation
+//   of the Jira issue schema — it is a deliberately reduced, side-effect-free
+//   view (with the pre-joined `combinedText`) that lets the pure domain modules
+//   be tested without Jira. jira.js exposes generated issue types, but those are
+//   the Node-SDK shape and would not run in the Forge sandbox; a small local DTO
+//   is the correct seam. Keep custom. The string-union enums (WorkflowArea,
+//   ClaimsRisk, Priority, etc.) encode Twin growth/safety taxonomy and are
+//   Twin-specific logic per specs/atlassian-native-tools.md.
 // A normalized, plain-object view of a Jira issue used across the handlers.
 export type IssueContext = {
   issueKey: string;

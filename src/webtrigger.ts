@@ -12,6 +12,17 @@
 // This is the same safe comment-writing path Jira Automation "Use agent" would
 // invoke. The webtrigger provides an operator-controlled fallback while BLK-02
 // (Rovo/AI activation eligibility) is unresolved.
+//
+// NIH note (atlassian-native-tools.md finding #3 / T-NIH-07): this module is a
+// CONTROLLED OPERATOR FALLBACK, not primary native proof. A 2xx/4xx response
+// here proves only that this Forge function is deployed and routing — it does
+// NOT prove that Jira Automation's native "Use Rovo agent" action invoked the
+// agent, nor that any of the rovo:agent entries in manifest.yml are visible or
+// reachable in the Rovo UI. Native proof must come from Jira Automation
+// audit-log evidence (VM-AUTOMATION-AUDIT). Evidence rows for this fallback and
+// for native Automation/Rovo audit proof must be kept separate; do not treat a
+// reachable webtrigger as completion of native Automation/Rovo wiring. This is a
+// comment-only clarification — no behavior change.
 
 import { getIssueContext, searchIssues } from "./jira";
 import { addAnalysisComment, renderMarkdownFromResult } from "./comments";

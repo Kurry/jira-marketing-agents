@@ -14,6 +14,20 @@
 // explicit experimental opt-in because the endpoint is private/internal and is
 // not part of the supported portability path.
 //
+// NIH classification (T-NIH-07): documented-API-gap (experimental, non-default).
+// The supported, portable way to set a rule's trigger is the native Jira
+// Automation UI / export-import (Project settings → Automation → Import rules)
+// or Studio automation — those are the Atlassian-native owners of rule editing
+// (see specs/atlassian-native-tools.md, finding #1 and T-NIH-02). This script
+// only exists because Atlassian exposes no documented public REST surface for
+// editing an imported rule's trigger in place; the multi-candidate PUT loop
+// against gateway/api/automation/internal-api/... is a private-endpoint
+// workaround for that gap, NOT a parallel automation engine to depend on. It is
+// off by default: live calls require AIGO_EXPERIMENTAL_AUTOMATION_IMPORT=1, and
+// when the internal API rejects every candidate the script prints the native UI
+// steps as the real fix. Prefer the native import/Studio path; if a public API
+// for rule-trigger editing ships, retire this script.
+//
 // Usage:
 //   node scripts/fix-automation-triggers.cjs --dry-run
 //   AIGO_EXPERIMENTAL_AUTOMATION_IMPORT=1 ATLASSIAN_TOKEN=<pat> node scripts/fix-automation-triggers.cjs

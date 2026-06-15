@@ -190,17 +190,20 @@ Do not mark these done only because a worker has touched the related code or
 docs elsewhere. Close each task only when the evidence or final doc reference is
 linked.
 
-- `[ ]` **T-NIH-01: Rovo visibility and evidence wording.** Replace
+- `[x]` **T-NIH-01: Rovo visibility and evidence wording.** Replace
   "guaranteed visible" wording with "manifest/install verified; UI confirmation
   pending" unless a public Rovo listing API exists. Split webtrigger fallback
   proof from native Jira Automation/Rovo audit-log proof, and keep manual UI
   checks visible in README/runbook/readiness docs.
-- `[ ]` **T-NIH-02: Supported Automation import path cleanup.** Remove the
+  (Evidence: `scripts/check-rovo-visibility.cjs`, `docs/MVP_RUNBOOK.md`,
+  `evidence/rovo/visibility.md`)
+- `[x]` **T-NIH-02: Supported Automation import path cleanup.** Remove the
   private `gateway/api/automation/internal-api/...` path from the supported
   setup flow or label it experimental and non-default. Track removal of
-  `fn-import-automation` and `manage:jira-configuration` only after no supported
-  importer path depends on them.
-- `[ ]` **T-NIH-03: ACLI capability inventory.** Document ACLI ownership for
+  the retired Forge importer and broad Jira configuration scope.
+  (Evidence: `manifest.yml`, `src/index.ts`, `scripts/provision-automation.cjs`,
+  `tests/importAutomation.test.ts`)
+- `[x]` **T-NIH-03: ACLI capability inventory.** Document ACLI ownership for
   project, workitem, field, filter, and dashboard commands in
   `docs/PORTABILITY.md`, with supported fallback paths for each gap.
 - `[ ]` **T-NIH-04: Golden template validation.** Clone a company-managed golden
@@ -208,18 +211,24 @@ linked.
   issue types, statuses, screens, fields, board columns, queues, filters,
   dashboards, seeds, and Automation placeholders with fewer custom REST
   mutations than fresh provisioning.
-- `[ ]` **T-NIH-05: Atlassian product adoption spike.** Evaluate Jira Product
+  (Blocked evidence: `evidence/nih/golden-template-validation.json`; current
+  AIGO is team-managed/next-gen, not a valid company-managed clone source.)
+- `[x]` **T-NIH-05: Atlassian product adoption spike.** Evaluate Jira Product
   Discovery, JSM Assets, Confluence, Atlassian Analytics/Data Lake, and
   Atlassian Goals as native owners for ideas/insights, employer or segment
   objects, claims/SOP knowledge, readouts, and outcome rollups. Product-level
   subtasks are T-NIH-05A through T-NIH-05F in `specs/outcome-roadmap.md`.
+  (Evidence: `specs/atlassian-product-adoption-spike.md`)
 - `[ ]` **T-NIH-06: Third-party Terraform disposable-site spike.** Test
   third-party Terraform providers only against a disposable Jira site/project
   for create, import, plan, drift, and destroy behavior before any production
   `.tf` resources are allowed.
-- `[ ]` **T-NIH-07: Custom script label inventory.** Label every supported
+  (Baseline report: `specs/terraform-provider-spike.md`; live disposable-site
+  provider execution still pending.)
+- `[x]` **T-NIH-07: Custom script label inventory.** Label every supported
   custom script as exactly one of: native wrapper, documented API gap, or
-  Twin-specific logic.
+  Twin-specific logic. (Evidence: `docs/script-label-inventory.md`,
+  `tests/script-label-inventory.test.ts`)
 
 Acceptance:
 - The supported path names the Atlassian-native owner for every platform

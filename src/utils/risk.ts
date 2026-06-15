@@ -1,6 +1,14 @@
 import { ClaimsRisk } from "../types";
 import { normalizeText } from "./text";
 
+// NIH-CLASSIFICATION (T-NIH-07): Twin-specific logic (acceptable, not NIH).
+//   The claims-risk rule bank + scanner encode Twin healthcare-claims safety
+//   policy (policies/claims-risk-policy.md). This is core custom IP that no
+//   Atlassian-native tool provides and must stay custom per CLAUDE.md and
+//   specs/atlassian-native-tools.md. The only platform-adjacent dependency is
+//   normalizeText (see the text.ts NIH note) — the regex matching itself is
+//   policy, not a re-implemented platform capability.
+
 type ClaimRule = {
   // Regex (case-insensitive) matched against normalized text.
   pattern: RegExp;
