@@ -1,0 +1,4 @@
+interface:
+  display_name: "Forge Rovo Jira Ops"
+  short_description: "Deploy and verify the Forge/Rovo Jira agent system."
+  default_prompt: "Use this skill to connect, seed, and verify the Forge/Rovo Jira agent system for this repo."

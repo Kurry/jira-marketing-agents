@@ -93,8 +93,7 @@ export async function addComment(issueKey: string, markdown: string): Promise<{ 
 
 /**
  * Map a raw Jira issue JSON + extracted comment texts into a normalized
- * IssueContext. Shared by the Forge handler path and the MCP server path so the
- * two integrations produce identical context shapes.
+ * IssueContext for Forge/Rovo handlers.
  */
 export function mapIssueToContext(
   issueKey: string,
@@ -143,7 +142,7 @@ export function mapIssueToContext(
 export async function getIssueContext(issueKey: string): Promise<IssueContext> {
   const [issue, comments] = await Promise.all([
     getIssue(issueKey),
-    getIssueComments(issueKey).catch(() => [] as string[]),
+    getIssueComments(issueKey),
   ]);
 
   return mapIssueToContext(issueKey, issue, comments);

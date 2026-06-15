@@ -45,7 +45,7 @@ This policy is the source of truth for what the app may and may not do.
 
 ## Mutation policy
 
-- The **only** mutating action in the MVP is `addAnalysisComment`, which adds a
+- The **only** mutating Forge action in the MVP is `addAnalysisComment`, which adds a
   Jira comment clearly marked as AI-generated analysis. It never changes
   fields, transitions, audiences, suppression, or claims state.
 - Any issue **field update** is future work, gated behind an explicit allowlist
@@ -59,3 +59,6 @@ Rovo actions invoked by Jira Automation are treated as **read-style** actions.
 Automation rules must not rely on autonomous agents performing unsafe mutations.
 Adding a comment with `{{agentResponse}}` is done by an explicit Automation
 "Add comment" action that a human configured — not by the agent itself.
+The Creative Claims rule may also transition a risky Creative Request to
+**Claims Review** when configured; that route is a review queue handoff, not an
+approval or claims-state decision.

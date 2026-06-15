@@ -43,11 +43,11 @@ Replace these tokens with values from your instance before enabling:
 ## Safety
 
 Per [`../../policies/safe-mutations.md`](../../policies/safe-mutations.md), the
-**only** mutation these rules perform is **adding a comment** with the agent's
-response (`{{agentResponse}}`). The "Use Rovo agent" step is read-style. No rule
-approves claims, launches campaigns, changes audiences/suppression, or modifies
-production systems. The Creative Claims rule may *suggest* a transition to Claims
-Review, but approval remains a human step.
+"Use Rovo agent" step is read-style and the primary mutation is **adding a
+comment** with the agent's response (`{{agentResponse}}`). The Creative Claims
+rule may also route risky work to **Claims Review**. No rule approves claims,
+launches campaigns, changes audiences/suppression, or modifies production
+systems; approval remains a human step.
 
 ## Rovo agent action type
 

@@ -7,6 +7,7 @@ build/
 .env.*
 coverage/
 .forge/
+automation/seed/generated/
 .vscode/
 .idea/
 *.tsbuildinfo

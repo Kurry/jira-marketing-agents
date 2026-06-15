@@ -1,0 +1,11 @@
+{
+  "skillName": "twg",
+  "target": "repo",
+  "installPath": "skills/twg",
+  "binaryPath": "TWG_BIN | skills/twg/bin/twg-bin | PATH:twg-bin",
+  "installedAt": "2026-06-15T00:06:33.934Z",
+  "installedVersion": "1.0.1",
+  "buildProfile": "external",
+  "buildCommit": "771d92ebc63d",
+  "builtAt": "2026-05-21T16:35:38.872Z"
+}

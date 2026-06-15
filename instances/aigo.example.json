@@ -1,0 +1,13 @@
+{
+  "site": "example.atlassian.net",
+  "forgeEnvironment": "development",
+  "projectKey": "AIGO",
+  "projectName": "AI Growth Ops",
+  "projectDescription": "AI Growth Ops workspace provisioned from jira-marketing-agents.",
+  "seedLabel": "aigo-seed",
+  "minSeedCount": 15,
+  "templateProjectKey": "",
+  "seedTemplate": "automation/seed/aigo-seed-issues.csv",
+  "renderedSeedFile": "automation/seed/generated/AIGO-seed-issues.csv",
+  "automationRulesFile": "automation/rules/aigo-automation-ruleset.json"
+}

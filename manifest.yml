@@ -1,69 +1,29 @@
 # Forge manifest for the AI Growth Ops Rovo agents app.
 #
-# NOTE: The app id below is a placeholder. Run `forge register` to create a
-# real app and replace this id (the CLI rewrites it automatically). Do not
-# commit a real production app id without intent.
+# Registered Forge app id for the shared development app. Run `forge deploy`
+# and `forge install` after manifest/code changes so Rovo agents appear in Jira.
 app:
-  id: ari:cloud:ecosystem::app/00000000-0000-0000-0000-000000000000
+  id: ari:cloud:ecosystem::app/d1baf70e-b5ad-4fe7-812b-7dc20c7eb154
   runtime:
     name: nodejs22.x
 
 permissions:
-  # Classic scopes are used for a faster MVP. If you switch to granular
-  # scopes, replace these with the granular equivalents (for example
-  # read:issue:jira, write:comment:jira, read:comment:jira) and re-run
-  # `forge deploy`. See README "Custom fields guidance" and Forge docs.
   scopes:
     - read:jira-work
     - write:jira-work
     - read:chat:rovo
 
 resources:
-  - key: growth-triage-agent-prompt
-    path: prompts/growth-triage-agent.md
-  - key: requirements-gap-agent-prompt
-    path: prompts/requirements-gap-agent.md
-  - key: epic-breakdown-agent-prompt
-    path: prompts/epic-breakdown-agent.md
-  - key: duplicate-detector-agent-prompt
-    path: prompts/duplicate-detector-agent.md
-  - key: sprint-risk-agent-prompt
-    path: prompts/sprint-risk-agent.md
-  - key: acceptance-criteria-agent-prompt
-    path: prompts/acceptance-criteria-agent.md
-  - key: qa-testcase-agent-prompt
-    path: prompts/qa-testcase-agent.md
-  - key: experiment-design-agent-prompt
-    path: prompts/experiment-design-agent.md
-  - key: creative-claims-agent-prompt
-    path: prompts/creative-claims-agent.md
-  - key: employer-launch-agent-prompt
-    path: prompts/employer-launch-agent.md
-  - key: dashboard-spec-agent-prompt
-    path: prompts/dashboard-spec-agent.md
-  - key: funnel-friction-agent-prompt
-    path: prompts/funnel-friction-agent.md
-  - key: weekly-readout-agent-prompt
-    path: prompts/weekly-readout-agent.md
-  - key: creative-generation-agent-prompt
-    path: prompts/creative-generation-agent.md
-  - key: audience-builder-agent-prompt
-    path: prompts/audience-builder-agent.md
-  - key: campaign-orchestration-agent-prompt
-    path: prompts/campaign-orchestration-agent.md
-  - key: landing-page-agent-prompt
-    path: prompts/landing-page-agent.md
-  - key: referral-loop-agent-prompt
-    path: prompts/referral-loop-agent.md
-  - key: activation-agent-prompt
-    path: prompts/activation-agent.md
+  - key: agent-prompts
+    path: prompts
 
 modules:
   rovo:agent:
     - key: growth-triage-agent
       name: AI Growth Triage Agent
-      description: Classifies Jira intake, identifies workflow area, risk, missing info, priority, owner group, and next action.
-      prompt: resource:growth-triage-agent-prompt
+      description: Classifies Jira intake, identifies workflow area, risk, missing
+        info, priority, owner group, and next action.
+      prompt: resource:agent-prompts;growth-triage-agent.md
       conversationStarters:
         - Triage this issue
         - Find missing requirements
@@ -76,8 +36,9 @@ modules:
 
     - key: requirements-gap-agent
       name: AI Requirements Gap Agent
-      description: Identifies missing requirements, clarifying questions, and blockers, and decides if an issue is ready for work.
-      prompt: resource:requirements-gap-agent-prompt
+      description: Identifies missing requirements, clarifying questions, and
+        blockers, and decides if an issue is ready for work.
+      prompt: resource:agent-prompts;requirements-gap-agent.md
       conversationStarters:
         - Find missing requirements
         - Is this ready for work?
@@ -89,8 +50,9 @@ modules:
 
     - key: epic-breakdown-agent
       name: AI Epic Breakdown Agent
-      description: Breaks an epic into child stories with acceptance criteria, dependencies, and owner groups.
-      prompt: resource:epic-breakdown-agent-prompt
+      description: Breaks an epic into child stories with acceptance criteria,
+        dependencies, and owner groups.
+      prompt: resource:agent-prompts;epic-breakdown-agent.md
       conversationStarters:
         - Break down this epic
         - Propose child stories
@@ -102,7 +64,7 @@ modules:
     - key: duplicate-detector-agent
       name: AI Duplicate Detector Agent
       description: Finds likely duplicate issues using text overlap, labels, and components.
-      prompt: resource:duplicate-detector-agent-prompt
+      prompt: resource:agent-prompts;duplicate-detector-agent.md
       conversationStarters:
         - Find duplicates of this issue
         - Search for similar issues
@@ -113,7 +75,7 @@ modules:
     - key: sprint-risk-agent
       name: AI Sprint Risk Agent
       description: Assesses sprint and ticket execution risk and proposes mitigations.
-      prompt: resource:sprint-risk-agent-prompt
+      prompt: resource:agent-prompts;sprint-risk-agent.md
       conversationStarters:
         - Assess sprint risk
         - What could block this?
@@ -124,7 +86,7 @@ modules:
     - key: acceptance-criteria-agent
       name: AI Acceptance Criteria Agent
       description: Proposes acceptance criteria, definition of done, and QA checks.
-      prompt: resource:acceptance-criteria-agent-prompt
+      prompt: resource:agent-prompts;acceptance-criteria-agent.md
       conversationStarters:
         - Propose acceptance criteria
         - Draft a definition of done
@@ -135,7 +97,7 @@ modules:
     - key: qa-testcase-agent
       name: AI QA Test Case Agent
       description: Generates QA test cases from a Jira issue.
-      prompt: resource:qa-testcase-agent-prompt
+      prompt: resource:agent-prompts;qa-testcase-agent.md
       conversationStarters:
         - Generate QA test cases
         - Write edge case tests
@@ -145,8 +107,9 @@ modules:
 
     - key: experiment-design-agent
       name: AI Experiment Design Agent
-      description: Drafts an experiment spec with hypothesis, metrics, guardrails, variants, and decision rule.
-      prompt: resource:experiment-design-agent-prompt
+      description: Drafts an experiment spec with hypothesis, metrics, guardrails,
+        variants, and decision rule.
+      prompt: resource:agent-prompts;experiment-design-agent.md
       conversationStarters:
         - Design an experiment
         - Draft an experiment spec
@@ -156,8 +119,9 @@ modules:
 
     - key: creative-claims-agent
       name: AI Creative Claims Agent
-      description: Reviews creative copy for health claims risk and suggests safer rewrites. Never approves claims.
-      prompt: resource:creative-claims-agent-prompt
+      description: Reviews creative copy for health claims risk and suggests safer
+        rewrites. Never approves claims.
+      prompt: resource:agent-prompts;creative-claims-agent.md
       conversationStarters:
         - Review claims risk
         - Suggest safer rewrites
@@ -167,8 +131,9 @@ modules:
 
     - key: employer-launch-agent
       name: AI Employer Launch Agent
-      description: Builds an employer launch workback plan, readiness score, and suggested subtasks.
-      prompt: resource:employer-launch-agent-prompt
+      description: Builds an employer launch workback plan, readiness score, and
+        suggested subtasks.
+      prompt: resource:agent-prompts;employer-launch-agent.md
       conversationStarters:
         - Plan this employer launch
         - Score launch readiness
@@ -179,7 +144,7 @@ modules:
     - key: dashboard-spec-agent
       name: AI Dashboard Spec Agent
       description: Drafts a dashboard analytics specification from a request.
-      prompt: resource:dashboard-spec-agent-prompt
+      prompt: resource:agent-prompts;dashboard-spec-agent.md
       conversationStarters:
         - Draft a dashboard spec
         - Define dashboard metrics
@@ -190,7 +155,7 @@ modules:
     - key: funnel-friction-agent
       name: AI Funnel Friction Agent
       description: Analyzes signup funnel issues and recommends fixes.
-      prompt: resource:funnel-friction-agent-prompt
+      prompt: resource:agent-prompts;funnel-friction-agent.md
       conversationStarters:
         - Analyze funnel friction
         - Diagnose this signup issue
@@ -201,7 +166,7 @@ modules:
     - key: weekly-readout-agent
       name: AI Weekly Readout Agent
       description: Produces a weekly growth readout over recent AIGO issues.
-      prompt: resource:weekly-readout-agent-prompt
+      prompt: resource:agent-prompts;weekly-readout-agent.md
       conversationStarters:
         - Generate the weekly readout
         - Summarize last week
@@ -210,8 +175,9 @@ modules:
 
     - key: creative-generation-agent
       name: AI Creative Generation Agent
-      description: Drafts compliant creative variants per channel and scans each for claims risk. Never sends or approves.
-      prompt: resource:creative-generation-agent-prompt
+      description: Drafts compliant creative variants per channel and scans each for
+        claims risk. Never sends or approves.
+      prompt: resource:agent-prompts;creative-generation-agent.md
       conversationStarters:
         - Generate creative variants
         - Draft email and SMS copy
@@ -222,8 +188,9 @@ modules:
 
     - key: audience-builder-agent
       name: AI Audience Builder Agent
-      description: Proposes candidate audience/segment definitions and personalization rules. Never mutates audiences or suppression.
-      prompt: resource:audience-builder-agent-prompt
+      description: Proposes candidate audience/segment definitions and personalization
+        rules. Never mutates audiences or suppression.
+      prompt: resource:agent-prompts;audience-builder-agent.md
       conversationStarters:
         - Build a candidate segment
         - Propose personalization rules
@@ -233,9 +200,10 @@ modules:
         - proposePersonalization
 
     - key: campaign-orchestration-agent
-      name: AI Campaign Orchestration Agent
-      description: Drafts a multi-touch outreach plan with guardrails and approvals for a human to execute. Never sends.
-      prompt: resource:campaign-orchestration-agent-prompt
+      name: AI Campaign Planner
+      description: Drafts a multi-touch outreach plan with guardrails and approvals
+        for a human to execute. Never sends.
+      prompt: resource:agent-prompts;campaign-orchestration-agent.md
       conversationStarters:
         - Plan an outreach campaign
         - Sequence channels for this launch
@@ -245,8 +213,9 @@ modules:
 
     - key: landing-page-agent
       name: AI Landing Page Agent
-      description: Produces a conversion-optimized landing page spec with compliance-scanned draft copy and an A/B plan.
-      prompt: resource:landing-page-agent-prompt
+      description: Produces a conversion-optimized landing page spec with
+        compliance-scanned draft copy and an A/B plan.
+      prompt: resource:agent-prompts;landing-page-agent.md
       conversationStarters:
         - Spec a landing page
         - Draft landing page copy
@@ -256,8 +225,9 @@ modules:
 
     - key: referral-loop-agent
       name: AI Referral Loop Agent
-      description: Designs a referral loop with tracking, fraud guardrails, and compliance flags. Never creates incentives.
-      prompt: resource:referral-loop-agent-prompt
+      description: Designs a referral loop with tracking, fraud guardrails, and
+        compliance flags. Never creates incentives.
+      prompt: resource:agent-prompts;referral-loop-agent.md
       conversationStarters:
         - Design a referral loop
         - How should referrals work?
@@ -267,8 +237,9 @@ modules:
 
     - key: activation-agent
       name: AI Activation Agent
-      description: Proposes an early-activation plan to get registered members to first value. Never sends nudges.
-      prompt: resource:activation-agent-prompt
+      description: Proposes an early-activation plan to get registered members to
+        first value. Never sends nudges.
+      prompt: resource:agent-prompts;activation-agent.md
       conversationStarters:
         - Plan early activation
         - Reduce onboarding drop-off
@@ -279,296 +250,325 @@ modules:
   action:
     - key: getIssueContext
       name: Get issue context
-      description: Fetch summary, description, fields, comments, labels, and components for an issue.
-      function: getIssueContext
+      description: Fetch summary, description, fields, comments, labels, and
+        components for an issue.
+      function: fn-get-issue
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: classifyGrowthIssue
       name: Classify growth issue
       description: Classify issue type, workflow area, risk, priority, and missing info.
-      function: classifyGrowthIssue
+      function: fn-classify-growth
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: findSimilarIssues
       name: Find similar issues
       description: Search for similar issues by text and JQL.
-      function: findSimilarIssues
+      function: fn-find-similar
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: proposeAcceptanceCriteria
       name: Propose acceptance criteria
       description: Generate acceptance criteria, definition of done, and QA checks.
-      function: proposeAcceptanceCriteria
+      function: fn-accept-criteria
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: proposeRequirementsGaps
       name: Propose requirements gaps
       description: Identify missing requirements and clarifying questions.
-      function: proposeRequirementsGaps
+      function: fn-require-gaps
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: breakDownEpic
       name: Break down epic
       description: Propose child stories and subtasks for an epic.
-      function: breakDownEpic
+      function: fn-break-epic
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: assessSprintRisk
       name: Assess sprint risk
       description: Assess sprint or ticket execution risk.
-      function: assessSprintRisk
+      function: fn-sprint-risk
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: generateQATestCases
       name: Generate QA test cases
       description: Generate QA test cases from an issue.
-      function: generateQATestCases
+      function: fn-qa-tests
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: proposeExperimentSpec
       name: Propose experiment spec
       description: Generate an experiment specification.
-      function: proposeExperimentSpec
+      function: fn-experiment-spec
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: reviewCreativeClaimsRisk
       name: Review creative claims risk
       description: Claims-risk review and safer rewrites. Never approves claims.
-      function: reviewCreativeClaimsRisk
+      function: fn-claims-risk
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: createEmployerLaunchPlan
       name: Create employer launch plan
       description: Employer launch workback plan, readiness score, and subtasks.
-      function: createEmployerLaunchPlan
+      function: fn-employer-launch
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: createDashboardSpec
       name: Create dashboard spec
       description: Dashboard analytics specification.
-      function: createDashboardSpec
+      function: fn-dashboard-spec
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: analyzeFunnelFriction
       name: Analyze funnel friction
       description: Signup funnel issue analysis.
-      function: analyzeFunnelFriction
+      function: fn-funnel-friction
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: generateWeeklyReadout
       name: Generate weekly readout
       description: Weekly summary over recent AIGO issues.
-      function: generateWeeklyReadout
+      function: fn-weekly-readout
       actionVerb: GET
       inputs:
         jql:
           title: JQL query
+          description: Optional JQL query for selecting issues.
           type: string
-          required: true
+          required: false
         days:
           title: Lookback days
+          description: Number of days to include in the readout.
           type: integer
           required: false
 
     - key: generateCreativeVariants
       name: Generate creative variants
-      description: Draft compliant creative variants per channel; scans each for claims risk.
-      function: generateCreativeVariants
+      description: Draft compliant creative variants per channel; scans each for
+        claims risk.
+      function: fn-creative-vars
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: buildAudienceSegment
       name: Build audience segment
-      description: Propose a candidate audience/segment definition. Never mutates production audiences.
-      function: buildAudienceSegment
+      description: Propose a candidate audience/segment definition. Never mutates
+        production audiences.
+      function: fn-audience
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: proposePersonalization
       name: Propose personalization
       description: Propose personalization variables and rules for a segment.
-      function: proposePersonalization
+      function: fn-personalization
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: buildCampaignPlan
       name: Build campaign plan
       description: Draft a multi-touch outreach plan for a human to execute. Never sends.
-      function: buildCampaignPlan
+      function: fn-campaign-plan
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: createLandingPageSpec
       name: Create landing page spec
       description: Produce a landing page spec with compliance-scanned draft copy.
-      function: createLandingPageSpec
+      function: fn-landing-page
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: designReferralLoop
       name: Design referral loop
-      description: Design a referral loop with tracking, fraud guardrails, and compliance flags.
-      function: designReferralLoop
+      description: Design a referral loop with tracking, fraud guardrails, and
+        compliance flags.
+      function: fn-referral-loop
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: proposeActivationPlan
       name: Propose activation plan
       description: Propose an early-activation plan for newly registered members.
-      function: proposeActivationPlan
+      function: fn-activation-plan
       actionVerb: GET
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
 
     - key: addAnalysisComment
       name: Add analysis comment
-      description: Explicitly add a Jira comment. This is the only mutating action in the MVP.
-      function: addAnalysisComment
+      description: Explicitly add a Jira comment. This is the only mutating action in
+        the MVP.
+      function: fn-add-comment
       actionVerb: UPDATE
       inputs:
         issueKey:
           title: Issue key
+          description: Jira issue key to read or comment on.
           type: string
           required: true
         commentBody:
           title: Comment body
+          description: Markdown analysis text to add as an AI-labeled Jira comment.
           type: string
           required: true
 
   function:
-    - key: getIssueContext
-      handler: src/index.getIssueContext
-    - key: classifyGrowthIssue
-      handler: src/index.classifyGrowthIssue
-    - key: findSimilarIssues
-      handler: src/index.findSimilarIssues
-    - key: proposeAcceptanceCriteria
-      handler: src/index.proposeAcceptanceCriteria
-    - key: proposeRequirementsGaps
-      handler: src/index.proposeRequirementsGaps
-    - key: breakDownEpic
-      handler: src/index.breakDownEpic
-    - key: assessSprintRisk
-      handler: src/index.assessSprintRisk
-    - key: generateQATestCases
-      handler: src/index.generateQATestCases
-    - key: proposeExperimentSpec
-      handler: src/index.proposeExperimentSpec
-    - key: reviewCreativeClaimsRisk
-      handler: src/index.reviewCreativeClaimsRisk
-    - key: createEmployerLaunchPlan
-      handler: src/index.createEmployerLaunchPlan
-    - key: createDashboardSpec
-      handler: src/index.createDashboardSpec
-    - key: analyzeFunnelFriction
-      handler: src/index.analyzeFunnelFriction
-    - key: generateWeeklyReadout
-      handler: src/index.generateWeeklyReadout
-    - key: generateCreativeVariants
-      handler: src/index.generateCreativeVariants
-    - key: buildAudienceSegment
-      handler: src/index.buildAudienceSegment
-    - key: proposePersonalization
-      handler: src/index.proposePersonalization
-    - key: buildCampaignPlan
-      handler: src/index.buildCampaignPlan
-    - key: createLandingPageSpec
-      handler: src/index.createLandingPageSpec
-    - key: designReferralLoop
-      handler: src/index.designReferralLoop
-    - key: proposeActivationPlan
-      handler: src/index.proposeActivationPlan
-    - key: addAnalysisComment
-      handler: src/index.addAnalysisComment
+    - key: fn-get-issue
+      handler: index.getIssueContext
+    - key: fn-classify-growth
+      handler: index.classifyGrowthIssue
+    - key: fn-find-similar
+      handler: index.findSimilarIssues
+    - key: fn-accept-criteria
+      handler: index.proposeAcceptanceCriteria
+    - key: fn-require-gaps
+      handler: index.proposeRequirementsGaps
+    - key: fn-break-epic
+      handler: index.breakDownEpic
+    - key: fn-sprint-risk
+      handler: index.assessSprintRisk
+    - key: fn-qa-tests
+      handler: index.generateQATestCases
+    - key: fn-experiment-spec
+      handler: index.proposeExperimentSpec
+    - key: fn-claims-risk
+      handler: index.reviewCreativeClaimsRisk
+    - key: fn-employer-launch
+      handler: index.createEmployerLaunchPlan
+    - key: fn-dashboard-spec
+      handler: index.createDashboardSpec
+    - key: fn-funnel-friction
+      handler: index.analyzeFunnelFriction
+    - key: fn-weekly-readout
+      handler: index.generateWeeklyReadout
+    - key: fn-creative-vars
+      handler: index.generateCreativeVariants
+    - key: fn-audience
+      handler: index.buildAudienceSegment
+    - key: fn-personalization
+      handler: index.proposePersonalization
+    - key: fn-campaign-plan
+      handler: index.buildCampaignPlan
+    - key: fn-landing-page
+      handler: index.createLandingPageSpec
+    - key: fn-referral-loop
+      handler: index.designReferralLoop
+    - key: fn-activation-plan
+      handler: index.proposeActivationPlan
+    - key: fn-add-comment
+      handler: index.addAnalysisComment

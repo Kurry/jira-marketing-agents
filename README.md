@@ -10,12 +10,9 @@ weekly growth readouts.
 It is **safe by default**: agents analyze and draft, they never take high-stakes
 actions (see [Safety model](#5-safety-model)).
 
-**Two integration routes, one shared core.** The growth-ops logic in `src/`
-powers both:
-
-- **Atlassian Forge + Rovo** — agents run inside Jira ([`docs/INTEGRATION.md`](docs/INTEGRATION.md)).
-- **Claude Cowork (MCP)** — the same capabilities as a 23-tool MCP server Cowork
-  connects to ([`docs/COWORK.md`](docs/COWORK.md)).
+**Forge/Rovo integration.** The growth-ops logic in `src/` powers Atlassian
+Forge actions and Rovo agents that run inside Jira
+([`docs/INTEGRATION.md`](docs/INTEGRATION.md)).
 
 ---
 
@@ -23,7 +20,7 @@ powers both:
 
 The app exposes 19 Rovo agents and 22 callable actions. Each agent reads a Jira
 issue (or a JQL result set), runs deterministic TypeScript logic, and returns
-**structured JSON** plus optional Markdown for comments. The only mutating
+**structured JSON** plus optional Markdown for comments. The only mutating Forge
 action is `addAnalysisComment`, which posts an AI-labeled comment.
 
 Coverage spans the full member-acquisition lifecycle: **triage & planning**
@@ -130,25 +127,51 @@ This app is **safe by default**. See [`policies/safe-mutations.md`](policies/saf
 - The app will **never** autonomously approve claims, send campaigns, change
   audiences, alter suppression rules, launch experiments, or modify production
   signup flows.
-- The **only** mutating action is `addAnalysisComment` (a clearly AI-labeled
+- The **only** mutating Forge action is `addAnalysisComment` (a clearly AI-labeled
   comment). Field writes are future work behind an explicit allowlist.
-- Rovo actions invoked by Automation are treated as **read-style**.
+- Rovo actions invoked by Automation are treated as **read-style**; Jira
+  Automation may add the configured comment and, for Creative Claims only, route
+  risky creative work to **Claims Review** without approving it.
 
 ## 6. Required Forge commands
 
 ```bash
 npm install
+npm install -g @forge/cli@latest
+forge --version
+forge settings set usage-analytics false
 forge login
-forge register     # creates a real app id and rewrites manifest.yml
+forge whoami
 forge lint
-forge deploy
-forge install
+forge deploy -e development
+forge install -e development -p jira --site myhealthcaresite.atlassian.net --confirm-scopes
+forge install list
 ```
+
+This repo now has a registered Forge app id in `manifest.yml`. Only run
+`forge register` again if you intentionally want a different app identity.
+The primary install success check is that the Rovo panel in Jira lists the AI
+Growth Ops agents.
 
 > **Full step-by-step install & wiring:** see
 > [`docs/INTEGRATION.md`](docs/INTEGRATION.md) — tooling, register/deploy/install,
 > scopes, project/issue-type/workflow setup, custom fields, Rovo enablement,
 > Automation wiring, an end-to-end smoke test, and troubleshooting.
+> The remaining MVP operator checklist lives in
+> [`docs/MVP_RUNBOOK.md`](docs/MVP_RUNBOOK.md).
+> Multi-site/project provisioning guidance lives in
+> [`docs/PORTABILITY.md`](docs/PORTABILITY.md).
+
+For CLI seed import, install/authenticate ACLI and import the portable seed CSV:
+
+```bash
+brew tap atlassian/homebrew-acli
+brew trust atlassian/acli
+brew install acli
+acli jira auth login --web
+AIGO_INSTANCE_CONFIG=instances/aigo.example.json npm run seed:render
+acli jira workitem create-bulk --from-csv automation/seed/generated/AIGO-seed-issues.csv --yes
+```
 
 ## 7. Jira Automation setup
 
@@ -163,7 +186,7 @@ Import rules**, then replace the documented placeholders. In short:
 2. Add Automation rules that use the **Use Rovo agent** action and post
    `{{agentResponse}}` via an explicit **Add comment** action:
    - Intake Triage (issue created)
-   - Creative Claims (transition to Ready)
+   - Creative Claims (transition to Ready; may route risky work to Claims Review)
    - Experiment Spec (created / AI Triage)
    - Employer Launch (created)
    - Weekly Readout (scheduled Monday 8 AM)
@@ -191,19 +214,28 @@ Issue, Insight / Research Brief, Bug / Tracking Issue, Decision Memo.
 ## 9. Deployment steps
 
 1. `npm install`
-2. `npm run build` and `npm test` (must pass — see below)
-3. `forge login` and `forge register` (replaces the placeholder app id)
-4. `forge lint`
-5. `forge deploy`
-6. `forge install` onto your Jira site
-7. Configure the Automation rules from section 7.
+2. `npm install -g @forge/cli@latest`
+3. `forge --version` and `forge settings set usage-analytics false`
+4. `npm run build` and `npm test` (must pass — see below)
+5. `forge login` and `forge whoami`
+6. `forge lint`
+7. `forge deploy -e development`
+8. `forge install -e development -p jira --site myhealthcaresite.atlassian.net --confirm-scopes`
+9. `forge install list` and confirm the Jira installation is `Up-to-date`
+10. Open Jira/Rovo and confirm the agents are visible before configuring Automation.
+11. Configure the Automation rules from section 7.
 
 ## 10. Test commands
 
 ```bash
 npm run build    # tsc --noEmit type check
 npm test         # vitest run
+npm run test:integration
+npm run test:readiness:jira
+npm run test:smoke:jira
 npm run test:watch
+npm run seed:render
+npm run provision:instance -- --help
 ```
 
 The project is developed **test-first (TDD)**: each domain module has a matching
@@ -211,6 +243,13 @@ test under `tests/` (triage, requirements, experiments, creative claims,
 dashboards, duplicates, employer launch, funnel, backlog/sprint risk, readout,
 ADF/comments, and growth execution: creative generation, audience/personalization,
 campaign, landing page, referral, activation).
+
+Forge/Rovo integration testing is not the same thing as evals. CI-safe
+integration tests assert manifest/prompt/action/handler contracts. Live smoke
+tests run after `forge deploy` + `forge install` and verify the Jira project and
+seed issues with ACLI. The readiness check reports live AIGO issue-type, seed,
+and observed-status gaps; use `AIGO_READINESS_WARN_ONLY=1` while Jira product
+setup is still incomplete. Evals can be added later for prompt-quality scoring.
 
 ## Future extensions
 
@@ -227,11 +266,12 @@ campaign, landing page, referral, activation).
 ```
 manifest.yml          Forge modules: rovo:agent, action, function, resources
 src/                  TypeScript handlers + pure domain logic + utils (shared core)
-mcp/                  Claude Cowork MCP server exposing src/ as 23 tools
 prompts/              One Markdown prompt per agent
 skills/               Reusable agent skill modules (grounded in src/ + manifest)
 policies/             Safety, claims-risk, and experiment policies
 automation/           Jira Automation rules and JQL filters
-docs/                 INTEGRATION.md (Forge/Rovo) and COWORK.md (MCP)
+docs/                 INTEGRATION.md and MVP_RUNBOOK.md
+instances/            Per-site/project provisioning config templates
+specs/                MVP requirements, design, and task roadmap
 tests/                Vitest unit tests (TDD)
 ```

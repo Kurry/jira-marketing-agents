@@ -9,6 +9,26 @@ Every skill is grounded in the repo: the **Implementation** line points to the
 `src/` module and the `manifest.yml` action that realizes it, or marks the skill
 as *prompt-driven* (behavior lives in the agent prompt, no dedicated action yet).
 
+## Forge/Rovo operations
+
+Use [`forge-rovo-jira-ops/`](forge-rovo-jira-ops/) when connecting this app to
+Jira, deploying through Forge, configuring the AIGO project, importing
+Automation rules, creating seed issues, or running live Rovo smoke tests.
+
+## Portable TWG skill bundle
+
+The repo also carries a portable copy of the local TWG agent skills:
+
+- [`twg/`](twg/) - root TWG CLI operating skill
+- [`twg-status-rollups/`](twg-status-rollups/) - status and leadership readouts
+- [`twg-context-discovery/`](twg-context-discovery/) - context and dependency discovery
+- [`twg-engineering-work/`](twg-engineering-work/) - PR and engineering work analysis
+- [`twg-operational-health/`](twg-operational-health/) - on-call, reliability, and operational health workflows
+
+The copied wrapper scripts can use `TWG_BIN`, a bundled
+`skills/twg/bin/twg-bin`, a repo-root `bin/twg-bin`, `twg-bin` on `PATH`, or the
+original local `/Users/kurrytran/.local/bin/twg-bin` fallback.
+
 ## Design principle
 
 > Agents can **draft, classify, route, summarize, and recommend**. They cannot
