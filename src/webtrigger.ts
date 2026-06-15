@@ -111,7 +111,7 @@ export async function agentWebtrigger(event: any) {
 function jsonResponse(statusCode: number, body: unknown) {
   return {
     statusCode,
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": ["application/json"] },
     body: JSON.stringify(body, null, 2),
   };
 }
