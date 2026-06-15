@@ -1,7 +1,7 @@
 # AIGO Agent-Team Status
 
-_Last updated: 2026-06-15T09:15Z_
-_Current tick: 17_
+_Last updated: 2026-06-15T09:20Z_
+_Current tick: 18_
 
 ## Milestone
 - Active: **M0-M2 ✓ · M6-filters ✓ · IaC ✓ · docs ✓ · safety-final-audit ✓ · DONE.md ✓ — awaiting operator: T-M3-02, T-M6-02, T-M1-04, T-M4-01..06**
