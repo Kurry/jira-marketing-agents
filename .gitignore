@@ -14,3 +14,4 @@ automation/seed/generated/
 *.err.log
 .mcp.json
 .claude/worktrees/
+infra/terraform/
