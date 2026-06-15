@@ -6,7 +6,7 @@
       "description": "Every Monday at 8 AM, run the AI Weekly Readout Agent over the last 7 days of AIGO issues and create a Decision Memo with the summary.",
       "state": "DISABLED",
       "ruleScope": {
-        "resources": ["ari:cloud:jira:__MISSING_PROJECT_ID__:project/__MISSING_PROJECT_ID__"]
+        "resources": ["ari:cloud:jira:10000:project/10000"]
       },
       "actor": { "type": "ACCOUNT_ID", "value": "__MISSING_ACTOR_ACCOUNT_ID__" },
       "trigger": {

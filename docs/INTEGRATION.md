@@ -8,10 +8,45 @@ For many Jira sites/projects, use the instance-based flow in
 [`PORTABILITY.md`](PORTABILITY.md) rather than copying these commands by hand.
 
 > **Audience:** a Jira site admin + a developer with Node.js installed.
-> **Time:** ~60–90 minutes for a first install.
+> **Time:** ~60–90 minutes for a first install (or ~10 minutes with `npm run provision:all`).
 > **Prerequisites recap:** a Jira Cloud site with **Rovo enabled** (Atlassian
 > Intelligence / Rovo subscription), admin rights, Node.js ≥ 20, and the
 > Atlassian Forge CLI.
+
+## Quick start (automated IaC path)
+
+If you have a working Jira Cloud site, Forge CLI authenticated, and
+`ATLASSIAN_TOKEN` set, run:
+
+```bash
+# 1. Validate everything first (no mutations)
+npm run provision:all -- --dry-run --config instances/aigo.example.json
+
+# 2. Full provision (copy + edit instances/aigo.example.json for your site first)
+npm run provision:all -- --config instances/your-site.json --site your-site.atlassian.net
+```
+
+This single command runs all 10 steps in order:
+1. Config validation
+2. `forge lint`
+3. `forge deploy -e development`
+4. `forge install`
+5. Issue types, custom fields, workflow statuses (`provision:jira`)
+6. Forge environment variables (`forge variables set` from evidence/jira-config/forge-vars.sh)
+7. `forge deploy` (re-deploy with new variables)
+8. Seed issues (`provision:seeds`)
+9. Automation rules (`provision:automation`)
+10. Smoke test (`test:smoke:jira`)
+
+After `provision:all` completes, see the **UI steps (cannot be automated)** section
+near the end of this document for the remaining manual steps.
+
+> **Note:** The Jira Automation import REST API requires specific admin OAuth
+> scopes that may not be available with a personal API token. If `provision:automation`
+> exits with code 2, follow the manual import instructions it prints and then
+> re-enable rules from the Jira UI.
+
+---
 
 ---
 
@@ -155,26 +190,59 @@ seed it.
 
 ---
 
-## 6. Create issue types
+## 6. Create issue types (automated)
 
-Add these issue types (Project settings → Issue types, or the company-managed
-issue-type scheme):
+> **Automated:** `npm run provision:jira` creates all 14 canonical issue types
+> via the Jira REST API. If you ran `npm run provision:all`, this step is already done.
 
-Growth Task · Experiment · Creative Request · Claims Review · Dashboard Request ·
-Automation Request · Employer Launch · Segmentation Request · Signup Funnel Issue ·
-Insight / Research Brief · Bug / Tracking Issue · Decision Memo
+If you need to run it standalone:
+
+```bash
+node scripts/provision-jira.cjs --config instances/aigo.example.json
+```
+
+The 14 canonical types provisioned:
+
+AI Growth Request · Creative Request · Experiment · Segmentation Request ·
+Personalization Journey · Employer Launch · Campaign · Dashboard Request ·
+Signup Funnel Issue · Research Brief · Claims Review · Decision Memo ·
+Positioning Update · Bug / Tracking Issue
 
 These map to the agents' `recommendedIssueType` outputs (see
 [`../skills/issue-classification.md`](../skills/issue-classification.md)).
 
-**Verify:** all 12 types appear in the AIGO create dialog.
+### UI steps (cannot be automated) — issue types
+
+> **UI steps (cannot be automated):** Jira's issue-type scheme assignment and
+> board column wiring require the Jira admin UI. See the
+> **UI steps (cannot be automated)** section at the end of this document.
+
+**Verify:** all 14 types appear in the AIGO create dialog.
 
 ---
 
-## 6a. Import seed issues with ACLI
+## 6a. Import seed issues (automated)
 
-The repo includes a portable seed CSV:
-[`../automation/seed/aigo-seed-issues.csv`](../automation/seed/aigo-seed-issues.csv).
+> **Automated:** `npm run provision:seeds` creates seed issues and re-types
+> any existing ones to their canonical type. Idempotent — safe to re-run.
+
+```bash
+# Dry-run first (validates CSV, no API calls)
+node scripts/provision-seeds.cjs --dry-run --config instances/aigo.example.json
+
+# Full run
+npm run provision:seeds -- --config instances/aigo.example.json
+```
+
+The script reads [`../automation/seed/aigo-seed-issues.csv`](../automation/seed/aigo-seed-issues.csv),
+matches existing issues by summary (case-insensitive), creates missing ones,
+re-types mis-typed ones, and writes evidence to `evidence/jira-config/seeds-output.json`.
+
+Evidence output: `evidence/jira-config/seeds-output.json` (created/retyped/skipped lists).
+
+**Alternative: ACLI bulk import**
+
+If you prefer ACLI for the initial import:
 
 ```bash
 AIGO_INSTANCE_CONFIG=instances/aigo.example.json npm run seed:render
@@ -182,28 +250,20 @@ acli jira workitem create-bulk --from-csv automation/seed/generated/AIGO-seed-is
 acli jira workitem search --jql "project = AIGO AND labels = aigo-seed ORDER BY created DESC" --fields "key,summary,status" --csv
 ```
 
-The CSV imports as `Task` so it works in a fresh team-managed `AIGO` project
-before custom issue types are configured. Each description records the intended
-AIGO type, target status, and test signals for the agents. After the custom
-issue types exist, copy the CSV and replace `issueType` values with the intended
-type names.
-
-CSV import creates issues in the workflow's initial status. Transition imported
-issues after creation only if your workflow supports the target status:
-
-```bash
-acli jira workitem transition --jql "project = AIGO AND labels = aigo-seed AND summary ~ \"Blocked\"" --status "Blocked" --yes
-```
-
-**Verify:** the search command returns the imported `AIGO-*` issue keys.
+**Verify:** `evidence/jira-config/seeds-output.json` exists, or the ACLI search
+returns the imported `AIGO-*` issue keys.
 
 ---
 
-## 7. Configure statuses & workflow
+## 7. Configure statuses & workflow (automated + UI)
+
+> **Automated:** `npm run provision:jira` creates the 8 canonical workflow
+> statuses via the Jira REST API. Wiring them into the board columns requires
+> the Jira admin UI (see **UI steps** section at the end).
 
 The agents recommend these statuses (`recommendedNextStatus` /
-`recommendedStatus`). Add any that don't exist and wire them into the AIGO
-workflow:
+`recommendedStatus`). `provision:jira` creates them; add them to the board
+workflow in the AIGO project settings:
 
 ```
 To Do ─► AI Triage ─► Needs Info ──┐
@@ -236,27 +296,33 @@ verify those in Jira.
 
 ---
 
-## 8. Custom fields (optional for MVP)
+## 8. Custom fields (automated)
+
+> **Automated:** `npm run provision:jira` creates the 6 custom fields and
+> generates `evidence/jira-config/forge-vars.sh` with the `forge variables set`
+> commands. `npm run provision:all` sources and applies those commands automatically.
 
 **You do not need custom fields to start.** Agent output is delivered as
 **comments and labels**, not field writes — field IDs are instance-specific and
 the app never guesses them.
 
-When you're ready to map outputs to fields, create the fields you want from this
-list and wire their IDs via environment variables in
-[`../src/config.ts`](../src/config.ts) (`FIELD_IDS`):
-
-Workflow Area · AI Agent Owner · Segment · Employer / Partner · Channel · Primary
-Metric · Guardrail Metric · Experiment ID · Variant ID · Claims Risk · Automation
-Level · Decision Needed · Expected Impact · Confidence · Effort · Priority Score ·
-Source System · Due / Decision Date.
+When you're ready to map outputs to fields, `provision:jira` creates the fields
+and generates the Forge variable commands:
 
 ```bash
-# Example: expose a field id to the app (Forge environment variable)
-forge variables set WORKFLOW_AREA_FIELD_ID customfield_10234
-forge variables set CLAIMS_RISK_FIELD_ID    customfield_10240
-forge deploy
+# After provision:jira runs, apply the generated forge variable commands:
+bash evidence/jira-config/forge-vars.sh
+forge deploy -e development
 ```
+
+The fields provisioned:
+
+Segment · Primary Metric · Claims Risk · Experiment ID · Workflow Area · Priority Score
+
+Additional fields (future work, create manually if needed):
+AI Agent Owner · Employer / Partner · Channel · Guardrail Metric · Variant ID ·
+Automation Level · Decision Needed · Expected Impact · Confidence · Effort ·
+Source System · Due / Decision Date.
 
 > Writing custom fields is **future work behind an explicit allowlist** (see
 > [`../policies/safe-mutations.md`](../policies/safe-mutations.md)). The MVP only
@@ -285,26 +351,49 @@ returns a structured response on a real issue.
 
 ---
 
-## 10. Wire Jira Automation
+## 10. Wire Jira Automation (automated + UI)
 
-Two paths — pick one:
+> **Automated:** `npm run provision:automation` renders and attempts to import all
+> five automation rules as **DISABLED**. Rules are idempotent (existing rule names
+> are skipped).
 
-### 10a. Import the rules-as-code (fastest)
+```bash
+# Dry-run: validate all rendered rules are DISABLED (no API calls)
+node scripts/provision-automation.cjs --dry-run --config instances/aigo.example.json
 
-Importable JSON for all five rules is in
-[`../automation/rules/`](../automation/rules/):
+# Full run (renders first, then imports)
+npm run provision:automation -- --config instances/aigo.example.json
+```
 
-1. **Project settings → Automation → ⋯ → Import rules** and upload
-   `aigo-automation-ruleset.json`.
-2. Open each imported rule and replace placeholders
-   (`__PROJECT_KEY__`, `__PROJECT_ID__`, `__ACTOR_ACCOUNT_ID__`,
-   `__*_AGENT_KEY__` — agent keys are in `manifest.yml`).
-3. Enable each rule.
+Evidence output: `evidence/automation/import-output.json`
+
+> **API limitation:** The Jira Automation import REST API requires specific OAuth
+> 2.0 admin scopes that are often not available with a personal API token. If the
+> script exits with code 2, follow the manual import steps below.
+
+### 10a. Automated import (preferred)
+
+`provision:automation` tries two REST endpoints in order:
+1. `POST /rest/api/3/automation/service/1.0/rules/imports`
+2. `POST /gateway/api/automation/internal-api/jira/{cloudId}/pro/rest/GLOBAL/rules/import`
+
+If either succeeds, rules are imported as DISABLED and the evidence file is written.
+
+### 10b. Manual import (if API returns 401/403) — UI steps (cannot be automated)
+
+> **UI steps (cannot be automated):** Rule enabling and placeholder substitution
+> require the Jira admin UI.
+
+1. **Project settings → Automation → ⋯ → Import rules** and upload each JSON
+   from `automation/rules/rendered/`.
+2. The rendered files have `__MISSING_PROJECT_ID__` and `__MISSING_ACTOR_ACCOUNT_ID__`
+   sentinels where the example config has no real values. Edit these in the Jira UI.
+3. Rules are imported **DISABLED** — review each rule's audit log before enabling.
 
 See [`../automation/rules/README.md`](../automation/rules/README.md) for the
 placeholder reference and the Rovo-action type caveat.
 
-### 10b. Build the rules by hand
+### 10c. Build the rules by hand (fallback)
 
 Follow the step-by-step in
 [`../automation/jira-automation-rules.md`](../automation/jira-automation-rules.md).
@@ -332,6 +421,57 @@ project = AIGO AND updated >= -7d ORDER BY updated DESC
 ```
 
 **Verify:** the weekly-readout JQL returns recent issues in the Jira search.
+
+---
+
+## 11b. UI steps (cannot be automated)
+
+The following steps require the Jira admin UI. They cannot be scripted via
+the REST API available to Forge apps or personal API tokens.
+
+**Run `npm run provision:all` first.** These are the remaining manual steps
+after the automated provisioning completes.
+
+### Issue types — board / scheme assignment
+
+1. Open AIGO → **Project settings → Issue Types**.
+2. Confirm all 14 canonical types are present (created by `provision:jira`).
+3. If using a company-managed project, add them to the project's issue-type scheme.
+
+### Board column → status wiring
+
+1. Open AIGO → **Project settings → Board**.
+2. Add the 8 provisioned statuses to board columns:
+   Intake · Triage · Spec Ready · In Review · Claims Review ·
+   Experiment Running · Decision Needed · Launch Prep
+
+### Automation rules — placeholder substitution and enabling
+
+1. After import (automated or manual), open each rule in
+   **Project settings → Automation**.
+2. Replace any `__MISSING_*` placeholder values with real project/account IDs.
+3. Review the rule's audit log entry.
+4. Enable the rule **only after a captured audit-log run** (per safety contract).
+
+### Rovo agent visibility
+
+1. Open `<your-site>.atlassian.net → Apps → Rovo → Agents`.
+2. Confirm all 19 AIGO agents are visible (names start with "AI Growth Ops").
+3. If agents are missing: `forge install list` to confirm install is Up-to-date;
+   re-run `forge deploy` and `forge install --upgrade` if needed.
+
+### First manual agent test (T-M4-01 through T-M4-06)
+
+Run these after all automated steps complete and UI wiring is done:
+
+| Test | Action | Expected result |
+|---|---|---|
+| T-M4-01 | Create AIGO issue | Intake Triage comment within 1 min |
+| T-M4-02 | Creative Request with "guaranteed reversal" | Claims flag: Prohibited |
+| T-M4-03 | Experiment issue with vague body | Spec: not ready with reasons |
+| T-M4-04 | Employer Launch with missing assets | Readiness score < 70 with blockers |
+| T-M4-05 | Run Weekly Readout rule manually | Decision Memo created |
+| T-M4-06 | Create duplicate issue | Duplicate flag comment |
 
 ---
 

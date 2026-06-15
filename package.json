@@ -16,6 +16,9 @@
     "provision:instance": "node scripts/provision-instance.cjs",
     "provision:jira": "node scripts/provision-jira.cjs",
     "provision:jira:dry": "node scripts/provision-jira.cjs --dry-run",
+    "provision:seeds": "node scripts/provision-seeds.cjs",
+    "provision:automation": "node scripts/provision-automation.cjs",
+    "provision:all": "node scripts/provision-all.cjs",
     "lint": "tsc --noEmit"
   },
   "dependencies": {

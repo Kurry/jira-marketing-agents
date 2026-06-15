@@ -6,7 +6,7 @@
       "description": "When a Creative Request transitions to Ready, run the AI Creative Claims Agent and post its risk analysis. Approval remains a human step.",
       "state": "DISABLED",
       "ruleScope": {
-        "resources": ["ari:cloud:jira:__MISSING_PROJECT_ID__:project/__MISSING_PROJECT_ID__"]
+        "resources": ["ari:cloud:jira:10000:project/10000"]
       },
       "actor": { "type": "ACCOUNT_ID", "value": "__MISSING_ACTOR_ACCOUNT_ID__" },
       "trigger": {
