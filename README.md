@@ -16,6 +16,25 @@ Forge actions and Rovo agents that run inside Jira
 
 ---
 
+## Infrastructure as Code
+
+This is the **v2 IaC reset**: the entire Jira/Forge control plane is brought up
+from code, with no manual UI steps. Nothing is considered done unless a script
+produced the evidence and a fresh clone can reproduce it via three commands:
+
+```bash
+npm run infra:plan     # show the diff between desired and live state
+npm run infra:apply    # converge live state to the desired state (idempotent)
+npm run infra:verify   # assert live state matches desired and emit evidence
+```
+
+The principles governing this reset — desired-state declaration, idempotent
+apply, script-generated evidence, and staging-only (`myhealthcaresite.atlassian.net`)
+— are documented in
+[`specs/agent-team/IAC_PRINCIPLES.md`](specs/agent-team/IAC_PRINCIPLES.md).
+
+---
+
 ## 1. What this app does
 
 The app exposes 19 Rovo agents and 22 callable actions. Each agent reads a Jira
